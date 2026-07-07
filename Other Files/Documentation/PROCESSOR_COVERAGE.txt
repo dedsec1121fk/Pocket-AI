@@ -1,0 +1,53 @@
+PocketAI Processor Detection Coverage
+=====================================
+
+Detection inputs
+----------------
+ro.product.manufacturer
+ro.product.brand
+ro.product.model
+ro.product.device
+ro.product.board
+ro.hardware
+ro.soc.model
+ro.soc.manufacturer
+ro.product.cpu.abi
+ro.product.cpu.abilist
+/proc/cpuinfo
+/sys/devices/system/cpu/cpu*/cpufreq/cpuinfo_max_freq
+/sys/devices/system/cpu/cpu*/cpufreq/scaling_max_freq
+Python userspace bitness
+Logical CPU count
+Short integer and floating-point benchmark
+Total and currently available RAM
+Free application and shared-storage space
+
+Recognized naming families
+--------------------------
+Qualcomm: Snapdragon 2/4/6/7/8, SMxxxx, SDMxxx, MSMxxxx, APQxxxx
+MediaTek: Dimensity 6000/7000/8000/9000 and 700-1200 families,
+           Helio A/P/G, MTxxxx
+Samsung: Exynos 7/8/9/1xxx/2xxx, Exynos 850, S5Exxxx
+Unisoc: T2/T3/T6/T7/T8/T9, UMSxxxx, SCxxxx, Spreadtrum
+HiSilicon: Kirin 6/7/8/9, HIxxxx, Hisi
+Google: Tensor G1-G5 and internal identifiers
+Other: NVIDIA Tegra, Rockchip RK, Allwinner/Sunxi, Amlogic/Meson,
+       Intel Atom and x86 Android
+
+Unknown processors
+------------------
+Unknown model names are intentionally not treated as errors. PocketAI computes
+a processor score from the measurable hardware and chooses a conservative
+model. This also supports future processors without requiring a script update.
+
+Classifier capacity selected after scanning
+-------------------------------------------
+Micro:    sub-1 GB or emergency/32-bit conditions
+Lite:     approximately 1-1.5 GB and legacy low-end processors
+Balanced: approximately 1.5-2.4 GB or slow entry processors
+Standard: approximately 2.4-3.6 GB and Galaxy A12-class or better
+Max:      approximately 3.6 GB+ when current free RAM and CPU score allow it
+
+The thresholds are conservative runtime policies rather than manufacturer
+compatibility guarantees. Available RAM and storage are checked dynamically,
+so a phone may temporarily receive a smaller model when Android is under load.

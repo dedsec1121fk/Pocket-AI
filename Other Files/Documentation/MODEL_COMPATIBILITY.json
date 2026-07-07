@@ -1,0 +1,253 @@
+{
+  "package": "Pocket AI Expanded Model Pack",
+  "package_version": 12,
+  "target": "Termux on unrooted Android phones from legacy low-end devices through modern phones",
+  "main_menu": [
+    "Scan Phone To Find Matching AI Model",
+    "Run Local AI"
+  ],
+  "automatic_scan": {
+    "checks": [
+      "processor identifiers and family",
+      "ABI and 32/64-bit userspace",
+      "logical cores and CPU frequency",
+      "short integer and floating-point benchmark",
+      "total and currently available RAM",
+      "free application and shared storage",
+      "bundled model presence"
+    ],
+    "unknown_processor_fallback": true,
+    "loads_simultaneous_gguf_models": 1,
+    "classifier_profiles": [
+      "micro",
+      "lite",
+      "balanced",
+      "standard",
+      "max"
+    ],
+    "task_specialists": [
+      "code",
+      "math",
+      "research"
+    ]
+  },
+  "model_count": 12,
+  "models": [
+    {
+      "id": "fast",
+      "name": "SmolLM2-135M-Instruct Q2_K",
+      "kind": "GGUF language model",
+      "file": "Models/SmolLM2-135M-Instruct.Q2_K.gguf",
+      "size_bytes": 88201792,
+      "sha256": "1e014d3c45f6cf502397a3b85b1d9d282605afb02079fd32665b0422c3f0106c",
+      "parameters": 134520000,
+      "minimum_total_ram_bytes": 1520435200,
+      "minimum_available_ram_bytes": 314572800,
+      "minimum_cpu_score": 14,
+      "requires_64_bit": true,
+      "processor_combinations": "Entry-level or better 64-bit ARM/x86; Cortex-A53/A55, Snapdragon 2/4+, Helio A/P/G, Exynos 7/850+, Unisoc SC9863/T+, Kirin 6+"
+    },
+    {
+      "id": "quality",
+      "name": "SmolLM2-135M-Instruct Q4_1",
+      "kind": "GGUF language model",
+      "file": "Models/SmolLM2-135M-Instruct.Q4_1.gguf",
+      "size_bytes": 98362432,
+      "sha256": "b179c9523d0e6a0f98a330c7562b682750a6f8c8c15e5bc70ea373728110db53",
+      "parameters": 134520000,
+      "minimum_total_ram_bytes": 2149580800,
+      "minimum_available_ram_bytes": 587202560,
+      "minimum_cpu_score": 35,
+      "requires_64_bit": true,
+      "processor_combinations": "Efficient entry/mid-range or better; Snapdragon 6/7/8, Dimensity, Helio G8x/G9x, Exynos 9/1xxx/2xxx, Tensor, Kirin 8/9, Unisoc T7/T8/T9"
+    },
+    {
+      "id": "classifier_micro",
+      "name": "PocketAI Micro neural classifier",
+      "kind": "pre-trained bilingual intent neural model",
+      "file": "Models/pretrained_micro/neural_model.pkl.gz",
+      "size_bytes": 218663,
+      "sha256": "adad5f9e2f2e1ccdc485885f23f0b3add17735843822c048ccc50bed7072b55f",
+      "parameters": 58383,
+      "profile": "micro",
+      "minimum_total_ram_bytes": 536870912,
+      "minimum_available_ram_bytes": 83886080,
+      "minimum_cpu_score": 0,
+      "requires_64_bit": false,
+      "processor_combinations": "Any Termux/Python-compatible processor; emergency and sub-1 GB profile",
+      "metadata_file": "Models/pretrained_micro/model_metadata.json",
+      "validation_accuracy": 0.43137254901960786
+    },
+    {
+      "id": "classifier_lite",
+      "name": "PocketAI Lite neural classifier",
+      "kind": "pre-trained bilingual intent neural model",
+      "file": "Models/pretrained_lite/neural_model.pkl.gz",
+      "size_bytes": 616941,
+      "sha256": "b669338849b9140d5494314645c0ccf450d0d39612e45402edd3d6b9f2cf9907",
+      "parameters": 165403,
+      "profile": "lite",
+      "minimum_total_ram_bytes": 943718400,
+      "minimum_available_ram_bytes": 157286400,
+      "minimum_cpu_score": 4,
+      "requires_64_bit": false,
+      "processor_combinations": "Legacy 32/64-bit and low-end processors; approximately 1 GB or more",
+      "metadata_file": "Models/pretrained_lite/model_metadata.json",
+      "validation_accuracy": 0.43137254901960786
+    },
+    {
+      "id": "classifier_balanced",
+      "name": "PocketAI Balanced neural classifier",
+      "kind": "pre-trained bilingual intent neural model",
+      "file": "Models/pretrained_balanced/neural_model.pkl.gz",
+      "size_bytes": 1599121,
+      "sha256": "e9488533e49b38b7a937477760276cd265210629ae0ab0eb39b9f6a60822c7d4",
+      "parameters": 428375,
+      "profile": "balanced",
+      "minimum_total_ram_bytes": 1520435200,
+      "minimum_available_ram_bytes": 272629760,
+      "minimum_cpu_score": 10,
+      "requires_64_bit": false,
+      "processor_combinations": "Cortex-A53/A55 and comparable entry processors; approximately 1.5-2.5 GB",
+      "metadata_file": "Models/pretrained_balanced/model_metadata.json",
+      "validation_accuracy": 0.49019607843137253
+    },
+    {
+      "id": "classifier_standard",
+      "name": "PocketAI Standard neural classifier",
+      "kind": "pre-trained bilingual intent neural model",
+      "file": "Models/pretrained_standard/neural_model.pkl.gz",
+      "size_bytes": 2758924,
+      "sha256": "a9b60828cdc891d800e1ea2ccadfbb6879fa629fc63643aedf274792abc6b772",
+      "parameters": 740303,
+      "profile": "standard",
+      "minimum_total_ram_bytes": 2516582400,
+      "minimum_available_ram_bytes": 503316480,
+      "minimum_cpu_score": 25,
+      "requires_64_bit": false,
+      "processor_combinations": "Galaxy A12-class or better; approximately 3-4 GB",
+      "metadata_file": "Models/pretrained_standard/model_metadata.json",
+      "validation_accuracy": 0.49019607843137253
+    },
+    {
+      "id": "classifier_max",
+      "name": "PocketAI Max neural classifier",
+      "kind": "pre-trained bilingual intent neural model",
+      "file": "Models/pretrained_max/neural_model.pkl.gz",
+      "size_bytes": 6586733,
+      "sha256": "a369c2a93a4b2e0c1dcd4cb3d4208d1319dce4fcea002ecc63f3c3d2b5f11d26",
+      "parameters": 1773811,
+      "profile": "max",
+      "minimum_total_ram_bytes": 3565158400,
+      "minimum_available_ram_bytes": 817889280,
+      "minimum_cpu_score": 43,
+      "requires_64_bit": false,
+      "processor_combinations": "Modern entry/mid-range or better; approximately 4 GB+",
+      "metadata_file": "Models/pretrained_max/model_metadata.json",
+      "validation_accuracy": 0.5294117647058824
+    },
+    {
+      "id": "microlm_lite",
+      "name": "PocketAI Bilingual MicroLM Lite",
+      "kind": "bilingual n-gram generation model",
+      "file": "Models/PocketAI_Bilingual_MicroLM_Lite.pkl.gz",
+      "size_bytes": 30450,
+      "sha256": "e11fe93a91417a5de8435e5514a419110b1b08ee88ef48ff95d2fba4fd40ea5b",
+      "minimum_total_ram_bytes": 536870912,
+      "requires_64_bit": false,
+      "processor_combinations": "Any processor for Lite; Quality is automatically preferred when roughly 2.2 GB total RAM and 360 MB free RAM are available"
+    },
+    {
+      "id": "microlm_quality",
+      "name": "PocketAI Bilingual MicroLM Quality",
+      "kind": "bilingual n-gram generation model",
+      "file": "Models/PocketAI_Bilingual_MicroLM_Quality.pkl.gz",
+      "size_bytes": 44915,
+      "sha256": "fe0b28ec2006db3659d1ed77f5c435aae31e3a8bff0f89ec7d7afe8242adeb2e",
+      "minimum_total_ram_bytes": 2306867200,
+      "requires_64_bit": false,
+      "processor_combinations": "Any processor for Lite; Quality is automatically preferred when roughly 2.2 GB total RAM and 360 MB free RAM are available"
+    },
+    {
+      "id": "specialist_code",
+      "name": "PocketAI Bilingual Code Specialist",
+      "kind": "task-specialist routing and knowledge model",
+      "file": "Models/PocketAI_Code_Specialist.json.gz",
+      "size_bytes": 2211,
+      "sha256": "ee4d9a95fe953d29d2d66aa6986b69ff15f67795d720eea445c3dc26b6692aed",
+      "minimum_total_ram_bytes": 536870912,
+      "requires_64_bit": false,
+      "processor_combinations": "Any processor; loaded as a compact task overlay and does not start a second GGUF model"
+    },
+    {
+      "id": "specialist_math",
+      "name": "PocketAI Bilingual Math Specialist",
+      "kind": "task-specialist routing and knowledge model",
+      "file": "Models/PocketAI_Math_Specialist.json.gz",
+      "size_bytes": 1530,
+      "sha256": "c05c1bb690418939edc1b1d917a2375f02c443ff90df421f909947ca3052dc56",
+      "minimum_total_ram_bytes": 536870912,
+      "requires_64_bit": false,
+      "processor_combinations": "Any processor; loaded as a compact task overlay and does not start a second GGUF model"
+    },
+    {
+      "id": "specialist_research",
+      "name": "PocketAI Bilingual Research Specialist",
+      "kind": "task-specialist routing and knowledge model",
+      "file": "Models/PocketAI_Research_Specialist.json.gz",
+      "size_bytes": 1919,
+      "sha256": "c7cd98502c7551b14b30b997223948362a686a2e4a839e5877535fb78132c1d0",
+      "minimum_total_ram_bytes": 536870912,
+      "requires_64_bit": false,
+      "processor_combinations": "Any processor; loaded as a compact task overlay and does not start a second GGUF model"
+    }
+  ],
+  "runtime_profiles": {
+    "ultra_eco": {
+      "threads": 1,
+      "context": 256,
+      "batch": 8,
+      "ubatch": 8
+    },
+    "eco": {
+      "threads": 1,
+      "context": 384,
+      "batch": 16,
+      "ubatch": 8
+    },
+    "entry": {
+      "threads": 2,
+      "context": 512,
+      "batch": 32,
+      "ubatch": 16
+    },
+    "balanced": {
+      "threads": 3,
+      "context": "640-768",
+      "batch": 48,
+      "ubatch": 32
+    },
+    "performance": {
+      "threads": 4,
+      "context": "768-1024",
+      "batch": 64,
+      "ubatch": 48
+    }
+  },
+  "language_policy": [
+    "English",
+    "Greek"
+  ],
+  "runner": {
+    "name": "llama.cpp llama-cli",
+    "bundled": false,
+    "installer": "Other Files/install_models.sh",
+    "reason": "Native runner is compiled for the phone architecture; all AI model data is already bundled"
+  },
+  "package_structure": {
+    "main_script": "Pocket AI.py",
+    "models_folder": "Models",
+    "other_files_folder": "Other Files",
+    "generated_data_folder": "Other Files/Saved Data"
+  }
+}

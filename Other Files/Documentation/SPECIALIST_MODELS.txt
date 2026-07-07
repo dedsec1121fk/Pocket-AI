@@ -1,0 +1,16 @@
+PocketAI task-specialist models
+===============================
+
+Code specialist
+---------------
+Routes Python, Termux, debugging, files, SQLite, JSON, and low-memory coding questions. It supplies bilingual task guidance to the selected GGUF model and contains compact verified answers for common questions.
+
+Math specialist
+---------------
+Routes formulas, equations, percentages, averages, geometry, and step-by-step calculations. The deterministic safe calculator keeps priority for numeric expressions.
+
+Research specialist
+-------------------
+Routes source verification, public web research, citations, and safe search-operator questions. Existing restrictions continue to block credential, private-file, admin-panel, and exposed-system searches.
+
+The specialists are small model files loaded together because their total memory cost is negligible. They do not load multiple GGUF language models.

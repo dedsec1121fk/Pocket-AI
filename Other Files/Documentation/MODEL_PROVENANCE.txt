@@ -1,0 +1,74 @@
+Pocket AI bundled-model provenance
+==================================
+
+Overview
+--------
+This package contains twelve local model components. All model data is already
+inside Models/. The Termux installer compiles only the native llama.cpp runner;
+it does not download model weights.
+
+GGUF language models
+--------------------
+Base family: SmolLM2-135M-Instruct
+Creator: HuggingFaceTB
+License: Apache License 2.0
+Approximate parameter count: 134.5 million
+
+1. Fast Q2_K
+   File: Models/SmolLM2-135M-Instruct.Q2_K.gguf
+   Size: 88,201,792 bytes
+   SHA-256: 1e014d3c45f6cf502397a3b85b1d9d282605afb02079fd32665b0422c3f0106c
+   This file was locally requantized from the bundled Q4_1 file with
+   llama.cpp using Q2_K and --allow-requantize.
+
+2. Quality Q4_1
+   File: Models/SmolLM2-135M-Instruct.Q4_1.gguf
+   Size: 98,362,432 bytes
+   SHA-256: b179c9523d0e6a0f98a330c7562b682750a6f8c8c15e5bc70ea373728110db53
+   Distribution source: llm-smollm2 0.1.2 Python wheel.
+
+Pocket AI neural classifiers
+-----------------------------
+The five classifier models were trained locally from the package's bilingual
+English/Greek 51-intent dataset. They use the same intent set at progressively
+larger hashed-input and hidden-layer capacities. The hardware scanner selects
+one classifier; it never loads every classifier at the same time.
+
+3. Micro:    Models/pretrained_micro/neural_model.pkl.gz
+4. Lite:     Models/pretrained_lite/neural_model.pkl.gz
+5. Balanced: Models/pretrained_balanced/neural_model.pkl.gz
+6. Standard: Models/pretrained_standard/neural_model.pkl.gz
+7. Max:      Models/pretrained_max/neural_model.pkl.gz
+
+Bilingual MicroLM generators
+----------------------------
+These are locally generated compact n-gram models built from English and Greek
+training text. They provide an extremely small fallback generator when GGUF
+inference is unavailable. The scanner uses Lite on constrained phones and
+Quality when RAM permits.
+
+8. Lite:    Models/PocketAI_Bilingual_MicroLM_Lite.pkl.gz
+9. Quality: Models/PocketAI_Bilingual_MicroLM_Quality.pkl.gz
+
+Bilingual specialist models
+----------------------------
+These compact package-specific models contain weighted bilingual routing
+features, specialist prompts, and curated local knowledge. They do not claim to
+be independent transformer language models. They improve the selected model's
+task routing and can directly answer a limited set of verified built-in topics.
+
+10. Code:     Models/PocketAI_Code_Specialist.json.gz
+11. Math:     Models/PocketAI_Math_Specialist.json.gz
+12. Research: Models/PocketAI_Research_Specialist.json.gz
+
+Runtime and language behavior
+-----------------------------
+Only one GGUF process is started for a response. One neural classifier and one
+MicroLM variant are selected according to detected RAM, available RAM,
+processor capability, userspace bitness, and storage. Specialist models are
+small routing overlays. Pocket AI accepts and produces English and Greek only.
+
+Validation
+----------
+Other Files/CHECKSUMS.sha256 covers all static package files. The installer and
+/llm-status additionally verify both GGUF files and their GGUF magic headers.
