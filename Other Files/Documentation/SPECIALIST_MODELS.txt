@@ -14,3 +14,16 @@ Research specialist
 Routes source verification, public web research, citations, and safe search-operator questions. Existing restrictions continue to block credential, private-file, admin-panel, and exposed-system searches.
 
 The specialists are small model files loaded together because their total memory cost is negligible. They do not load multiple GGUF language models.
+
+
+SCHOOL SPECIALISTS
+------------------
+- PocketAI_SchoolMath_Specialist.json.gz
+- PocketAI_SchoolScience_Specialist.json.gz
+- PocketAI_SchoolLanguage_Specialist.json.gz
+- PocketAI_SchoolHumanities_Specialist.json.gz
+- PocketAI_SchoolComputing_Specialist.json.gz
+- PocketAI_School_Knowledge.json.gz
+- PocketAI_School_Hybrid_Controller.json.gz
+
+These are shared through the central school layer so every selected model profile receives the same foundation.

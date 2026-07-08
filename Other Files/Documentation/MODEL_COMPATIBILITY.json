@@ -1,7 +1,7 @@
 {
   "package": "Pocket AI Hybrid Automatic Model Pack",
-  "package_version": 18,
-  "target": "Termux on unrooted Android phones from legacy low-end devices through modern phones",
+  "package_version": 19,
+  "target": "Termux on unrooted Android phones, with shared bilingual grade 1-12 school support and no-key public web learning",
   "automatic_scan": {
     "checks": [
       "processor identifiers and family",
@@ -28,18 +28,33 @@
     "task_specialists": [
       "code",
       "math",
-      "research"
+      "research",
+      "school_math",
+      "school_science",
+      "school_language",
+      "school_humanities",
+      "school_computing"
     ],
     "hybrid_modes": [
       "off",
       "speed",
       "smart",
       "quality",
+      "adaptive",
+      "expert",
+      "consensus",
       "cascade",
       "auto"
+    ],
+    "shared_foundations": [
+      "English/Greek conversation",
+      "grade 1-12 school foundation",
+      "deterministic school mathematics",
+      "persistent retrieval memory",
+      "safe no-key public web learning"
     ]
   },
-  "model_count": 21,
+  "model_count": 29,
   "models": [
     {
       "id": "fast",
@@ -318,6 +333,118 @@
       "minimum_cpu_score": 0,
       "requires_64_bit": false,
       "processor_combinations": "Any processor supported by Pocket AI; controller runs in standard Python."
+    },
+    {
+      "id": "school_knowledge",
+      "name": "PocketAI Grade 1-12 Bilingual School Knowledge",
+      "kind": "shared bilingual school knowledge model",
+      "file": "Models/PocketAI_School_Knowledge.json.gz",
+      "size_bytes": 18960,
+      "sha256": "631ba7115f13007fbf3f4d65d0ae23ff3b7a4b6091fe116371c4ff8a1f1316af",
+      "requires_64_bit": false,
+      "minimum_total_ram_bytes": 0,
+      "minimum_available_ram_bytes": 0,
+      "minimum_cpu_score": 0,
+      "processor_combinations": "Shared standard-library layer available on every Pocket AI profile",
+      "coverage": "Grades 1-12; mathematics, science, language, humanities, computing, and study skills"
+    },
+    {
+      "id": "school_math",
+      "name": "PocketAI School Mathematics Specialist",
+      "kind": "compact bilingual task-specialist model",
+      "file": "Models/PocketAI_SchoolMath_Specialist.json.gz",
+      "size_bytes": 6099,
+      "sha256": "621648abdf72ed8500b190c93d48bc752c7cacc3bb5a86dc45e840ec5953be23",
+      "requires_64_bit": false,
+      "minimum_total_ram_bytes": 0,
+      "minimum_available_ram_bytes": 0,
+      "minimum_cpu_score": 0,
+      "processor_combinations": "Shared standard-library layer available on every Pocket AI profile",
+      "coverage": "Arithmetic through introductory calculus; deterministic solver routes before model fallback"
+    },
+    {
+      "id": "school_science",
+      "name": "PocketAI School Science Specialist",
+      "kind": "compact bilingual task-specialist model",
+      "file": "Models/PocketAI_SchoolScience_Specialist.json.gz",
+      "size_bytes": 6018,
+      "sha256": "a5c904fd7f085d7c89755a8ba8a764527dec7e4aab886e614b6a4c0191236bd8",
+      "requires_64_bit": false,
+      "minimum_total_ram_bytes": 0,
+      "minimum_available_ram_bytes": 0,
+      "minimum_cpu_score": 0,
+      "processor_combinations": "Shared standard-library layer available on every Pocket AI profile",
+      "coverage": "Primary through upper-secondary science foundations"
+    },
+    {
+      "id": "school_language",
+      "name": "PocketAI School Language Specialist",
+      "kind": "compact bilingual task-specialist model",
+      "file": "Models/PocketAI_SchoolLanguage_Specialist.json.gz",
+      "size_bytes": 3236,
+      "sha256": "fd206bedb0a827ecffc5672e0658364f63fa504fbf634b4a4a931cb0d898c29f",
+      "requires_64_bit": false,
+      "minimum_total_ram_bytes": 0,
+      "minimum_available_ram_bytes": 0,
+      "minimum_cpu_score": 0,
+      "processor_combinations": "Shared standard-library layer available on every Pocket AI profile",
+      "coverage": "English/Greek grammar, writing, literature, and research foundations"
+    },
+    {
+      "id": "school_humanities",
+      "name": "PocketAI School Humanities Specialist",
+      "kind": "compact bilingual task-specialist model",
+      "file": "Models/PocketAI_SchoolHumanities_Specialist.json.gz",
+      "size_bytes": 4338,
+      "sha256": "de7339c8f6357540e7505b947bd8f0edb201582686bc88b61a0cbbca704eac87",
+      "requires_64_bit": false,
+      "minimum_total_ram_bytes": 0,
+      "minimum_available_ram_bytes": 0,
+      "minimum_cpu_score": 0,
+      "processor_combinations": "Shared standard-library layer available on every Pocket AI profile",
+      "coverage": "History, geography, civics, economics, and introductory philosophy"
+    },
+    {
+      "id": "school_computing",
+      "name": "PocketAI School Computing and Study Specialist",
+      "kind": "compact bilingual task-specialist model",
+      "file": "Models/PocketAI_SchoolComputing_Specialist.json.gz",
+      "size_bytes": 2406,
+      "sha256": "ed0a909ec40c7fb929350df884189009a4d3543d943efe1c8b4c65bb40fc2f79",
+      "requires_64_bit": false,
+      "minimum_total_ram_bytes": 0,
+      "minimum_available_ram_bytes": 0,
+      "minimum_cpu_score": 0,
+      "processor_combinations": "Shared standard-library layer available on every Pocket AI profile",
+      "coverage": "Computing, algorithms, digital literacy, and study skills"
+    },
+    {
+      "id": "school_hybrid",
+      "name": "PocketAI School Hybrid Controller",
+      "kind": "hybrid control model",
+      "file": "Models/PocketAI_School_Hybrid_Controller.json.gz",
+      "size_bytes": 480,
+      "sha256": "003361c31a37a6423dd5fb2cc1d958df176313e25d93b7e7054d586b4f53c976",
+      "requires_64_bit": false,
+      "minimum_total_ram_bytes": 0,
+      "minimum_available_ram_bytes": 0,
+      "minimum_cpu_score": 0,
+      "processor_combinations": "Shared standard-library layer available on every Pocket AI profile",
+      "coverage": "Runs shared school tools before retrieval, specialists, and optional GGUF explanation"
+    },
+    {
+      "id": "no_key_web_learning",
+      "name": "PocketAI No-Key Public Web Learning Controller",
+      "kind": "safe web-learning controller",
+      "file": "Models/PocketAI_NoKey_Web_Learner.json.gz",
+      "size_bytes": 502,
+      "sha256": "51b912bfd88134ee9dffb3e6f8a76a5712a3a483d3ed0cf32d6686756d206c47",
+      "requires_64_bit": false,
+      "minimum_total_ram_bytes": 0,
+      "minimum_available_ram_bytes": 0,
+      "minimum_cpu_score": 0,
+      "processor_combinations": "Shared standard-library layer available on every Pocket AI profile",
+      "coverage": "Bing RSS, Wikipedia MediaWiki API, public pages, and constrained operators; no Google Gemini bypass"
     }
   ],
   "runtime_profiles": {
@@ -417,5 +544,48 @@
       "Show advanced commands",
       "Exit"
     ]
+  },
+  "school_foundation": {
+    "supported_grades": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "languages": [
+      "English",
+      "Greek"
+    ],
+    "topic_count": 79,
+    "shared_across_every_model_profile": true,
+    "deterministic_math": [
+      "arithmetic",
+      "fractions",
+      "percentages",
+      "mean/median/mode/range",
+      "GCD/LCM",
+      "linear equations",
+      "quadratic equations",
+      "rectangle/triangle/circle area"
+    ],
+    "honest_scope": "Broad foundation; not a full copy of every national curriculum or textbook."
+  },
+  "web_learning": {
+    "api_key_required": false,
+    "providers": [
+      "Bing RSS",
+      "Wikipedia MediaWiki API",
+      "public readable pages"
+    ],
+    "google_gemini_without_credentials": false,
+    "safe_operator_validation": true
   }
 }

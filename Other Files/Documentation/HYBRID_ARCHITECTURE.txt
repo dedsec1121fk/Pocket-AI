@@ -71,3 +71,16 @@ MEMORY SAFETY
   selected phone profile.
 - A valid first answer is preserved if a second pass becomes unsafe.
 - The internal bilingual engine remains the universal fallback.
+
+SHARED SCHOOL FOUNDATION
+------------------------
+School questions are handled before generic transformer fallback. The shared layer provides
+bilingual grade 1-12 topic retrieval and deterministic solvers for arithmetic, fractions,
+percentages, statistics, equations, and common geometry. This makes the capability available
+regardless of the phone's selected classifier or GGUF tier.
+
+NO-KEY PUBLIC LEARNING
+----------------------
+The web-learning route combines safe operator validation, Bing RSS, Wikipedia MediaWiki search,
+robots-aware public page fetching, language filtering, size limits, and local source-aware storage.
+Official Google Gemini access is not attempted without credentials.

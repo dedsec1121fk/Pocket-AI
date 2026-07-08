@@ -14,7 +14,7 @@ Everything is implemented with Python's standard library:
 - Strict English/Greek language routing and bilingual response generation
 - Persistent user memories and conversation history
 - Bundled bilingual MicroLM generator
-- Safe public-web research using constrained search operators
+- Safe no-key public-web research through Bing RSS, Wikipedia, and constrained search operators
 - Optional SmolLM2 135M GGUF reasoning through llama.cpp
 - Automatic RAM, storage, temperature, battery, and processor-aware model profiles
 - Sequential hybrid inference with adaptive, expert, consensus, and cascade modes
@@ -114,6 +114,16 @@ try:
     from resource_advisor import concise_reason as resource_reason
 except Exception:
     def resource_reason(scan: dict, recommendation: dict, language: str = "en") -> str: return ""
+try:
+    from school_tutor import SchoolTutor
+except Exception:
+    class SchoolTutor:
+        def __init__(self, knowledge_path: Path) -> None: self.path = Path(knowledge_path)
+        def answer(self, text: str, language: str = "en") -> Optional[dict]: return None
+        def catalog(self, language: str = "en") -> str:
+            return "School foundation unavailable." if language != "el" else "Η σχολική βάση δεν είναι διαθέσιμη."
+        def grade_overview(self, grade: int, subject: str, language: str = "en") -> str: return self.catalog(language)
+        def instruction(self, language: str = "en") -> str: return "Explain school questions carefully."
 
 
 APP_NAME = "PocketAI Bilingual MAX"
@@ -236,6 +246,8 @@ HYBRID_COMPONENT_FILES = {
     "persona": "PocketAI_Persona_Controller.json.gz",
     "context": "PocketAI_Context_Optimizer.json.gz",
     "confidence": "PocketAI_Confidence_Calibrator.json.gz",
+    "school_hybrid": "PocketAI_School_Hybrid_Controller.json.gz",
+    "web_learning": "PocketAI_NoKey_Web_Learner.json.gz",
 }
 
 # Rules identify major Android-phone SoC families and many common model-number
@@ -3239,37 +3251,119 @@ class SafeWebResearch:
             charset = response.headers.get_content_charset() or "utf-8"
             return data, content_type, charset
 
-    def search(self, query: str, limit: int = 6) -> List[dict]:
-        query = validate_research_query(query)
-        limit = max(1, min(WEB_MAX_RESULTS, int(limit)))
-        params = urllib.parse.urlencode({"q": query, "format": "rss", "count": str(limit)})
-        url = "https://www.bing.com/search?" + params
-        data, content_type, _ = self._request(
-            url, WEB_SEARCH_TIMEOUT, "application/rss+xml, application/xml, text/xml;q=0.9"
+    @staticmethod
+    def _clean_wikipedia_query(query: str) -> str:
+        # Wikipedia search does not understand web-search operators. Keep the
+        # human topic while removing site:/filetype:/date filters.
+        cleaned = re.sub(
+            r'(?i)\b(?:site|filetype|intitle|inurl|before|after)\s*:\s*(?:"[^"]+"|\S+)',
+            ' ', query
         )
-        if content_type not in {"application/rss+xml", "application/xml", "text/xml", "text/plain"}:
-            raise ValueError(f"Search provider returned unsupported content type: {content_type}")
+        cleaned = re.sub(r'(?<!\w)-[a-zA-Zα-ωΑ-Ω0-9_]+', ' ', cleaned)
+        cleaned = cleaned.replace('"', ' ')
+        return SPACE_RE.sub(' ', cleaned).strip()[:220]
+
+    def _wikipedia_search(self, query: str, limit: int) -> List[dict]:
+        clean_query = self._clean_wikipedia_query(query)
+        if len(clean_query) < 2:
+            return []
+        language = 'el' if GREEK_CHAR_RE.search(clean_query) else 'en'
+        params = urllib.parse.urlencode({
+            'action': 'query', 'list': 'search', 'srsearch': clean_query,
+            'srlimit': str(max(1, min(limit, 8))), 'format': 'json',
+            'utf8': '1', 'origin': '*'
+        })
+        api_url = f'https://{language}.wikipedia.org/w/api.php?' + params
+        data, content_type, charset = self._request(
+            api_url, WEB_SEARCH_TIMEOUT, 'application/json, text/json;q=0.9'
+        )
+        if content_type not in {'application/json', 'text/json', 'text/plain'}:
+            return []
+        try:
+            payload = json.loads(data.decode(charset or 'utf-8', errors='replace'))
+        except (ValueError, UnicodeError, json.JSONDecodeError):
+            return []
+        results: List[dict] = []
+        for item in payload.get('query', {}).get('search', []):
+            title = str(item.get('title', '')).strip()
+            if not title:
+                continue
+            snippet = html.unescape(HTML_TAG_RE.sub(' ', str(item.get('snippet', ''))))
+            snippet = SPACE_RE.sub(' ', snippet).strip()
+            article = f'https://{language}.wikipedia.org/wiki/' + urllib.parse.quote(title.replace(' ', '_'))
+            try:
+                article = validate_public_url(article)
+            except ValueError:
+                continue
+            results.append({
+                'title': title[:300], 'url': article,
+                'snippet': snippet[:1200], 'provider': f'Wikipedia-{language}'
+            })
+        return results
+
+    def _bing_rss_search(self, query: str, limit: int) -> List[dict]:
+        params = urllib.parse.urlencode({'q': query, 'format': 'rss', 'count': str(limit)})
+        url = 'https://www.bing.com/search?' + params
+        data, content_type, _ = self._request(
+            url, WEB_SEARCH_TIMEOUT, 'application/rss+xml, application/xml, text/xml;q=0.9'
+        )
+        if content_type not in {'application/rss+xml', 'application/xml', 'text/xml', 'text/plain'}:
+            return []
         try:
             root = ET.fromstring(data)
-        except ET.ParseError as error:
-            raise ValueError(f"Search results could not be parsed: {error}") from error
+        except ET.ParseError:
+            return []
         results: List[dict] = []
-        seen: set = set()
-        for item in root.findall(".//item"):
-            title = html.unescape((item.findtext("title") or "").strip())
-            link = html.unescape((item.findtext("link") or "").strip())
-            description = html.unescape(HTML_TAG_RE.sub(" ", item.findtext("description") or ""))
-            description = SPACE_RE.sub(" ", description).strip()
-            if not title or not link or link in seen:
+        for item in root.findall('.//item'):
+            title = html.unescape((item.findtext('title') or '').strip())
+            link = html.unescape((item.findtext('link') or '').strip())
+            description = html.unescape(HTML_TAG_RE.sub(' ', item.findtext('description') or ''))
+            description = SPACE_RE.sub(' ', description).strip()
+            if not title or not link:
                 continue
             try:
                 safe_link = validate_public_url(link)
             except ValueError:
                 continue
-            seen.add(safe_link)
-            results.append({"title": title[:300], "url": safe_link, "snippet": description[:1200]})
+            results.append({
+                'title': title[:300], 'url': safe_link,
+                'snippet': description[:1200], 'provider': 'Bing RSS'
+            })
+        return results
+
+    def search(self, query: str, limit: int = 6) -> List[dict]:
+        query = validate_research_query(query)
+        limit = max(1, min(WEB_MAX_RESULTS, int(limit)))
+        combined: List[dict] = []
+        errors: List[str] = []
+        for provider in (self._bing_rss_search, self._wikipedia_search):
+            try:
+                combined.extend(provider(query, limit))
+            except (OSError, ValueError, TimeoutError, urllib.error.URLError) as error:
+                errors.append(str(error))
+        # Interleave providers so Wikipedia remains available even when Bing
+        # returns a full page of results. This gives school/reference queries a
+        # stable no-key source while retaining operator-aware web results.
+        bing_items = [item for item in combined if item.get('provider') == 'Bing RSS']
+        wiki_items = [item for item in combined if str(item.get('provider', '')).startswith('Wikipedia-')]
+        ordered: List[dict] = []
+        while bing_items or wiki_items:
+            if bing_items:
+                ordered.append(bing_items.pop(0))
+            if wiki_items:
+                ordered.append(wiki_items.pop(0))
+        seen: set = set()
+        results: List[dict] = []
+        for item in ordered:
+            url = str(item.get('url', ''))
+            if not url or url in seen:
+                continue
+            seen.add(url)
+            results.append(item)
             if len(results) >= limit:
                 break
+        if not results and errors:
+            raise ValueError('No-key search providers were unavailable: ' + '; '.join(errors[:2]))
         return results
 
     @staticmethod
@@ -3372,6 +3466,11 @@ class SpecialistModelRouter:
         "code": "PocketAI_Code_Specialist.json.gz",
         "math": "PocketAI_Math_Specialist.json.gz",
         "research": "PocketAI_Research_Specialist.json.gz",
+        "school_math": "PocketAI_SchoolMath_Specialist.json.gz",
+        "school_science": "PocketAI_SchoolScience_Specialist.json.gz",
+        "school_language": "PocketAI_SchoolLanguage_Specialist.json.gz",
+        "school_humanities": "PocketAI_SchoolHumanities_Specialist.json.gz",
+        "school_computing": "PocketAI_SchoolComputing_Specialist.json.gz",
     }
 
     def __init__(self, models_dir: Path) -> None:
@@ -3999,8 +4098,8 @@ COMMON_DEFINITION_ALIASES = {
 def common_definition_response(text: str, language: str) -> Optional[str]:
     normalized = normalize_text(text).strip(" ?.!,:;")
     prefixes = (
-        "what is ", "what's ", "define ", "tell me what ", "tell me about ",
-        "τι ειναι ", "ορισε ", "πες μου τι ειναι ", "πες μου για ",
+        "what is ", "what's ", "define ", "explain ", "teach me about ", "tell me what ", "tell me about ",
+        "τι ειναι ", "ορισε ", "εξηγησε ", "μαθε μου για ", "πες μου τι ειναι ", "πες μου για ",
     )
     subject = None
     for prefix in prefixes:
@@ -4087,6 +4186,7 @@ class PocketAssistant:
                 self.language_model = None
         self.web_research = SafeWebResearch(self.store)
         self.specialists = SpecialistModelRouter(Path(__file__).resolve().parent / "Models")
+        self.school_tutor = SchoolTutor(models_dir / "PocketAI_School_Knowledge.json.gz")
         self.hybrid_components: Dict[str, dict] = {}
         for component_id, filename in HYBRID_COMPONENT_FILES.items():
             component_path = models_dir / filename
@@ -4586,23 +4686,27 @@ class PocketAssistant:
             response, route = utility
             details = {"route": route, "language": language, "context_used": False}
         else:
-            common_answer = common_definition_response(original_text, language)
-            if common_answer is not None:
+            school_answer = self.school_tutor.answer(original_text, language)
+            common_answer = None if school_answer is not None else common_definition_response(original_text, language)
+            if school_answer is not None:
+                response = str(school_answer.get("response", ""))
+                details = {"language": language, "context_used": False, **school_answer}
+                candidates = []
+            elif common_answer is not None:
                 response = common_answer
                 details = {"route": "common_knowledge", "language": language, "context_used": False}
                 candidates = []
             else:
                 candidates = self.store.retrieve_many(contextual_text, limit=6, language=language)
-            if common_answer is None:
                 response = ""
                 details = {"language": language, "context_used": context_used}
 
-            qa_candidates = [candidate for candidate in candidates if candidate["kind"] == "qa"] if common_answer is None else []
+            qa_candidates = [candidate for candidate in candidates if candidate["kind"] == "qa"] if not response else []
             best_qa = qa_candidates[0] if qa_candidates else None
-            if common_answer is None and best_qa and best_qa["overlap"] >= 1 and best_qa["score"] >= 0.43:
+            if not response and best_qa and best_qa["overlap"] >= 1 and best_qa["score"] >= 0.43:
                 response = str(best_qa["response"])
                 details = {"route": "retrieval_qa", **details, **best_qa}
-            elif common_answer is None:
+            elif not response:
                 document_candidates = [candidate for candidate in candidates if candidate["kind"] == "document"]
                 best_document = document_candidates[0] if document_candidates else None
                 if best_document and best_document["overlap"] >= 1 and best_document["score"] >= 0.37:
@@ -4938,6 +5042,8 @@ class PocketAssistant:
     ) -> Tuple[str, dict]:
         context = self.llm_context(candidates, text)
         specialist_instruction = self.specialists.instruction(specialist, language)
+        if specialist and str(specialist.get("id", "")).startswith("school_"):
+            specialist_instruction = (self.school_tutor.instruction(language) + "\n" + specialist_instruction).strip()
         persona_text = self.persona_guidance(language)
         specialist_instruction = (persona_text + "\n" + specialist_instruction).strip()
         plan = self.resolve_hybrid_plan(text, specialist)
@@ -5056,6 +5162,7 @@ class PocketAssistant:
             f"  Active model size:   {human_size(self.local_llm.model_path.stat().st_size) if self.local_llm.model_path else 'not installed'}",
             f"  Bundled GGUF models: {len(self.local_llm.model_paths)}/{len(EXTERNAL_LLM_MODELS)} detected",
             f"  Specialist models:   {sum(1 for item in self.specialists.status() if item['loaded'])}/{len(self.specialists.FILES)} loaded",
+            f"  School foundation:   grades 1-12 shared across every model",
             f"  Hybrid controllers:  {len(self.hybrid_components)}/{len(HYBRID_COMPONENT_FILES)} loaded",
             f"  llama.cpp:           {str(self.local_llm.binary_path) if self.local_llm.binary_path else 'not installed'}"
         ]
@@ -5088,8 +5195,10 @@ Learning and knowledge
   /teach QUESTION | ANSWER      Add an immediately searchable Q&A pair
   /correct ANSWER               Replace the answer to your previous question
   /ingest PATH                  Index English/Greek text files or a directory
+  /school [GRADE] [SUBJECT]     Show grade 1-12 school help or a subject overview
   /dork QUERY                   Safely search public web pages and learn them
-  /web-learn QUERY              Alias of /dork; supports safe search operators
+  /web-learn QUERY              No-key Bing RSS + Wikipedia learning; supports safe operators
+  /google-ai                    Explain why Gemini requires credentials
   /summarize PATH               Create an extractive summary of a text file
   /remember KEY = VALUE         Store a persistent local memory
   /memories                     List saved memories
@@ -5142,8 +5251,10 @@ HELP_TEXT_EL = """
   /teach ΕΡΩΤΗΣΗ | ΑΠΑΝΤΗΣΗ     Άμεση προσθήκη γνώσης
   /διόρθωση ΑΠΑΝΤΗΣΗ            Διόρθωση της προηγούμενης απάντησης
   /ingest ΔΙΑΔΡΟΜΗ              Ευρετηρίαση αγγλικών/ελληνικών αρχείων
+  /school [ΤΑΞΗ] [ΜΑΘΗΜΑ]       Βοήθεια σχολείου για τάξεις 1-12
   /dork ΕΡΩΤΗΜΑ                  Ασφαλής έρευνα δημόσιου ιστού και μάθηση
-  /web-learn ΕΡΩΤΗΜΑ             Ίδια λειτουργία με /dork
+  /web-learn ΕΡΩΤΗΜΑ             Μάθηση χωρίς API key από Bing RSS + Wikipedia
+  /google-ai                    Επεξήγηση γιατί το Gemini απαιτεί διαπιστευτήρια
   /σύνοψη ΔΙΑΔΡΟΜΗ              Εξαγωγική σύνοψη αρχείου κειμένου
   /remember ΚΛΕΙΔΙ = ΤΙΜΗ       Αποθήκευση μόνιμης μνήμης
   /memories                     Προβολή αποθηκευμένων μνημών
@@ -5232,6 +5343,7 @@ def handle_command(assistant: PocketAssistant, command_line: str) -> Tuple[bool,
     aliases = {
         "/βοηθεια": "/help", "/βοήθεια": "/help",
         "/έρευνα": "/dork", "/ερευνα": "/dork", "/ιστομαθηση": "/web-learn",
+        "/σχολείο": "/school", "/σχολειο": "/school", "/τάξη": "/school", "/ταξη": "/school",
         "/μοντέλο": "/llm-model", "/μοντελο": "/llm-model",
         "/μοντέλα": "/models", "/μοντελα": "/models",
         "/επεξεργαστησ": "/cpu-profile", "/επεξεργαστής": "/cpu-profile", "/cpu": "/cpu-profile",
@@ -5447,6 +5559,27 @@ def handle_command(assistant: PocketAssistant, command_line: str) -> Tuple[bool,
             return True, extractive_summary(text, language, max_sentences=7)
         except (OSError, ValueError, UnicodeError) as error:
             return True, assistant.t(f"Summary failed: {error}", f"Η σύνοψη απέτυχε: {error}", language)
+    if command == "/school":
+        if not argument:
+            return True, assistant.school_tutor.catalog(language) + assistant.t(
+                "\nExamples: /school 5 math, /school 9 science, or ask: explain fractions.",
+                "\nΠαραδείγματα: /school 5 μαθηματικά, /school 9 επιστήμες ή ρώτησε: εξήγησε τα κλάσματα.",
+                language
+            )
+        match = re.match(r"\s*(1[0-2]|[1-9])(?:\s+(.+))?$", argument.strip())
+        if not match:
+            return True, assistant.t(
+                "Use /school followed by grade 1-12 and optionally a subject.",
+                "Χρησιμοποίησε /school με τάξη 1-12 και προαιρετικά μάθημα.",
+                language
+            )
+        return True, assistant.school_tutor.grade_overview(int(match.group(1)), (match.group(2) or "").strip(), language)
+    if command == "/google-ai":
+        return True, assistant.t(
+            "Google Gemini cannot be called anonymously: its official API requires credentials. Pocket AI instead learns without an API key from public Bing RSS search results, Wikipedia, and readable public pages through /web-learn.",
+            "Το Google Gemini δεν μπορεί να κληθεί ανώνυμα: το επίσημο API του απαιτεί διαπιστευτήρια. Το Pocket AI μαθαίνει χωρίς API key από δημόσια αποτελέσματα Bing RSS, Wikipedia και αναγνώσιμες δημόσιες σελίδες μέσω /web-learn.",
+            language
+        )
     if command in {"/dork", "/web-learn"}:
         if not argument:
             return True, assistant.t(
@@ -5763,10 +5896,11 @@ def easy_help_menu(assistant: PocketAssistant, language: str) -> bool:
         print("  4. Δίδαξε στο AI μία ερώτηση και απάντηση")
         print("  5. Μάθηση από αρχείο ή φάκελο")
         print("  6. Ασφαλής έρευνα στο διαδίκτυο και μάθηση")
-        print("  7. Προβολή ενεργού μοντέλου και κατάστασης")
-        print("  8. Προβολή προχωρημένων εντολών")
-        print("  9. Έξοδος")
-        menu_prompt = "Επίλεξε 1-9: "
+        print("  7. Σχολικός βοηθός για τάξεις 1-12")
+        print("  8. Προβολή ενεργού μοντέλου και κατάστασης")
+        print("  9. Προβολή προχωρημένων εντολών")
+        print("  10. Έξοδος")
+        menu_prompt = "Επίλεξε 1-10: "
     else:
         print("\nWhat would you like to do?")
         print("  1. Return to chat")
@@ -5775,10 +5909,11 @@ def easy_help_menu(assistant: PocketAssistant, language: str) -> bool:
         print("  4. Teach the AI a question and answer")
         print("  5. Learn from a file or folder")
         print("  6. Safely research the web and learn")
-        print("  7. Show active model and status")
-        print("  8. Show advanced commands")
-        print("  9. Exit")
-        menu_prompt = "Choose 1-9: "
+        print("  7. School tutor for grades 1-12")
+        print("  8. Show active model and status")
+        print("  9. Show advanced commands")
+        print("  10. Exit")
+        menu_prompt = "Choose 1-10: "
 
     try:
         choice = input(menu_prompt).strip()
@@ -5875,15 +6010,26 @@ def easy_help_menu(assistant: PocketAssistant, language: str) -> bool:
             ))
         return True
     if choice == "7":
-        print("\n" + assistant.stats_text())
+        try:
+            grade_raw = input("Grade 1-12: " if language != "el" else "Τάξη 1-12: ").strip()
+            subject = input("Subject (optional): " if language != "el" else "Μάθημα (προαιρετικό): ").strip()
+            grade = int(grade_raw)
+            if grade < 1 or grade > 12:
+                raise ValueError
+            print(assistant.school_tutor.grade_overview(grade, subject, language))
+        except (ValueError, EOFError, KeyboardInterrupt):
+            print(assistant.t("Enter a grade from 1 to 12.", "Δώσε τάξη από 1 έως 12.", language))
         return True
     if choice == "8":
-        print("\n" + (HELP_TEXT_EL if language == "el" else HELP_TEXT_EN))
+        print("\n" + assistant.stats_text())
         return True
     if choice == "9":
+        print("\n" + (HELP_TEXT_EL if language == "el" else HELP_TEXT_EN))
+        return True
+    if choice == "10":
         return False
 
-    print(assistant.t("Choose a number from 1 to 9.", "Επίλεξε αριθμό από 1 έως 9.", language))
+    print(assistant.t("Choose a number from 1 to 10.", "Επίλεξε αριθμό από 1 έως 10.", language))
     return True
 
 

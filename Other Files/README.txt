@@ -1,25 +1,22 @@
-POCKET AI
+Pocket AI
 =========
 
-Start:
+Run from the repository root:
   python "Pocket AI.py"
 
-Pocket AI opens directly in chat.
-Ask any normal English or Greek question at the You: / Εσύ: prompt.
+Normal startup enters chat directly. Type help or βοήθεια for the easy menu.
 
-For simple options, type:
-  help
-or:
-  βοήθεια
+Folders:
+- Models/ contains all bundled model weights, classifiers, specialists, school packs, and controllers.
+- Other Files/Modules/ contains standard-library runtime modules.
+- Other Files/Saved Data/ contains generated settings, memory, learned knowledge, scans, history, exports, and runtime files.
 
-The help menu can scan the phone, select the best model, rename the AI,
-teach answers, learn from files, research public web pages, show status,
-open advanced commands, or exit.
+School support:
+- Shared grades 1-12 foundation in English and Greek.
+- Use /school, /school 5 math, or /school 9 science.
 
-All bundled model weights are inside Models/.
-All generated data is stored inside Other Files/Saved Data/.
-Runtime helper modules are inside Other Files/Modules/.
-The complete bilingual GitHub documentation is README.md in the package root.
+Web learning:
+- /web-learn and /dork use safe public Bing RSS, Wikipedia, and readable pages without an API key.
+- Official Google Gemini access is not bypassed and requires credentials.
 
-Install the optional GGUF runner without downloading model weights:
-  bash "Other Files/install_models.sh"
+See the root README.md for complete English and Greek documentation.

@@ -9,3 +9,5 @@ These standard-library modules are loaded by `Pocket AI.py` and provide real run
 - `resource_advisor.py` — turns hardware scan data into a concise model-selection explanation.
 
 They use only Python's standard library and remain optional: the main script contains safe fallbacks if a module is missing.
+
+- `school_tutor.py` — shared English/Greek grade 1-12 knowledge retrieval plus deterministic arithmetic, fractions, percentages, equations, statistics, and geometry.

@@ -1,180 +1,361 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/dedsec1121fk/dedsec1121fk.github.io/47ad8e5cbaaee04af552ae6b90edc49cd75b324b/Assets/Images/Logos/Black%20Purple%20Butterfly%20Logo.jpeg" alt="DedSec Project Logo" width="150"/>
+  <img src="https://raw.githubusercontent.com/dedsec1121fk/dedsec1121fk.github.io/47ad8e5cbaaee04af552ae6b90edc49cd75b324b/Assets/Images/Logos/Black%20Purple%20Butterfly%20Logo.jpeg" alt="Pocket AI / DedSec Project Logo" width="150"/>
   <h1>Pocket AI</h1>
-  <p><strong>Private bilingual local AI for Android + Termux</strong></p>
+  <p><strong>Local bilingual AI for Android + Termux, built for old and low-memory phones</strong></p>
   <p>
+    <a href="https://github.com/dedsec1121fk/Pocket-AI"><strong>GitHub Repository</strong></a>
+    &nbsp;•&nbsp;
     <a href="https://ded-sec.space/"><strong>DedSec Project Website</strong></a>
-    ·
-    <a href="https://github.com/sponsors/dedsec1121fk"><strong>Sponsor the Project</strong></a>
   </p>
   <p>
-    <img src="https://img.shields.io/badge/Platform-Android%20%2B%20Termux-brightgreen.svg" alt="Android + Termux">
-    <img src="https://img.shields.io/badge/Interface-English%20%7C%20Greek-lightgrey.svg" alt="English and Greek">
-    <img src="https://img.shields.io/badge/Root-Not%20Required-blue.svg" alt="No root required">
-    <img src="https://img.shields.io/badge/Models-Bundled-purple.svg" alt="Models bundled">
-    <img src="https://img.shields.io/badge/Cloud-Not%20Required-black.svg" alt="Cloud not required">
+    <a href="https://github.com/sponsors/dedsec1121fk"><img src="https://img.shields.io/badge/Sponsor-DedSec-purple?style=for-the-badge&logo=GitHub" alt="Sponsor DedSec"></a>
+  </p>
+  <p>
+    <img src="https://img.shields.io/badge/Platform-Android%20%7C%20Termux-brightgreen.svg" alt="Android Termux">
+    <img src="https://img.shields.io/badge/Root-Not%20Required-blue.svg" alt="No root">
+    <img src="https://img.shields.io/badge/Interface-English%20%7C%20Greek-lightgrey.svg" alt="English Greek">
+    <img src="https://img.shields.io/badge/Core-Offline-orange.svg" alt="Offline core">
+    <img src="https://img.shields.io/badge/School-Grades%201--12-yellow.svg" alt="Grades 1 to 12">
   </p>
 </div>
 
 ---
 
-<a id="english"></a>
+<a id="english-readme"></a>
 
 # Pocket AI — English
 
-> **Για την πλήρη Ελληνική έκδοση, μεταβείτε [εδώ](#ελληνικά).**
+> **Για να μεταβείτε στην πλήρη Ελληνική έκδοση, συνεχίστε [πατώντας εδώ](#greek-readme).**
 
-Pocket AI is a bilingual **English and Greek local AI assistant** designed for Android phones running Termux without root. It automatically scans the phone, measures usable resources, and selects the safest combination of neural classifier, local language model, runtime profile, and hybrid mode.
+**Pocket AI** is a bilingual local assistant for **English and Greek** that runs in **Termux without root**. It combines compact neural classifiers, local GGUF language models, persistent retrieval memory, subject specialists, deterministic school tools, and hardware-aware hybrid routing.
 
-The package is built for old and low-cost phones as well as stronger devices. It can fall back to its lightweight internal engine when a GGUF model would be unsafe, while phones with more available RAM can use sequential hybrid inference for better answer quality.
-
-Pocket AI does not claim to be a human. The optional human-conversation feature gives it a custom name and a more natural speaking style while it continues to identify itself as an AI assistant.
-
-## Simple Use
-
-Pocket AI opens directly in chat. There is no launcher to learn before asking a question.
+The normal experience is deliberately simple:
 
 ```text
+Pocket AI is ready. Ask me anything, or type help for options.
+
 You: What is an apple?
 Pocket AI: An apple is an edible fruit produced by an apple tree...
 ```
 
-Type any normal English or Greek question and Pocket AI answers it. Type `help` or `βοήθεια` at any time to open a simple numbered menu.
+Type **`help`** at any time to open the easy numbered menu.
+
+<a id="english-table-of-contents"></a>
+
+## Table of Contents
+
+* [Main Features](#main-features)
+* [Requirements](#requirements)
+* [Installation](#installation)
+* [How To Use Pocket AI](#how-to-use-pocket-ai)
+* [School Tutor: Grades 1–12](#school-tutor-grades-112)
+* [Models And Hybrid Intelligence](#models-and-hybrid-intelligence)
+* [Automatic Phone Scanning](#automatic-phone-scanning)
+* [Learning From Files And The Web](#learning-from-files-and-the-web)
+* [Google AI And API-Key Limitation](#google-ai-and-api-key-limitation)
+* [Folder Structure And Save Locations](#folder-structure-and-save-locations)
+* [Important Commands](#important-commands)
+* [Privacy And Safety](#privacy-and-safety)
+* [Limitations](#limitations)
+* [Credits](#credits)
+* [Disclaimer](#disclaimer)
+
+<a id="main-features"></a>
+
+<details open>
+<summary><strong>Main Features</strong></summary>
+
+* **Direct chat by default:** no complicated launcher is required.
+* **Simple help:** type `help` or `βοήθεια` to see normal numbered options.
+* **English and Greek only:** interface, responses, memories, school knowledge, and web indexing are filtered to the supported languages.
+* **Runs without root:** designed for Termux on Android.
+* **Works offline:** chatting, local knowledge, mathematics, school help, memories, and bundled models do not require a cloud account.
+* **Automatic hardware matching:** scans processor, architecture, total RAM, available RAM, storage, temperature, and model integrity.
+* **Low-memory protection:** reduces context, batch size, thread count, output length, or model tier when resources become unsafe.
+* **Human-style persona:** give the AI a name and choose Friendly, Calm Expert, Casual, Mentor, or Direct speech.
+* **Persistent local memory:** remembers taught answers, user memories, indexed files, settings, and conversation history.
+* **Hybrid intelligence:** combines deterministic tools, retrieval, specialists, neural routing, and sequential GGUF passes.
+* **School foundation:** shared grade 1–12 support across every model profile.
+* **No-key public research:** can learn from safe public search results, Wikipedia, and readable public pages.
+* **Safe operator research:** supports public `site:`, `filetype:`, `intitle:`, `inurl:`, `before:`, `after:`, exact phrases, and excluded words.
+* **Local file learning:** indexes English and Greek text documents and folders.
+* **No TensorFlow, PyTorch, or NumPy required:** the main assistant uses Python’s standard library and bundled files.
+
+</details>
+
+<a id="requirements"></a>
+
+<details>
+<summary><strong>Requirements</strong></summary>
+
+| Component | Minimum | Recommended |
+| :-- | :-- | :-- |
+| **Device** | Android phone/tablet | 64-bit Android phone |
+| **Termux** | Current F-Droid build | Current F-Droid build |
+| **Root** | Not required | Not required |
+| **RAM** | Around 512 MB for the internal engine | 2 GB+ for bundled GGUF inference |
+| **Storage** | Enough for Python and the repository | At least 700 MB free for build files, models, and saves |
+| **Internet** | Not needed for normal offline chat | Needed only for installation, Git LFS, or explicit web learning |
+
+### Hardware behavior
+
+* 32-bit or severely constrained devices use the internal bilingual engine.
+* Approximately 1–2 GB devices prioritize the Q2_K Fast model or internal engine.
+* Approximately 3–4 GB devices can use Q4_1 Quality when enough RAM is currently free.
+* Stronger devices can use adaptive, expert, consensus, or cascade routing.
+* Pocket AI loads only one GGUF process at a time.
+* Live RAM and temperature are checked again before an expensive second pass.
+
+</details>
+
+<a id="installation"></a>
+
+<details>
+<summary><strong>Installation</strong></summary>
+
+### 1. Install Termux
+
+* Install **Termux from F-Droid** for current package support.
+* Open Termux once before running the commands below.
+* Allow storage access when Android asks.
+
+### 2. Prepare Termux
+
+```bash
+pkg update -y && pkg upgrade -y
+pkg install python git git-lfs unzip cmake clang make -y
+termux-setup-storage
+git lfs install
+```
+
+### 3. Clone Pocket AI
+
+```bash
+cd ~
+git clone https://github.com/dedsec1121fk/Pocket-AI
+cd Pocket-AI
+git lfs pull
+```
+
+### 4. Build the local GGUF runner
+
+The models are already stored inside `Models/`. The installer builds the phone-compatible `llama.cpp` runner; it does not download AI weights.
+
+```bash
+chmod +x "Other Files/install_models.sh"
+bash "Other Files/install_models.sh"
+```
+
+### 5. Start Pocket AI
+
+```bash
+python "Pocket AI.py"
+```
+
+### Open it later
+
+```bash
+cd ~/Pocket-AI && python "Pocket AI.py"
+```
+
+</details>
+
+<a id="how-to-use-pocket-ai"></a>
+
+<details>
+<summary><strong>How To Use Pocket AI</strong></summary>
+
+Pocket AI opens directly into chat:
 
 ```text
+You: What is gravity?
+Pocket AI: Gravity is the attraction between objects with mass...
+```
+
+You can type normal questions instead of commands:
+
+* `What is an apple?`
+* `Explain photosynthesis.`
+* `What is 25% of 80?`
+* `Solve 2*x + 3 = 11.`
+* `Explain democracy.`
+* `Grade 5 math topics.`
+* `Τι είναι η βαρύτητα;`
+* `Πόσο κάνει 12*7;`
+* `Εξήγησε τη φωτοσύνθεση.`
+* `Τάξη 9 επιστήμη.`
+
+Type one of these to open the easy menu:
+
+* `help`
+* `/help`
+* `βοήθεια`
+* `/βοήθεια`
+
+The easy menu includes:
+
 1. Return to chat
-2. Scan phone and automatically choose the best model
+2. Scan the phone and select the best model
 3. Change the AI name and speaking style
-4. Teach the AI a question and answer
+4. Teach one question and answer
 5. Learn from a file or folder
-6. Safely research the web and learn
-7. Show active model and status
-8. Show advanced commands
-9. Exit
-```
+6. Safely research the public web and learn
+7. Open the grade 1–12 school tutor
+8. Show the active model and status
+9. Show advanced commands
+10. Exit
 
-The phone scan also runs automatically on normal startup, so most users only need to launch the script and start talking.
+</details>
 
-### Automatic Phone Scan and Model Selection
+<a id="school-tutor-grades-112"></a>
 
-The scanner checks:
+<details open>
+<summary><strong>School Tutor: Grades 1–12</strong></summary>
 
-- phone manufacturer and model
-- processor and SoC identifiers
-- ARM, ARM64, x86, or x86-64 architecture
-- 32-bit or 64-bit Termux userspace
-- CPU cores and frequency clusters
-- short local CPU benchmark
-- total and currently available RAM
-- application and shared-storage capacity
-- free storage space
-- phone and battery temperature when exposed by Android
-- battery status and power pressure
-- bundled model availability, size, GGUF header, and checksum
+The school foundation is **shared across every model profile**. This means the internal engine, Fast GGUF, Quality GGUF, and hybrid modes all use the same school tools before generic language-model fallback.
 
-Unknown or renamed processors are not rejected. Pocket AI uses measured architecture, cores, frequency, benchmark performance, RAM, and storage as a fallback.
+### Covered school areas
 
-### Direct Local Chat
+* **Mathematics**
+  * counting and place value
+  * addition, subtraction, multiplication, and division
+  * fractions, decimals, percentages, ratios, and proportions
+  * factors, multiples, GCD, and LCM
+  * integers, exponents, and scientific notation
+  * algebra and linear equations
+  * quadratic equations
+  * coordinates and linear functions
+  * geometry, perimeter, area, circles, volume, and Pythagorean theorem
+  * mean, median, mode, range, statistics, and probability
+  * trigonometry, functions, vectors, and introductory calculus
+* **Science**
+  * living things, plants, animals, ecosystems, and human body systems
+  * matter, atoms, elements, periodic table, reactions, acids, and bases
+  * cells, DNA, genetics, evolution, and ecology
+  * forces, motion, Newton’s laws, energy, electricity, circuits, and waves
+  * weather, climate, rocks, water cycle, Earth systems, and Solar System
+  * scientific method and evidence
+* **English and Greek language**
+  * sentences, subjects, predicates, and parts of speech
+  * verb tenses and grammar
+  * paragraph and essay structure
+  * summaries, vocabulary, argumentation, and evidence
+  * literary devices and literature analysis
+  * research writing, sources, citations, and plagiarism awareness
+* **History, Geography, and Civics**
+  * maps, directions, continents, oceans, landforms, and population
+  * Ancient Greece, Ancient Rome, Byzantium, Renaissance, and Industrial Revolution
+  * World Wars and modern history foundations
+  * democracy, constitutions, rights, duties, institutions, and citizenship
+  * economics, scarcity, opportunity cost, supply, and demand
+  * introductory philosophy and logic
+* **Computing and study skills**
+  * hardware, software, input, output, and storage
+  * algorithms, variables, conditions, loops, functions, testing, and debugging
+  * digital safety, source reliability, and media literacy
+  * active recall, spaced repetition, worked examples, and study planning
 
-If no scan exists, Pocket AI scans automatically. It then loads the recommended pre-trained classifier and configures the local GGUF runtime. Only one transformer model is loaded at a time. The normal screen waits at `You:` or `Εσύ:` for a question.
+### Deterministic math support
 
-### Name & Humanize AI
-
-This menu lets you set:
-
-- the AI's name
-- your optional name
-- a conversation style
-- whether natural human-like wording is enabled
-
-Available styles:
-
-| Style | Behavior |
-| :--- | :--- |
-| `friendly` | Warm, natural, and clear |
-| `calm_expert` | Careful, professional explanations |
-| `casual` | Relaxed and concise conversation |
-| `mentor` | Patient step-by-step teaching |
-| `direct` | Answer-first, minimal wording |
-
-The settings are stored locally in:
+Pocket AI solves many common school calculations without asking a language model to guess:
 
 ```text
-Other Files/Saved Data/persona.json
+What is 25% of 80?
+1/2 + 1/3
+Mean of 5, 8, 8, 10
+GCD of 24 and 36
+Solve 2*x + 3 = 11
+Solve x^2 - 5*x + 6 = 0
+Area of a rectangle length 8 width 3
+Area of a circle radius 5
 ```
 
-## Package Structure
+### Grade overviews
 
 ```text
-Pocket AI.py
-README.md
-Models/
-Other Files/
+/school 5 math
+/school 9 science
+/school 12 computing
 ```
 
-### `Pocket AI.py`
+Greek examples:
 
-The main application. It includes the terminal menu, phone scanner, neural classifier, local retrieval database, bilingual tools, web-learning controls, GGUF runner integration, and hybrid orchestration.
+```text
+/school 5 μαθηματικά
+/school 9 επιστήμες
+/school 12 πληροφορική
+```
 
-### `Models/`
+> The school pack is a broad bilingual learning foundation. It does not claim to contain every national textbook, examination board, or teacher’s exact curriculum.
 
-Contains every bundled AI model and controller. Model weights are included in the ZIP and are not downloaded when Pocket AI starts.
+</details>
 
-### `Other Files/`
+<a id="models-and-hybrid-intelligence"></a>
 
-Contains runtime modules, documentation, licenses, checksums, the llama.cpp build helper, and all generated save data.
+<details>
+<summary><strong>Models And Hybrid Intelligence</strong></summary>
 
-## Bundled Model Stack
+### Bundled GGUF language models
 
-Pocket AI contains multiple model layers that cooperate rather than pretending every small controller is a full transformer.
+* **SmolLM2-135M-Instruct Q2_K Fast**
+  * lowest bundled GGUF memory requirement
+  * intended for old and 2 GB-class phones
+  * used for quick drafts and low-resource answers
+* **SmolLM2-135M-Instruct Q4_1 Quality**
+  * higher-quality quantization of the same compact model family
+  * selected when current RAM, CPU, storage, and temperature permit it
+  * used for quality answers, verification, and consensus
 
-### GGUF Language Models
+### Pre-trained bilingual neural profiles
 
-| Model | Purpose | Typical target |
-| :--- | :--- | :--- |
-| SmolLM2-135M Q2_K | Lowest-memory transformer responses | 2 GB-class phones and weak processors |
-| SmolLM2-135M Q4_1 | Better quantization quality | 3 GB+ phones with enough available RAM |
+* Micro
+* Lite
+* Balanced
+* Standard
+* Max
 
-### Pre-trained Bilingual Neural Classifiers
+### General specialists
 
-- Micro
-- Lite
-- Balanced
-- Standard
-- Max
+* Coding and Termux specialist
+* Mathematics specialist
+* Public research specialist
 
-The hardware scanner selects the classifier from RAM, available memory, CPU performance, and storage. These classifiers are pre-trained so old phones do not need to perform heavy first-run training.
+### School specialists
 
-### Bilingual MicroLM Models
+* School Mathematics Specialist
+* School Science Specialist
+* School Language Specialist
+* School Humanities Specialist
+* School Computing and Study Specialist
+* Grade 1–12 School Knowledge Foundation
+* School Hybrid Controller
 
-- MicroLM Lite
-- MicroLM Quality
+### Hybrid controllers
 
-These compact n-gram models provide lightweight local generation and fallback behavior.
+* Query planner
+* Hybrid router
+* Resource guard
+* Context optimizer
+* Confidence calibrator
+* Response verifier
+* Adaptive controller
+* Consensus controller
+* Persona controller
+* No-key web-learning controller
 
-### Task Specialists
+### Hybrid modes
 
-- Coding and Termux specialist
-- Mathematics specialist
-- Public-research specialist
+* **Off:** internal tools, memory, retrieval, and specialists only
+* **Speed:** quickest safe single-pass model
+* **Smart:** routes each question automatically
+* **Quality:** prefers the higher-quality model when safe
+* **Adaptive:** starts fast and performs a second pass only when useful
+* **Expert:** combines specialist guidance, optimized context, and quality inference
+* **Consensus:** compares independent Fast and Quality answers sequentially
+* **Cascade:** generates a draft, unloads it, then verifies and rewrites it
+* **Auto:** chooses the safest useful mode from live phone resources
 
-### Hybrid and Control Models
-
-- Hybrid Router
-- Query Planner
-- Response Verifier
-- Resource Guard
-- Adaptive Controller
-- Consensus Controller
-- Persona Controller
-- Context Optimizer
-- Confidence Calibrator
-
-The controllers are compact routing and scoring components, not large transformer models.
-
-## Hybrid Modes
-
-Use:
+Commands:
 
 ```text
 /hybrid auto
@@ -188,540 +369,890 @@ Use:
 /hybrid off
 ```
 
-| Mode | How it works |
-| :--- | :--- |
-| `off` | Uses retrieval, tools, specialists, and the internal neural engine only |
-| `speed` | Uses the Fast GGUF model in one pass |
-| `smart` | Selects Fast or Quality from the question and live resources |
-| `quality` | Prefers the Quality GGUF model |
-| `adaptive` | Creates a Fast draft and skips the second pass when the draft is already strong |
-| `expert` | Adds specialist guidance and optimized local context to the Quality model |
-| `consensus` | Generates independent Fast and Quality answers sequentially, compares them, and selects the stronger result |
-| `cascade` | Generates a Fast draft, unloads it, then verifies and rewrites it with Quality |
-| `auto` | Selects a safe mode from CPU, RAM, temperature, model availability, and question complexity |
+</details>
 
-Fast and Quality models are executed sequentially in multi-pass modes. They are not kept in memory at the same time.
+<a id="automatic-phone-scanning"></a>
 
-## Runtime Modules
+<details>
+<summary><strong>Automatic Phone Scanning</strong></summary>
 
-The following standard-library modules are included under `Other Files/Modules/`:
+Pocket AI checks:
 
-- `persona_engine.py` — persistent AI identity and natural bilingual speaking styles
-- `context_optimizer.py` — ranks local documents, memories, and recent conversation under a prompt budget
-- `consensus_engine.py` — compares independent Fast and Quality answers
-- `confidence_engine.py` — produces calibrated high, medium, or low answer confidence
-- `resource_advisor.py` — explains why a hardware/model combination was selected
+* phone manufacturer and model
+* Android hardware and board identifiers
+* known Qualcomm, MediaTek, Exynos, Unisoc, Kirin, Tensor, Tegra, Rockchip, Allwinner, Amlogic, and x86 naming patterns
+* fallback benchmark for unknown processors
+* ARM, ARM64, x86, or x86-64 architecture
+* 32-bit or 64-bit Termux userspace
+* logical cores and frequency clusters
+* total RAM and currently available RAM
+* application storage and shared storage
+* battery and thermal information when exposed by Android
+* bundled model presence, file size, GGUF header, and checksum
 
-Pocket AI contains conservative fallbacks if one of these optional module files becomes damaged.
+The scan selects:
 
-## English and Greek Only
+* neural classifier profile
+* internal, Fast, or Quality inference
+* hybrid mode
+* CPU thread count
+* context size
+* batch and micro-batch sizes
+* answer-token limit
+* timeout and emergency fallback behavior
 
-Pocket AI accepts and produces English and Greek. Other scripts are rejected before they can enter training data, memories, document indexing, or local generation.
-
-Use:
+Run a scan manually:
 
 ```text
-/language auto
-/language en
-/language el
+scan my phone
 ```
 
-## Local Knowledge and Learning
+or:
+
+```text
+/scan-phone
+```
+
+</details>
+
+<a id="learning-from-files-and-the-web"></a>
+
+<details>
+<summary><strong>Learning From Files And The Web</strong></summary>
+
+### Learn from a file or folder
+
+```text
+/ingest ~/storage/downloads/SchoolNotes
+```
+
+Pocket AI can:
+
+* read supported English and Greek text files
+* split them into searchable knowledge chunks
+* store source paths
+* retrieve relevant passages during later questions
+* summarize readable text files
 
 ### Teach a direct answer
 
 ```text
-/teach What is Pocket AI? | Pocket AI is a bilingual local AI assistant for Termux.
+/teach What is Pocket AI? | Pocket AI is a local bilingual Termux assistant.
 ```
 
-### Correct the previous answer
+### No-key public web learning
 
 ```text
-/correct The corrected answer goes here.
-```
-
-### Index a file or folder
-
-```text
-/ingest ~/storage/downloads/MyNotes
-```
-
-### Summarize a text file
-
-```text
-/summarize ~/storage/downloads/article.txt
-```
-
-### Save a persistent memory
-
-```text
-/remember project = DedSec Project
-```
-
-All learned data remains under `Other Files/Saved Data/` unless you explicitly use public-web learning.
-
-## Public Web Learning and Search Operators
-
-Pocket AI can perform explicit public research through `/dork` or `/web-learn`. This feature requires internet access and is not used automatically.
-
-Supported public search operators include:
-
-```text
-site:
-filetype:
-intitle:
-inurl:
-before:
-after:
-"exact phrase"
--minusword
-```
-
-Example:
-
-```text
+/web-learn photosynthesis for middle school
 /dork site:python.org sqlite tutorial
+/dork "Pythagorean theorem" filetype:html
 ```
 
-The web-learning system blocks requests aimed at exposed passwords, private keys, credentials, admin panels, databases, backups, cameras, routers, and private systems. Use it only for lawful public research.
+The no-key learning pipeline uses:
 
-## Installation in Termux
+* **Bing RSS search results**
+* **Wikipedia MediaWiki search API**
+* **readable public HTTP/HTTPS pages**
+* source-aware local indexing
+* English/Greek content filtering
+* conservative request limits
+* `robots.txt` checks for fetched pages
 
-### Requirements
+Blocked research includes queries aimed at:
 
-| Component | Requirement |
-| :--- | :--- |
-| Android | A device capable of running a current Termux build |
-| Root | Not required |
-| Python | Installed by the command below |
-| Storage | Approximately 500 MB recommended for extraction, models, build files, and saves |
-| RAM | Internal engine can run on very low memory; GGUF model use depends on live available RAM |
-| Internet | Needed for Termux packages and building llama.cpp; model weights are already bundled |
+* exposed passwords or API keys
+* private keys and credential files
+* database backups
+* login/admin panels
+* private or local hosts
+* cameras, routers, or exposed devices
+* executable files, archives, databases, and key containers
 
-Install:
+</details>
 
-```bash
-termux-setup-storage
-pkg update -y
-pkg install python unzip -y
+<a id="google-ai-and-api-key-limitation"></a>
 
-cd ~
-rm -rf Pocket_AI
-mkdir Pocket_AI
-unzip -o ~/storage/downloads/Pocket_AI.zip -d ~/Pocket_AI
+<details>
+<summary><strong>Google AI And API-Key Limitation</strong></summary>
 
-cd ~/Pocket_AI
-chmod +x "Other Files/install_models.sh"
-bash "Other Files/install_models.sh"
+Pocket AI does **not** claim to access Google Gemini anonymously.
 
-python "Pocket AI.py"
-```
+* The official Gemini API requires authentication credentials.
+* Google’s official programmable search API also requires configuration and an API key.
+* Pocket AI does not bypass authentication, scrape private AI sessions, or imitate Google services.
+* Without a key, Pocket AI uses its bundled local models plus the public no-key research sources listed above.
+* Type `/google-ai` inside Pocket AI to see this explanation.
 
-The installer builds the compatible `llama.cpp` executable. It does not download the bundled model weights.
+This design keeps the project honest, reproducible, and usable without attaching a cloud billing account.
 
-## Useful Commands
+</details>
+
+<a id="folder-structure-and-save-locations"></a>
+
+<details>
+<summary><strong>Folder Structure And Save Locations</strong></summary>
 
 ```text
-/help
-/persona
-/name NAME
-/style friendly
-/human on
-/models
-/system
-/stats
-/why
-/teach QUESTION | ANSWER
-/correct ANSWER
-/ingest PATH
-/summarize PATH
-/remember KEY = VALUE
-/memories
-/forget KEY
-/hybrid auto
-/llm-status
-/benchmark
-/backup
-/quit
+Pocket-AI/
+├── Pocket AI.py
+├── README.md
+├── Models/
+│   ├── GGUF language models
+│   ├── pre-trained neural profiles
+│   ├── bilingual generators
+│   ├── general specialists
+│   ├── school specialists
+│   └── hybrid controllers
+└── Other Files/
+    ├── Modules/
+    ├── Documentation/
+    ├── Licenses/
+    ├── Saved Data/
+    ├── CHECKSUMS.sha256
+    └── install_models.sh
 ```
 
-Greek aliases are available for the most important commands, including `/βοήθεια`, `/όνομα`, `/προσωπικότητα`, `/στυλ`, `/ανθρώπινο`, `/υβριδικό`, `/μοντέλα`, `/γλώσσα`, and `/έξοδος`.
-
-## Save Locations
+Generated user data is kept under:
 
 ```text
-Other Files/Saved Data/device_profile.json
-Other Files/Saved Data/persona.json
-Other Files/Saved Data/knowledge.sqlite3
-Other Files/Saved Data/dataset.json
-Other Files/Saved Data/neural_model.pkl.gz
-Other Files/Saved Data/model_metadata.json
-Other Files/Saved Data/language_model.pkl.gz
-Other Files/Saved Data/backups/
+Other Files/Saved Data/
 ```
 
-## Limitations
+That folder may contain:
 
-- Pocket AI is not comparable to a cloud-scale modern LLM.
-- The bundled transformer models are intentionally small for older phones.
-- Small models can produce incorrect or incomplete answers.
-- Important medical, legal, financial, security, or current factual claims should be independently verified.
-- Greek quality from the bundled English-focused GGUF model may be weaker than the bilingual internal retrieval and classifier layers.
-- Phone vendors may hide temperature, battery, or SoC information; Pocket AI uses measured fallbacks when necessary.
-- “Human-like” means natural conversational wording. It does not mean the program is human, conscious, or emotionally aware.
+* selected hardware profile
+* AI name and persona
+* model settings
+* SQLite knowledge database
+* memories and taught answers
+* indexed file and web knowledge
+* local conversation history
+* exports and backups
+* compiled `llama.cpp` runner files
 
-## Privacy
+Bundled model files remain separate under `Models/`.
 
-Core chat, retrieval, memories, documents, and models run locally. Pocket AI does not require a cloud API. Public web access occurs only when you explicitly run `/dork` or `/web-learn`.
+</details>
 
-Do not store secrets that should not exist in unencrypted local application data.
+<a id="important-commands"></a>
 
-## Credits
+<details>
+<summary><strong>Important Commands</strong></summary>
 
-- Creator and project: **dedsec1121fk / DedSec Project**
-- Website: [ded-sec.space](https://ded-sec.space/)
-- Sponsor: [GitHub Sponsors](https://github.com/sponsors/dedsec1121fk)
-- Local runtime: `llama.cpp`
-- Bundled model license information is available under `Other Files/Licenses/`.
+### Easy controls
 
-## Disclaimer
+* `help` — open the simple numbered menu
+* `exit` — close Pocket AI
+* `scan my phone` — select the best model automatically
+* `change your name` — open persona configuration
+* `school help` — show school coverage
 
-Pocket AI is provided for educational, personal, and lawful local-assistant use. It is supplied **as is**, without guarantees of accuracy, compatibility, availability, or fitness for a particular purpose. The user is responsible for reviewing generated commands and answers before acting on them.
+### Identity and language
+
+* `/name NAME`
+* `/style friendly|calm_expert|casual|mentor|direct`
+* `/human on|off`
+* `/language auto|en|el`
+
+### School
+
+* `/school`
+* `/school 5 math`
+* `/school 9 science`
+* `/school 12 computing`
+
+### Learning
+
+* `/teach QUESTION | ANSWER`
+* `/correct ANSWER`
+* `/ingest PATH`
+* `/summarize PATH`
+* `/web-learn QUERY`
+* `/dork QUERY`
+* `/remember KEY = VALUE`
+
+### Models
+
+* `/models`
+* `/stats`
+* `/system`
+* `/llm-status`
+* `/llm off|fallback|always`
+* `/llm-model fast|quality`
+* `/hybrid MODE`
+* `/cpu-profile auto|ultra_eco|eco|entry|balanced|performance`
+
+### Maintenance
+
+* `/history`
+* `/clear-history`
+* `/export`
+* `/backup`
+* `/benchmark`
+* `/why`
+* `/debug`
+
+</details>
+
+<a id="privacy-and-safety"></a>
+
+<details>
+<summary><strong>Privacy And Safety</strong></summary>
+
+* Normal chat runs locally.
+* Memories, history, files, and learned knowledge remain in the local save folder unless the user exports or uploads them.
+* Web access happens only when the user explicitly requests web learning or runs installation/update commands.
+* The web learner accepts only public HTTP/HTTPS targets.
+* Local, private, `.onion`, and non-public hosts are blocked.
+* The dork validator blocks credential hunting, exposed systems, private files, databases, and admin-interface targeting.
+* Download size, file type, language, and page count are limited.
+* Pocket AI does not guarantee that public web content is correct; retrieved information should be checked against reliable sources.
+
+</details>
+
+<a id="limitations"></a>
+
+<details>
+<summary><strong>Limitations</strong></summary>
+
+* Pocket AI is not ChatGPT, Gemini, or another cloud-scale model.
+* The bundled 135M models are intentionally small so they can run on older phones.
+* Smaller models can misunderstand questions or produce incorrect text.
+* The school layer is broad but not a complete copy of every country’s official curriculum.
+* It should not replace a teacher, textbook, doctor, lawyer, financial professional, or emergency service.
+* Automatic hardware thresholds are conservative estimates; Android background load varies by phone and firmware.
+* Public web learning can fail because of connectivity, robots rules, changed websites, or provider limits.
+* Learned web content may be outdated, incomplete, biased, or wrong.
+* Always verify important facts and calculations.
+
+</details>
+
+<a id="credits"></a>
+
+<details>
+<summary><strong>Credits</strong></summary>
+
+* **Creator:** dedsec1121fk
+* **Project:** Pocket AI / DedSec Project
+* **Platform:** Android + Termux
+* **Languages:** English and Greek
+* **Local model runtime:** `llama.cpp`
+* **Bundled compact language-model family:** SmolLM2
+* **GitHub:** [dedsec1121fk/Pocket-AI](https://github.com/dedsec1121fk/Pocket-AI)
+* **Website:** [ded-sec.space](https://ded-sec.space)
+* **Sponsors:** [GitHub Sponsors](https://github.com/sponsors/dedsec1121fk)
+
+</details>
+
+<a id="disclaimer"></a>
+
+<details>
+<summary><strong>Disclaimer</strong></summary>
+
+Pocket AI is provided for educational, personal, and experimental use. It is provided **AS IS**, without guarantees of accuracy, availability, suitability, or fitness for a particular purpose. The creator and contributors are not responsible for damage, data loss, incorrect decisions, overheating, battery drain, account restrictions, or other consequences caused by use or misuse.
+
+Use web learning only for lawful public research. Respect website terms, copyright, privacy, robots rules, and applicable law. Do not use search operators to target credentials, private systems, exposed devices, or data that you are not authorized to access.
+
+</details>
 
 ---
 
-<a id="ελληνικά"></a>
+<a id="greek-readme"></a>
 
 # Pocket AI — Ελληνικά
 
-> **To return to the full English version, continue [here](#english).**
+> **To return to the complete English version, continue by [clicking here](#english-readme).**
 
-Το Pocket AI είναι ένας δίγλωσσος **τοπικός βοηθός AI στα Αγγλικά και στα Ελληνικά**, σχεδιασμένος για Android κινητά που χρησιμοποιούν Termux χωρίς root. Σαρώνει αυτόματα το κινητό, μετρά τους διαθέσιμους πόρους και επιλέγει τον ασφαλέστερο συνδυασμό νευρωνικού classifier, τοπικού γλωσσικού μοντέλου, runtime profile και υβριδικής λειτουργίας.
+Το **Pocket AI** είναι ένας δίγλωσσος τοπικός βοηθός για **Αγγλικά και Ελληνικά**, σχεδιασμένος για **Termux χωρίς root**. Συνδυάζει μικρούς νευρωνικούς classifiers, τοπικά μοντέλα GGUF, μόνιμη μνήμη ανάκτησης, ειδικά μοντέλα μαθημάτων, ντετερμινιστικά σχολικά εργαλεία και υβριδική δρομολόγηση που προσαρμόζεται στο κινητό.
 
-Το πακέτο είναι σχεδιασμένο τόσο για παλιά και οικονομικά κινητά όσο και για ισχυρότερες συσκευές. Όταν ένα GGUF μοντέλο δεν είναι ασφαλές για τη διαθέσιμη RAM, χρησιμοποιεί την ελαφριά εσωτερική μηχανή. Σε κινητά με περισσότερους πόρους μπορεί να χρησιμοποιήσει διαδοχική υβριδική επεξεργασία για καλύτερη ποιότητα απαντήσεων.
-
-Το Pocket AI δεν προσποιείται ότι είναι άνθρωπος. Η προαιρετική φυσική συνομιλία επιτρέπει να του δώσετε όνομα και πιο ανθρώπινο τρόπο έκφρασης, ενώ συνεχίζει να αναγνωρίζει ότι είναι βοηθός τεχνητής νοημοσύνης.
-
-## Απλή Χρήση
-
-Το Pocket AI ανοίγει απευθείας στη συνομιλία. Δεν χρειάζεται να μάθετε αρχικό μενού πριν κάνετε μία ερώτηση.
+Η κανονική χρήση είναι απλή:
 
 ```text
-Εσύ: Τι είναι ένα μήλο;
-Pocket AI: Ένα μήλο είναι ένας βρώσιμος καρπός της μηλιάς...
+Pocket AI είναι έτοιμο. Ρώτησέ με οτιδήποτε ή γράψε βοήθεια για επιλογές.
+
+Εσύ: Τι είναι το μήλο;
+Pocket AI: Το μήλο είναι ένας βρώσιμος καρπός της μηλιάς...
 ```
 
-Γράψτε οποιαδήποτε κανονική ερώτηση στα Ελληνικά ή στα Αγγλικά και το Pocket AI θα απαντήσει. Γράψτε `help` ή `βοήθεια` οποιαδήποτε στιγμή για να ανοίξει ένα απλό αριθμημένο μενού.
+Γράψε **`βοήθεια`** οποιαδήποτε στιγμή για να ανοίξει το απλό αριθμημένο μενού.
 
-```text
-1. Επιστροφή στη συνομιλία
-2. Σάρωση κινητού και αυτόματη επιλογή καλύτερου μοντέλου
-3. Αλλαγή ονόματος και τρόπου ομιλίας του AI
-4. Δίδαξε στο AI μία ερώτηση και απάντηση
-5. Μάθηση από αρχείο ή φάκελο
-6. Ασφαλής έρευνα στο διαδίκτυο και μάθηση
-7. Προβολή ενεργού μοντέλου και κατάστασης
-8. Προβολή προχωρημένων εντολών
-9. Έξοδος
-```
+<a id="greek-table-of-contents"></a>
 
-Η σάρωση του κινητού εκτελείται αυτόματα στην κανονική εκκίνηση, επομένως οι περισσότεροι χρήστες χρειάζεται μόνο να ανοίξουν το script και να αρχίσουν να μιλούν.
+## Περιεχόμενα
 
-### Αυτόματη Σάρωση Κινητού και Επιλογή Μοντέλου
+* [Κύρια Χαρακτηριστικά](#κύρια-χαρακτηριστικά)
+* [Απαιτήσεις](#απαιτήσεις)
+* [Εγκατάσταση](#εγκατάσταση)
+* [Πώς Χρησιμοποιείται](#πώς-χρησιμοποιείται)
+* [Σχολικός Βοηθός: Τάξεις 1–12](#σχολικός-βοηθός-τάξεις-112)
+* [Μοντέλα και Υβριδική Νοημοσύνη](#μοντέλα-και-υβριδική-νοημοσύνη)
+* [Αυτόματη Σάρωση Κινητού](#αυτόματη-σάρωση-κινητού)
+* [Μάθηση από Αρχεία και Διαδίκτυο](#μάθηση-από-αρχεία-και-διαδίκτυο)
+* [Google AI και Περιορισμός API Key](#google-ai-και-περιορισμός-api-key)
+* [Δομή Φακέλων και Αποθηκεύσεις](#δομή-φακέλων-και-αποθηκεύσεις)
+* [Σημαντικές Εντολές](#σημαντικές-εντολές)
+* [Ιδιωτικότητα και Ασφάλεια](#ιδιωτικότητα-και-ασφάλεια)
+* [Περιορισμοί](#περιορισμοί)
+* [Συντελεστές](#συντελεστές)
+* [Αποποίηση Ευθύνης](#αποποίηση-ευθύνης)
 
-Η σάρωση ελέγχει:
+<a id="κύρια-χαρακτηριστικά"></a>
 
-- κατασκευαστή και μοντέλο κινητού
-- ονομασία επεξεργαστή και SoC
-- ARM, ARM64, x86 ή x86-64 αρχιτεκτονική
-- 32-bit ή 64-bit Termux userspace
-- πυρήνες και συχνότητες CPU
-- σύντομο τοπικό CPU benchmark
-- συνολική και διαθέσιμη RAM
-- συνολικό και ελεύθερο χώρο αποθήκευσης
-- θερμοκρασία κινητού και μπαταρίας όταν το Android την παρέχει
-- κατάσταση μπαταρίας και πίεση πόρων
-- διαθεσιμότητα, μέγεθος, GGUF header και checksum των μοντέλων
+<details open>
+<summary><strong>Κύρια Χαρακτηριστικά</strong></summary>
 
-Άγνωστοι ή μετονομασμένοι επεξεργαστές δεν απορρίπτονται. Το Pocket AI χρησιμοποιεί ως fallback την αρχιτεκτονική, τους πυρήνες, τις συχνότητες, το benchmark, τη RAM και την αποθήκευση.
+* **Άμεση συνομιλία:** δεν απαιτείται περίπλοκος launcher.
+* **Απλή βοήθεια:** γράψε `help` ή `βοήθεια` για κανονικές αριθμημένες επιλογές.
+* **Μόνο Αγγλικά και Ελληνικά:** interface, απαντήσεις, μνήμες, σχολική γνώση και ευρετηρίαση ιστού φιλτράρονται στις δύο γλώσσες.
+* **Χωρίς root:** σχεδιασμένο για Termux σε Android.
+* **Λειτουργία offline:** συνομιλία, τοπική γνώση, μαθηματικά, σχολική βοήθεια, μνήμες και ενσωματωμένα μοντέλα δεν χρειάζονται cloud λογαριασμό.
+* **Αυτόματη αντιστοίχιση hardware:** ελέγχει επεξεργαστή, αρχιτεκτονική, συνολική και διαθέσιμη RAM, αποθήκευση, θερμοκρασία και ακεραιότητα μοντέλων.
+* **Προστασία χαμηλής RAM:** μειώνει context, batch, threads, μήκος απάντησης ή βαθμίδα μοντέλου όταν χρειάζεται.
+* **Ανθρώπινο στυλ:** δώσε όνομα στο AI και επίλεξε Friendly, Calm Expert, Casual, Mentor ή Direct.
+* **Μόνιμη τοπική μνήμη:** κρατά διδαγμένες απαντήσεις, μνήμες, αρχεία, ρυθμίσεις και ιστορικό.
+* **Υβριδική νοημοσύνη:** συνδυάζει εργαλεία, retrieval, specialists, neural routing και διαδοχικά GGUF περάσματα.
+* **Σχολική βάση:** κοινή υποστήριξη τάξεων 1–12 για κάθε profile μοντέλου.
+* **Δημόσια έρευνα χωρίς API key:** μάθηση από ασφαλή δημόσια αποτελέσματα, Wikipedia και αναγνώσιμες δημόσιες σελίδες.
+* **Ασφαλείς τελεστές αναζήτησης:** `site:`, `filetype:`, `intitle:`, `inurl:`, `before:`, `after:`, ακριβείς φράσεις και εξαιρούμενες λέξεις.
+* **Μάθηση από τοπικά αρχεία:** ευρετηρίαση αγγλικών και ελληνικών εγγράφων και φακέλων.
+* **Χωρίς απαίτηση TensorFlow, PyTorch ή NumPy:** ο βασικός βοηθός χρησιμοποιεί standard library και ενσωματωμένα αρχεία.
 
-### Άμεση Τοπική Συνομιλία
+</details>
 
-Αν δεν υπάρχει αποθηκευμένη σάρωση, πραγματοποιείται αυτόματα. Στη συνέχεια φορτώνεται ο προτεινόμενος pre-trained classifier και ρυθμίζεται το GGUF runtime. Μόνο ένα transformer μοντέλο φορτώνεται κάθε φορά. Η κανονική οθόνη περιμένει στο `You:` ή `Εσύ:` για την ερώτησή σας.
+<a id="απαιτήσεις"></a>
 
-### Όνομα και Φυσική Συνομιλία
+<details>
+<summary><strong>Απαιτήσεις</strong></summary>
 
-Η επιλογή επιτρέπει να ορίσετε:
+| Στοιχείο | Ελάχιστο | Προτεινόμενο |
+| :-- | :-- | :-- |
+| **Συσκευή** | Android κινητό ή tablet | 64-bit Android κινητό |
+| **Termux** | Σύγχρονη έκδοση από F-Droid | Σύγχρονη έκδοση από F-Droid |
+| **Root** | Δεν απαιτείται | Δεν απαιτείται |
+| **RAM** | Περίπου 512 MB για τον εσωτερικό engine | 2 GB+ για GGUF inference |
+| **Αποθήκευση** | Αρκετή για Python και repository | Τουλάχιστον 700 MB ελεύθερα για build, μοντέλα και saves |
+| **Internet** | Δεν χρειάζεται για κανονικό offline chat | Χρειάζεται μόνο για εγκατάσταση, Git LFS ή ρητή web learning λειτουργία |
 
-- το όνομα του AI
-- το δικό σας προαιρετικό όνομα
-- το στυλ συζήτησης
-- αν θα χρησιμοποιείται φυσική ανθρώπινη διατύπωση
+### Συμπεριφορά ανά hardware
 
-Διαθέσιμα στυλ:
+* 32-bit ή πολύ περιορισμένες συσκευές χρησιμοποιούν τον εσωτερικό δίγλωσσο engine.
+* Συσκευές περίπου 1–2 GB προτιμούν Q2_K Fast ή εσωτερικό engine.
+* Συσκευές περίπου 3–4 GB μπορούν να χρησιμοποιήσουν Q4_1 Quality όταν υπάρχει αρκετή διαθέσιμη RAM.
+* Ισχυρότερες συσκευές μπορούν να χρησιμοποιήσουν adaptive, expert, consensus ή cascade.
+* Φορτώνεται μόνο μία διεργασία GGUF κάθε φορά.
+* Η RAM και η θερμοκρασία ελέγχονται ξανά πριν από ακριβό δεύτερο πέρασμα.
 
-| Στυλ | Συμπεριφορά |
-| :--- | :--- |
-| `friendly` | Φιλικό, φυσικό και καθαρό |
-| `calm_expert` | Ήρεμες και προσεκτικές εξηγήσεις ειδικού |
-| `casual` | Χαλαρή και σύντομη συνομιλία |
-| `mentor` | Υπομονετική διδασκαλία βήμα προς βήμα |
-| `direct` | Άμεση απάντηση με ελάχιστη περιττή διατύπωση |
+</details>
 
-Οι ρυθμίσεις αποθηκεύονται τοπικά στο:
+<a id="εγκατάσταση"></a>
 
-```text
-Other Files/Saved Data/persona.json
-```
+<details>
+<summary><strong>Εγκατάσταση</strong></summary>
 
-## Δομή Πακέτου
+### 1. Εγκατάσταση Termux
 
-```text
-Pocket AI.py
-README.md
-Models/
-Other Files/
-```
+* Εγκατέστησε το **Termux από F-Droid**.
+* Άνοιξε το Termux μία φορά πριν εκτελέσεις τις εντολές.
+* Επίτρεψε πρόσβαση αποθήκευσης όταν ζητηθεί.
 
-### `Pocket AI.py`
-
-Το κύριο πρόγραμμα με το terminal menu, τη σάρωση κινητού, τον νευρωνικό classifier, την τοπική βάση ανάκτησης, τα δίγλωσσα εργαλεία, το ελεγχόμενο web learning, το GGUF runtime και την υβριδική δρομολόγηση.
-
-### `Models/`
-
-Περιέχει όλα τα ενσωματωμένα AI μοντέλα και controllers. Τα model weights βρίσκονται ήδη μέσα στο ZIP και δεν κατεβαίνουν κατά την εκκίνηση.
-
-### `Other Files/`
-
-Περιέχει runtime modules, τεκμηρίωση, άδειες, checksums, το helper για τη δημιουργία του llama.cpp και όλα τα save data.
-
-## Ενσωματωμένα Μοντέλα
-
-### GGUF Γλωσσικά Μοντέλα
-
-| Μοντέλο | Χρήση | Συνήθης στόχος |
-| :--- | :--- | :--- |
-| SmolLM2-135M Q2_K | Χαμηλότερη RAM και γρήγορες απαντήσεις | Κινητά περίπου 2 GB και αδύναμοι επεξεργαστές |
-| SmolLM2-135M Q4_1 | Καλύτερη ποιότητα quantization | Κινητά 3 GB+ με αρκετή διαθέσιμη RAM |
-
-### Pre-trained Δίγλωσσοι Classifiers
-
-- Micro
-- Lite
-- Balanced
-- Standard
-- Max
-
-Ο scanner επιλέγει classifier με βάση RAM, διαθέσιμη μνήμη, ταχύτητα επεξεργαστή και αποθήκευση. Είναι ήδη εκπαιδευμένοι ώστε τα παλιά κινητά να μη χρειάζονται βαριά εκπαίδευση στην πρώτη εκκίνηση.
-
-### Δίγλωσσα MicroLM
-
-- MicroLM Lite
-- MicroLM Quality
-
-### Task Specialists
-
-- Coding και Termux specialist
-- Mathematics specialist
-- Public-research specialist
-
-### Hybrid και Control Models
-
-- Hybrid Router
-- Query Planner
-- Response Verifier
-- Resource Guard
-- Adaptive Controller
-- Consensus Controller
-- Persona Controller
-- Context Optimizer
-- Confidence Calibrator
-
-Οι controllers είναι μικρά components δρομολόγησης και βαθμολόγησης, όχι μεγάλα transformer LLMs.
-
-## Υβριδικές Λειτουργίες
-
-```text
-/υβριδικό auto
-/υβριδικό speed
-/υβριδικό smart
-/υβριδικό quality
-/υβριδικό adaptive
-/υβριδικό expert
-/υβριδικό consensus
-/υβριδικό cascade
-/υβριδικό off
-```
-
-| Λειτουργία | Τρόπος λειτουργίας |
-| :--- | :--- |
-| `off` | Μόνο ανάκτηση, εργαλεία, specialists και εσωτερική νευρωνική μηχανή |
-| `speed` | Ένα πέρασμα με το Fast GGUF |
-| `smart` | Επιλογή Fast ή Quality με βάση την ερώτηση και τους ζωντανούς πόρους |
-| `quality` | Προτίμηση του Quality GGUF |
-| `adaptive` | Δημιουργεί Fast πρόχειρο και παραλείπει το δεύτερο πέρασμα όταν είναι ήδη αρκετά καλό |
-| `expert` | Συνδυάζει specialist guidance και βελτιστοποιημένα τοπικά συμφραζόμενα με το Quality μοντέλο |
-| `consensus` | Δημιουργεί ανεξάρτητες απαντήσεις Fast και Quality διαδοχικά και επιλέγει την ισχυρότερη |
-| `cascade` | Δημιουργεί Fast πρόχειρο, το αποφορτώνει και μετά το ελέγχει/ξαναγράφει με Quality |
-| `auto` | Επιλέγει ασφαλή λειτουργία από CPU, RAM, θερμοκρασία, διαθέσιμα μοντέλα και δυσκολία ερώτησης |
-
-Τα Fast και Quality μοντέλα εκτελούνται διαδοχικά. Δεν παραμένουν ταυτόχρονα στη RAM.
-
-## Runtime Modules
-
-Στον φάκελο `Other Files/Modules/` υπάρχουν:
-
-- `persona_engine.py` — μόνιμο όνομα AI και φυσικά δίγλωσσα στυλ
-- `context_optimizer.py` — επιλογή σχετικών εγγράφων, μνημών και πρόσφατης συζήτησης
-- `consensus_engine.py` — σύγκριση ανεξάρτητων απαντήσεων Fast και Quality
-- `confidence_engine.py` — βαθμονόμηση βεβαιότητας απάντησης
-- `resource_advisor.py` — εξήγηση επιλογής hardware/model συνδυασμού
-
-## Μόνο Αγγλικά και Ελληνικά
-
-```text
-/γλώσσα auto
-/γλώσσα en
-/γλώσσα el
-```
-
-Άλλες γραφές απορρίπτονται πριν εισαχθούν σε training data, μνήμες, έγγραφα ή τοπική παραγωγή.
-
-## Τοπική Μάθηση
-
-### Διδασκαλία απάντησης
-
-```text
-/teach Τι είναι το Pocket AI; | Το Pocket AI είναι ένας δίγλωσσος τοπικός βοηθός AI για Termux.
-```
-
-### Διόρθωση προηγούμενης απάντησης
-
-```text
-/διόρθωση Η σωστή απάντηση είναι αυτή.
-```
-
-### Ευρετηρίαση αρχείου ή φακέλου
-
-```text
-/ingest ~/storage/downloads/Σημειώσεις
-```
-
-### Σύνοψη αρχείου
-
-```text
-/σύνοψη ~/storage/downloads/άρθρο.txt
-```
-
-### Μόνιμη μνήμη
-
-```text
-/θυμήσου project = DedSec Project
-```
-
-## Δημόσια Έρευνα και Dork Operators
-
-Η λειτουργία `/dork` ή `/web-learn` χρησιμοποιείται μόνο όταν την εκτελείτε ρητά και χρειάζεται σύνδεση στο διαδίκτυο.
-
-Υποστηρίζονται:
-
-```text
-site:
-filetype:
-intitle:
-inurl:
-before:
-after:
-"ακριβής φράση"
--λέξη
-```
-
-Μπλοκάρονται ερωτήματα που στοχεύουν εκτεθειμένους κωδικούς, private keys, credentials, admin panels, databases, backups, κάμερες, routers ή ιδιωτικά συστήματα.
-
-## Εγκατάσταση στο Termux
+### 2. Προετοιμασία Termux
 
 ```bash
+pkg update -y && pkg upgrade -y
+pkg install python git git-lfs unzip cmake clang make -y
 termux-setup-storage
-pkg update -y
-pkg install python unzip -y
+git lfs install
+```
 
+### 3. Κλωνοποίηση Pocket AI
+
+```bash
 cd ~
-rm -rf Pocket_AI
-mkdir Pocket_AI
-unzip -o ~/storage/downloads/Pocket_AI.zip -d ~/Pocket_AI
+git clone https://github.com/dedsec1121fk/Pocket-AI
+cd Pocket-AI
+git lfs pull
+```
 
-cd ~/Pocket_AI
+### 4. Δημιουργία τοπικού GGUF runner
+
+Τα μοντέλα βρίσκονται ήδη στο `Models/`. Ο installer δημιουργεί τον συμβατό `llama.cpp` runner και δεν κατεβάζει AI weights.
+
+```bash
 chmod +x "Other Files/install_models.sh"
 bash "Other Files/install_models.sh"
+```
 
+### 5. Εκκίνηση
+
+```bash
 python "Pocket AI.py"
 ```
 
-Το installer δημιουργεί το συμβατό `llama.cpp` executable. Δεν κατεβάζει τα model weights, επειδή βρίσκονται ήδη στον φάκελο `Models/`.
+### Άνοιγμα αργότερα
 
-## Χρήσιμες Εντολές
-
-```text
-/βοήθεια
-/προσωπικότητα
-/όνομα ΟΝΟΜΑ
-/στυλ friendly
-/ανθρώπινο on
-/μοντέλα
-/system
-/stats
-/γιατί
-/teach ΕΡΩΤΗΣΗ | ΑΠΑΝΤΗΣΗ
-/διόρθωση ΑΠΑΝΤΗΣΗ
-/ingest ΔΙΑΔΡΟΜΗ
-/σύνοψη ΔΙΑΔΡΟΜΗ
-/θυμήσου ΚΛΕΙΔΙ = ΤΙΜΗ
-/μνήμες
-/ξέχασε ΚΛΕΙΔΙ
-/υβριδικό auto
-/llm-status
-/benchmark
-/backup
-/έξοδος
+```bash
+cd ~/Pocket-AI && python "Pocket AI.py"
 ```
 
-## Αποθηκευμένα Αρχεία
+</details>
+
+<a id="πώς-χρησιμοποιείται"></a>
+
+<details>
+<summary><strong>Πώς Χρησιμοποιείται</strong></summary>
+
+Το Pocket AI ανοίγει απευθείας στη συνομιλία:
 
 ```text
-Other Files/Saved Data/device_profile.json
-Other Files/Saved Data/persona.json
-Other Files/Saved Data/knowledge.sqlite3
-Other Files/Saved Data/dataset.json
-Other Files/Saved Data/neural_model.pkl.gz
-Other Files/Saved Data/model_metadata.json
-Other Files/Saved Data/language_model.pkl.gz
-Other Files/Saved Data/backups/
+Εσύ: Τι είναι η βαρύτητα;
+Pocket AI: Η βαρύτητα είναι η έλξη μεταξύ αντικειμένων που έχουν μάζα...
 ```
 
-## Περιορισμοί
+Μπορείς να γράψεις φυσιολογικές ερωτήσεις:
 
-- Το Pocket AI δεν είναι αντίστοιχο ενός σύγχρονου cloud-scale LLM.
-- Τα transformer μοντέλα είναι σκόπιμα μικρά για παλιά κινητά.
-- Μπορούν να δώσουν λανθασμένες ή ελλιπείς απαντήσεις.
-- Σημαντικές ιατρικές, νομικές, οικονομικές, security ή επίκαιρες πληροφορίες χρειάζονται ανεξάρτητη επιβεβαίωση.
-- Η ποιότητα Ελληνικών από το κυρίως αγγλόφωνο GGUF μπορεί να είναι χαμηλότερη από τα δίγλωσσα layers ανάκτησης και classifier.
-- Ορισμένοι κατασκευαστές κρύβουν πληροφορίες θερμοκρασίας ή SoC, οπότε χρησιμοποιούνται μετρημένα fallbacks.
-- Η φυσική συνομιλία αλλάζει μόνο το ύφος. Δεν σημαίνει ότι το πρόγραμμα είναι άνθρωπος, έχει συνείδηση ή συναισθήματα.
+* `Τι είναι το μήλο;`
+* `Εξήγησε τη φωτοσύνθεση.`
+* `Πόσο είναι το 25% του 80;`
+* `Λύσε 2*x + 3 = 11.`
+* `Εξήγησε τη δημοκρατία.`
+* `Τάξη 5 μαθηματικά.`
+* `What is gravity?`
+* `What is 12*7?`
+* `Explain photosynthesis.`
+* `Grade 9 science.`
 
-## Ιδιωτικότητα
+Για το απλό μενού γράψε:
 
-Η βασική συνομιλία, η ανάκτηση γνώσης, οι μνήμες, τα έγγραφα και τα μοντέλα λειτουργούν τοπικά. Δεν απαιτείται cloud API. Πρόσβαση στον δημόσιο ιστό γίνεται μόνο όταν εκτελείτε `/dork` ή `/web-learn`.
+* `help`
+* `/help`
+* `βοήθεια`
+* `/βοήθεια`
 
-Μην αποθηκεύετε μυστικά που δεν πρέπει να υπάρχουν σε μη κρυπτογραφημένα τοπικά δεδομένα εφαρμογής.
+Το μενού περιλαμβάνει:
 
-## Credits
+1. Επιστροφή στη συνομιλία
+2. Σάρωση κινητού και επιλογή καλύτερου μοντέλου
+3. Αλλαγή ονόματος και στυλ ομιλίας
+4. Διδασκαλία ερώτησης και απάντησης
+5. Μάθηση από αρχείο ή φάκελο
+6. Ασφαλής δημόσια έρευνα και μάθηση
+7. Σχολικός βοηθός τάξεων 1–12
+8. Προβολή ενεργού μοντέλου και κατάστασης
+9. Προβολή προχωρημένων εντολών
+10. Έξοδος
 
-- Δημιουργός και project: **dedsec1121fk / DedSec Project**
-- Ιστοσελίδα: [ded-sec.space](https://ded-sec.space/)
-- Sponsors: [GitHub Sponsors](https://github.com/sponsors/dedsec1121fk)
-- Τοπικό runtime: `llama.cpp`
-- Οι άδειες των bundled models βρίσκονται στο `Other Files/Licenses/`.
+</details>
 
-## Αποποίηση Ευθύνης
+<a id="σχολικός-βοηθός-τάξεις-112"></a>
 
-Το Pocket AI παρέχεται για εκπαιδευτική, προσωπική και νόμιμη χρήση ως τοπικός βοηθός. Παρέχεται **ως έχει**, χωρίς εγγύηση ακρίβειας, συμβατότητας ή καταλληλότητας. Ο χρήστης είναι υπεύθυνος να ελέγχει τις παραγόμενες εντολές και απαντήσεις πριν τις χρησιμοποιήσει.
+<details open>
+<summary><strong>Σχολικός Βοηθός: Τάξεις 1–12</strong></summary>
+
+Η σχολική βάση είναι **κοινή για κάθε profile μοντέλου**. Ο εσωτερικός engine, το Fast GGUF, το Quality GGUF και τα hybrid modes χρησιμοποιούν τα ίδια σχολικά εργαλεία πριν από γενικό LLM fallback.
+
+### Καλυπτόμενοι τομείς
+
+* **Μαθηματικά**
+  * μέτρηση και αξία θέσης
+  * πρόσθεση, αφαίρεση, πολλαπλασιασμός και διαίρεση
+  * κλάσματα, δεκαδικοί, ποσοστά, λόγοι και αναλογίες
+  * παράγοντες, πολλαπλάσια, ΜΚΔ και ΕΚΠ
+  * ακέραιοι, δυνάμεις και επιστημονική γραφή
+  * άλγεβρα και γραμμικές εξισώσεις
+  * εξισώσεις δευτέρου βαθμού
+  * συντεταγμένες και γραμμικές συναρτήσεις
+  * γεωμετρία, περίμετρος, εμβαδόν, κύκλοι, όγκος και Πυθαγόρειο θεώρημα
+  * μέσος όρος, διάμεσος, επικρατούσα τιμή, εύρος, στατιστική και πιθανότητες
+  * τριγωνομετρία, συναρτήσεις, διανύσματα και εισαγωγικός λογισμός
+* **Επιστήμες**
+  * ζωντανά, φυτά, ζώα, οικοσυστήματα και ανθρώπινο σώμα
+  * ύλη, άτομα, στοιχεία, περιοδικός πίνακας, αντιδράσεις, οξέα και βάσεις
+  * κύτταρα, DNA, γενετική, εξέλιξη και οικολογία
+  * δυνάμεις, κίνηση, νόμοι Νεύτωνα, ενέργεια, ηλεκτρισμός, κυκλώματα και κύματα
+  * καιρός, κλίμα, πετρώματα, κύκλος νερού, Γη και Ηλιακό Σύστημα
+  * επιστημονική μέθοδος και τεκμήρια
+* **Ελληνική και Αγγλική γλώσσα**
+  * προτάσεις, υποκείμενο, κατηγόρημα και μέρη του λόγου
+  * χρόνοι ρημάτων και γραμματική
+  * δομή παραγράφου και έκθεσης
+  * περιλήψεις, λεξιλόγιο, επιχειρηματολογία και τεκμήρια
+  * λογοτεχνικά σχήματα και ανάλυση λογοτεχνίας
+  * έρευνα, πηγές, παραπομπές και αποφυγή λογοκλοπής
+* **Ιστορία, Γεωγραφία και Αγωγή Πολίτη**
+  * χάρτες, κατευθύνσεις, ήπειροι, ωκεανοί, ανάγλυφο και πληθυσμός
+  * Αρχαία Ελλάδα, Αρχαία Ρώμη, Βυζάντιο, Αναγέννηση και Βιομηχανική Επανάσταση
+  * Παγκόσμιοι Πόλεμοι και βασικές έννοιες νεότερης ιστορίας
+  * δημοκρατία, σύνταγμα, δικαιώματα, υποχρεώσεις, θεσμοί και πολίτες
+  * οικονομικά, σπανιότητα, κόστος ευκαιρίας, προσφορά και ζήτηση
+  * εισαγωγή σε φιλοσοφία και λογική
+* **Πληροφορική και δεξιότητες μελέτης**
+  * hardware, software, είσοδος, έξοδος και αποθήκευση
+  * αλγόριθμοι, μεταβλητές, συνθήκες, βρόχοι, συναρτήσεις, testing και debugging
+  * ψηφιακή ασφάλεια, αξιοπιστία πηγών και media literacy
+  * ενεργή ανάκληση, κατανεμημένη επανάληψη, λυμένα παραδείγματα και πρόγραμμα μελέτης
+
+### Ντετερμινιστικά μαθηματικά
+
+```text
+Πόσο είναι το 25% του 80;
+1/2 + 1/3
+Μέσος όρος των 5, 8, 8, 10
+ΜΚΔ των 24 και 36
+Λύσε 2*x + 3 = 11
+Λύσε x^2 - 5*x + 6 = 0
+Εμβαδόν ορθογωνίου μήκος 8 πλάτος 3
+Εμβαδόν κύκλου ακτίνα 5
+```
+
+### Προβολή ύλης ανά τάξη
+
+```text
+/school 5 μαθηματικά
+/school 9 επιστήμες
+/school 12 πληροφορική
+```
+
+> Η σχολική βάση είναι ευρεία δίγλωσση βοήθεια. Δεν ισχυρίζεται ότι περιέχει κάθε επίσημο σχολικό βιβλίο, εξεταστικό οργανισμό ή ακριβές πρόγραμμα κάθε χώρας.
+
+</details>
+
+<a id="μοντέλα-και-υβριδική-νοημοσύνη"></a>
+
+<details>
+<summary><strong>Μοντέλα και Υβριδική Νοημοσύνη</strong></summary>
+
+### Ενσωματωμένα GGUF μοντέλα
+
+* **SmolLM2-135M-Instruct Q2_K Fast**
+  * χαμηλότερη απαίτηση RAM
+  * για παλιά και 2 GB-class κινητά
+  * για γρήγορα drafts και low-resource απαντήσεις
+* **SmolLM2-135M-Instruct Q4_1 Quality**
+  * καλύτερη quantization της ίδιας compact οικογένειας
+  * επιλέγεται όταν RAM, CPU, storage και θερμοκρασία το επιτρέπουν
+  * για quality απαντήσεις, verification και consensus
+
+### Προεκπαιδευμένα δίγλωσσα neural profiles
+
+* Micro
+* Lite
+* Balanced
+* Standard
+* Max
+
+### Γενικά specialist μοντέλα
+
+* Coding και Termux
+* Μαθηματικά
+* Δημόσια έρευνα
+
+### Σχολικά specialist μοντέλα
+
+* Σχολικά Μαθηματικά
+* Σχολικές Επιστήμες
+* Σχολική Γλώσσα
+* Σχολικές Ανθρωπιστικές Επιστήμες
+* Σχολική Πληροφορική και Μελέτη
+* Σχολική Βάση Γνώσης Τάξεων 1–12
+* School Hybrid Controller
+
+### Hybrid controllers
+
+* Query planner
+* Hybrid router
+* Resource guard
+* Context optimizer
+* Confidence calibrator
+* Response verifier
+* Adaptive controller
+* Consensus controller
+* Persona controller
+* No-key web-learning controller
+
+### Hybrid modes
+
+* **Off:** μόνο εσωτερικά εργαλεία, μνήμη, retrieval και specialists
+* **Speed:** γρηγορότερο ασφαλές single pass
+* **Smart:** αυτόματη δρομολόγηση ανά ερώτηση
+* **Quality:** προτίμηση καλύτερου μοντέλου όταν είναι ασφαλές
+* **Adaptive:** δεύτερο pass μόνο όταν χρειάζεται
+* **Expert:** specialist guidance, optimized context και quality inference
+* **Consensus:** σύγκριση ανεξάρτητων Fast και Quality απαντήσεων
+* **Cascade:** draft, unload, verification και rewrite
+* **Auto:** επιλογή από τη ζωντανή κατάσταση του κινητού
+
+</details>
+
+<a id="αυτόματη-σάρωση-κινητού"></a>
+
+<details>
+<summary><strong>Αυτόματη Σάρωση Κινητού</strong></summary>
+
+Ελέγχονται:
+
+* κατασκευαστής και μοντέλο κινητού
+* hardware, board και SoC identifiers
+* γνωστά Qualcomm, MediaTek, Exynos, Unisoc, Kirin, Tensor, Tegra, Rockchip, Allwinner, Amlogic και x86 patterns
+* benchmark για άγνωστους επεξεργαστές
+* ARM, ARM64, x86 ή x86-64
+* 32-bit ή 64-bit Termux userspace
+* πυρήνες και συχνότητες CPU
+* συνολική και διαθέσιμη RAM
+* αποθήκευση εφαρμογής και shared storage
+* θερμοκρασία και battery δεδομένα όταν παρέχονται από Android
+* παρουσία, μέγεθος, GGUF header και checksum μοντέλων
+
+Η σάρωση επιλέγει:
+
+* neural classifier profile
+* internal, Fast ή Quality inference
+* hybrid mode
+* threads
+* context
+* batch και micro-batch
+* όριο tokens
+* timeout και emergency fallback
+
+Για χειροκίνητη σάρωση:
+
+```text
+scan my phone
+```
+
+</details>
+
+<a id="μάθηση-από-αρχεία-και-διαδίκτυο"></a>
+
+<details>
+<summary><strong>Μάθηση από Αρχεία και Διαδίκτυο</strong></summary>
+
+### Μάθηση από αρχείο ή φάκελο
+
+```text
+/ingest ~/storage/downloads/SchoolNotes
+```
+
+Το Pocket AI μπορεί να:
+
+* διαβάζει υποστηριζόμενα αγγλικά και ελληνικά text files
+* τα χωρίζει σε searchable knowledge chunks
+* κρατά source paths
+* ανακτά σχετικά αποσπάσματα σε επόμενες ερωτήσεις
+* δημιουργεί extractive summaries
+
+### Άμεση διδασκαλία
+
+```text
+/teach Τι είναι το Pocket AI; | Το Pocket AI είναι τοπικός δίγλωσσος βοηθός Termux.
+```
+
+### Δημόσια web learning χωρίς API key
+
+```text
+/web-learn φωτοσύνθεση για γυμνάσιο
+/dork site:python.org sqlite tutorial
+/dork "Πυθαγόρειο θεώρημα" filetype:html
+```
+
+Χρησιμοποιούνται:
+
+* **Bing RSS search results**
+* **Wikipedia MediaWiki API**
+* **αναγνώσιμες δημόσιες HTTP/HTTPS σελίδες**
+* source-aware local indexing
+* φιλτράρισμα Αγγλικών και Ελληνικών
+* συντηρητικά request limits
+* έλεγχοι `robots.txt`
+
+Μπλοκάρονται έρευνες για:
+
+* εκτεθειμένους κωδικούς ή API keys
+* private keys και credential files
+* database backups
+* login/admin panels
+* private ή local hosts
+* cameras, routers ή εκτεθειμένες συσκευές
+* executables, archives, databases και key containers
+
+</details>
+
+<a id="google-ai-και-περιορισμός-api-key"></a>
+
+<details>
+<summary><strong>Google AI και Περιορισμός API Key</strong></summary>
+
+Το Pocket AI **δεν ισχυρίζεται** ότι χρησιμοποιεί ανώνυμα το Google Gemini.
+
+* Το επίσημο Gemini API απαιτεί authentication credentials.
+* Το επίσημο programmable search API της Google επίσης απαιτεί ρύθμιση και API key.
+* Το Pocket AI δεν παρακάμπτει authentication και δεν αντιγράφει private AI sessions.
+* Χωρίς key χρησιμοποιεί τα ενσωματωμένα τοπικά μοντέλα και τις δημόσιες no-key πηγές που αναφέρονται παραπάνω.
+* Γράψε `/google-ai` μέσα στο Pocket AI για την ίδια εξήγηση.
+
+</details>
+
+<a id="δομή-φακέλων-και-αποθηκεύσεις"></a>
+
+<details>
+<summary><strong>Δομή Φακέλων και Αποθηκεύσεις</strong></summary>
+
+```text
+Pocket-AI/
+├── Pocket AI.py
+├── README.md
+├── Models/
+│   ├── GGUF μοντέλα
+│   ├── neural profiles
+│   ├── bilingual generators
+│   ├── general specialists
+│   ├── school specialists
+│   └── hybrid controllers
+└── Other Files/
+    ├── Modules/
+    ├── Documentation/
+    ├── Licenses/
+    ├── Saved Data/
+    ├── CHECKSUMS.sha256
+    └── install_models.sh
+```
+
+Τα δεδομένα χρήστη αποθηκεύονται στο:
+
+```text
+Other Files/Saved Data/
+```
+
+Μπορεί να περιλαμβάνονται:
+
+* hardware profile
+* όνομα και persona AI
+* model settings
+* SQLite knowledge database
+* μνήμες και taught answers
+* γνώση από αρχεία και web
+* τοπικό ιστορικό συνομιλιών
+* exports και backups
+* compiled `llama.cpp` runner
+
+</details>
+
+<a id="σημαντικές-εντολές"></a>
+
+<details>
+<summary><strong>Σημαντικές Εντολές</strong></summary>
+
+### Απλές εντολές
+
+* `βοήθεια` — άνοιγμα απλού μενού
+* `έξοδος` — κλείσιμο
+* `scan my phone` — αυτόματη επιλογή μοντέλου
+* `change your name` — ρυθμίσεις persona
+* `school help` — σχολική κάλυψη
+
+### Ταυτότητα και γλώσσα
+
+* `/όνομα ΟΝΟΜΑ`
+* `/στυλ friendly|calm_expert|casual|mentor|direct`
+* `/ανθρώπινο on|off`
+* `/γλώσσα auto|en|el`
+
+### Σχολείο
+
+* `/school`
+* `/school 5 μαθηματικά`
+* `/school 9 επιστήμες`
+* `/school 12 πληροφορική`
+
+### Μάθηση
+
+* `/teach ΕΡΩΤΗΣΗ | ΑΠΑΝΤΗΣΗ`
+* `/διόρθωση ΑΠΑΝΤΗΣΗ`
+* `/ingest ΔΙΑΔΡΟΜΗ`
+* `/σύνοψη ΔΙΑΔΡΟΜΗ`
+* `/web-learn ΕΡΩΤΗΜΑ`
+* `/dork ΕΡΩΤΗΜΑ`
+* `/remember ΚΛΕΙΔΙ = ΤΙΜΗ`
+
+### Μοντέλα
+
+* `/μοντέλα`
+* `/stats`
+* `/system`
+* `/llm-status`
+* `/llm off|fallback|always`
+* `/μοντέλο fast|quality`
+* `/υβριδικό MODE`
+* `/επεξεργαστής auto|ultra_eco|eco|entry|balanced|performance`
+
+### Συντήρηση
+
+* `/history`
+* `/clear-history`
+* `/export`
+* `/backup`
+* `/benchmark`
+* `/why`
+* `/debug`
+
+</details>
+
+<a id="ιδιωτικότητα-και-ασφάλεια"></a>
+
+<details>
+<summary><strong>Ιδιωτικότητα και Ασφάλεια</strong></summary>
+
+* Η κανονική συνομιλία εκτελείται τοπικά.
+* Μνήμες, ιστορικό, αρχεία και γνώση παραμένουν στον τοπικό save folder εκτός αν τα εξαγάγει ή ανεβάσει ο χρήστης.
+* Web access γίνεται μόνο όταν ζητηθεί ρητά web learning ή installation/update.
+* Επιτρέπονται μόνο δημόσιοι HTTP/HTTPS στόχοι.
+* Local, private, `.onion` και μη δημόσιοι hosts μπλοκάρονται.
+* Ο dork validator μπλοκάρει credential hunting, exposed systems, private files, databases και admin targets.
+* Περιορίζονται μέγεθος download, file type, γλώσσα και αριθμός σελίδων.
+* Το Pocket AI δεν εγγυάται ότι δημόσιο web content είναι σωστό.
+
+</details>
+
+<a id="περιορισμοί"></a>
+
+<details>
+<summary><strong>Περιορισμοί</strong></summary>
+
+* Το Pocket AI δεν είναι ChatGPT, Gemini ή cloud-scale μοντέλο.
+* Τα ενσωματωμένα 135M μοντέλα είναι μικρά για να λειτουργούν σε παλιά κινητά.
+* Μπορεί να παρερμηνεύσουν ερωτήσεις ή να παράγουν λάθος κείμενο.
+* Η σχολική βάση είναι ευρεία αλλά όχι αντίγραφο κάθε επίσημου προγράμματος χώρας.
+* Δεν αντικαθιστά δάσκαλο, βιβλίο, γιατρό, δικηγόρο, οικονομικό σύμβουλο ή υπηρεσία έκτακτης ανάγκης.
+* Τα hardware thresholds είναι συντηρητικές εκτιμήσεις.
+* Η δημόσια web learning μπορεί να αποτύχει λόγω σύνδεσης, robots, αλλαγών ιστοσελίδων ή provider limits.
+* Η web γνώση μπορεί να είναι παλιά, ελλιπής ή λανθασμένη.
+* Έλεγχε σημαντικά στοιχεία και υπολογισμούς.
+
+</details>
+
+<a id="συντελεστές"></a>
+
+<details>
+<summary><strong>Συντελεστές</strong></summary>
+
+* **Δημιουργός:** dedsec1121fk
+* **Project:** Pocket AI / DedSec Project
+* **Platform:** Android + Termux
+* **Γλώσσες:** Αγγλικά και Ελληνικά
+* **Local model runtime:** `llama.cpp`
+* **Compact language-model family:** SmolLM2
+* **GitHub:** [dedsec1121fk/Pocket-AI](https://github.com/dedsec1121fk/Pocket-AI)
+* **Website:** [ded-sec.space](https://ded-sec.space)
+* **Sponsors:** [GitHub Sponsors](https://github.com/sponsors/dedsec1121fk)
+
+</details>
+
+<a id="αποποίηση-ευθύνης"></a>
+
+<details>
+<summary><strong>Αποποίηση Ευθύνης</strong></summary>
+
+Το Pocket AI παρέχεται για εκπαιδευτική, προσωπική και πειραματική χρήση **ΩΣ ΕΧΕΙ**, χωρίς εγγύηση ακρίβειας, διαθεσιμότητας ή καταλληλότητας. Ο δημιουργός και οι contributors δεν ευθύνονται για ζημιές, απώλεια δεδομένων, λάθος αποφάσεις, υπερθέρμανση, κατανάλωση μπαταρίας, περιορισμούς λογαριασμών ή άλλες συνέπειες χρήσης ή κατάχρησης.
+
+Χρησιμοποίησε το web learning μόνο για νόμιμη δημόσια έρευνα. Σεβάσου όρους ιστοσελίδων, copyright, ιδιωτικότητα, robots rules και νομοθεσία. Μη χρησιμοποιείς search operators για credentials, ιδιωτικά συστήματα, εκτεθειμένες συσκευές ή δεδομένα χωρίς άδεια.
+
+</details>

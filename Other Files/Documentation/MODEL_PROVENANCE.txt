@@ -87,3 +87,13 @@ The Adaptive Controller, Consensus Controller, Persona Controller, Context
 Optimizer, Confidence Calibrator, and Python runtime modules were created for
 this Pocket AI package. They are compact local routing, scoring, context, and
 conversation components. They are not represented as full transformer LLMs.
+
+POCKET AI SCHOOL AND WEB-LEARNING COMPONENTS
+--------------------------------------------
+The grade 1-12 school knowledge pack, five school specialist files, school hybrid controller,
+and no-key web-learning controller are compact project-authored routing/knowledge components.
+They are not third-party transformer weights. Their purpose is to provide deterministic school
+support and safe source selection before optional GGUF inference.
+
+The no-key learner uses public Bing RSS results, Wikipedia's MediaWiki API, and readable public
+pages. It does not contain credentials and does not bypass Google Gemini authentication.
