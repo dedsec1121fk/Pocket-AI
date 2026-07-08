@@ -30,51 +30,32 @@ The package is built for old and low-cost phones as well as stronger devices. It
 
 Pocket AI does not claim to be a human. The optional human-conversation feature gives it a custom name and a more natural speaking style while it continues to identify itself as an AI assistant.
 
+## Simple Use
 
-## Key Features
-
-- Runs locally on Android through Termux without root
-- Supports English and Greek conversations
-- Automatically scans CPU, RAM, available memory, storage, architecture, and temperature
-- Selects the safest and strongest compatible AI model automatically
-- Includes multiple GGUF, classifier, MicroLM, specialist, and hybrid-control models
-- Supports Speed, Smart, Quality, Adaptive, Expert, Consensus, Cascade, and Auto hybrid modes
-- Loads large models sequentially to reduce RAM pressure
-- Lets you give the AI a custom name and conversation style
-- Stores memories, learned answers, settings, and indexed documents locally
-- Includes optional public-web research with guarded search operators
-- Does not require a cloud API for normal local use
-
-## Table of Contents
-
-- Main Menu
-- Phone Scanning and Automatic Model Selection
-- Name and Humanize AI
-- Package Structure
-- Bundled Model Stack
-- Hybrid Modes
-- Runtime Modules
-- English and Greek Language Support
-- Local Knowledge and Learning
-- Public Web Learning and Search Operators
-- Installation in Termux
-- Useful Commands
-- Save Locations
-- Limitations
-- Privacy
-- Credits
-- Disclaimer
-
-## Main Menu
+Pocket AI opens directly in chat. There is no launcher to learn before asking a question.
 
 ```text
-1. Scan Phone To Find Matching AI Model
-2. Run Local AI
-3. Name & Humanize AI
-4. Exit
+You: What is an apple?
+Pocket AI: An apple is an edible fruit produced by an apple tree...
 ```
 
-### 1. Scan Phone To Find Matching AI Model
+Type any normal English or Greek question and Pocket AI answers it. Type `help` or `βοήθεια` at any time to open a simple numbered menu.
+
+```text
+1. Return to chat
+2. Scan phone and automatically choose the best model
+3. Change the AI name and speaking style
+4. Teach the AI a question and answer
+5. Learn from a file or folder
+6. Safely research the web and learn
+7. Show active model and status
+8. Show advanced commands
+9. Exit
+```
+
+The phone scan also runs automatically on normal startup, so most users only need to launch the script and start talking.
+
+### Automatic Phone Scan and Model Selection
 
 The scanner checks:
 
@@ -93,11 +74,11 @@ The scanner checks:
 
 Unknown or renamed processors are not rejected. Pocket AI uses measured architecture, cores, frequency, benchmark performance, RAM, and storage as a fallback.
 
-### 2. Run Local AI
+### Direct Local Chat
 
-If no scan exists, Pocket AI scans automatically. It then loads the recommended pre-trained classifier and configures the local GGUF runtime. Only one transformer model is loaded at a time.
+If no scan exists, Pocket AI scans automatically. It then loads the recommended pre-trained classifier and configures the local GGUF runtime. Only one transformer model is loaded at a time. The normal screen waits at `You:` or `Εσύ:` for a question.
 
-### 3. Name & Humanize AI
+### Name & Humanize AI
 
 This menu lets you set:
 
@@ -421,51 +402,32 @@ Pocket AI is provided for educational, personal, and lawful local-assistant use.
 
 Το Pocket AI δεν προσποιείται ότι είναι άνθρωπος. Η προαιρετική φυσική συνομιλία επιτρέπει να του δώσετε όνομα και πιο ανθρώπινο τρόπο έκφρασης, ενώ συνεχίζει να αναγνωρίζει ότι είναι βοηθός τεχνητής νοημοσύνης.
 
+## Απλή Χρήση
 
-## Βασικά Χαρακτηριστικά
-
-- Εκτελείται τοπικά σε Android μέσω Termux χωρίς root
-- Υποστηρίζει συνομιλίες στα Αγγλικά και στα Ελληνικά
-- Σαρώνει αυτόματα CPU, RAM, διαθέσιμη μνήμη, αποθήκευση, αρχιτεκτονική και θερμοκρασία
-- Επιλέγει αυτόματα το ασφαλέστερο και ισχυρότερο συμβατό AI μοντέλο
-- Περιλαμβάνει πολλά GGUF, classifiers, MicroLM, specialists και hybrid-control models
-- Υποστηρίζει Speed, Smart, Quality, Adaptive, Expert, Consensus, Cascade και Auto hybrid modes
-- Φορτώνει τα μεγάλα μοντέλα διαδοχικά για χαμηλότερη χρήση RAM
-- Επιτρέπει να δώσετε προσαρμοσμένο όνομα και στυλ συνομιλίας στο AI
-- Αποθηκεύει τοπικά μνήμες, διορθώσεις, ρυθμίσεις και ευρετηριασμένα έγγραφα
-- Περιλαμβάνει προαιρετική δημόσια διαδικτυακή έρευνα με προστατευμένους search operators
-- Δεν απαιτεί cloud API για την κανονική τοπική χρήση
-
-## Περιεχόμενα
-
-- Κεντρικό Μενού
-- Σάρωση Κινητού και Αυτόματη Επιλογή Μοντέλου
-- Όνομα και Φυσική Συνομιλία
-- Δομή Πακέτου
-- Ενσωματωμένα Μοντέλα
-- Υβριδικές Λειτουργίες
-- Runtime Modules
-- Υποστήριξη Αγγλικών και Ελληνικών
-- Τοπική Γνώση και Μάθηση
-- Δημόσια Έρευνα και Search Operators
-- Εγκατάσταση στο Termux
-- Χρήσιμες Εντολές
-- Αποθηκευμένα Αρχεία
-- Περιορισμοί
-- Ιδιωτικότητα
-- Credits
-- Αποποίηση Ευθύνης
-
-## Κεντρικό Μενού
+Το Pocket AI ανοίγει απευθείας στη συνομιλία. Δεν χρειάζεται να μάθετε αρχικό μενού πριν κάνετε μία ερώτηση.
 
 ```text
-1. Scan Phone To Find Matching AI Model
-2. Run Local AI
-3. Name & Humanize AI
-4. Exit
+Εσύ: Τι είναι ένα μήλο;
+Pocket AI: Ένα μήλο είναι ένας βρώσιμος καρπός της μηλιάς...
 ```
 
-### 1. Σάρωση Κινητού και Επιλογή Μοντέλου
+Γράψτε οποιαδήποτε κανονική ερώτηση στα Ελληνικά ή στα Αγγλικά και το Pocket AI θα απαντήσει. Γράψτε `help` ή `βοήθεια` οποιαδήποτε στιγμή για να ανοίξει ένα απλό αριθμημένο μενού.
+
+```text
+1. Επιστροφή στη συνομιλία
+2. Σάρωση κινητού και αυτόματη επιλογή καλύτερου μοντέλου
+3. Αλλαγή ονόματος και τρόπου ομιλίας του AI
+4. Δίδαξε στο AI μία ερώτηση και απάντηση
+5. Μάθηση από αρχείο ή φάκελο
+6. Ασφαλής έρευνα στο διαδίκτυο και μάθηση
+7. Προβολή ενεργού μοντέλου και κατάστασης
+8. Προβολή προχωρημένων εντολών
+9. Έξοδος
+```
+
+Η σάρωση του κινητού εκτελείται αυτόματα στην κανονική εκκίνηση, επομένως οι περισσότεροι χρήστες χρειάζεται μόνο να ανοίξουν το script και να αρχίσουν να μιλούν.
+
+### Αυτόματη Σάρωση Κινητού και Επιλογή Μοντέλου
 
 Η σάρωση ελέγχει:
 
@@ -483,11 +445,11 @@ Pocket AI is provided for educational, personal, and lawful local-assistant use.
 
 Άγνωστοι ή μετονομασμένοι επεξεργαστές δεν απορρίπτονται. Το Pocket AI χρησιμοποιεί ως fallback την αρχιτεκτονική, τους πυρήνες, τις συχνότητες, το benchmark, τη RAM και την αποθήκευση.
 
-### 2. Εκτέλεση Τοπικού AI
+### Άμεση Τοπική Συνομιλία
 
-Αν δεν υπάρχει αποθηκευμένη σάρωση, πραγματοποιείται αυτόματα. Στη συνέχεια φορτώνεται ο προτεινόμενος pre-trained classifier και ρυθμίζεται το GGUF runtime. Μόνο ένα transformer μοντέλο φορτώνεται κάθε φορά.
+Αν δεν υπάρχει αποθηκευμένη σάρωση, πραγματοποιείται αυτόματα. Στη συνέχεια φορτώνεται ο προτεινόμενος pre-trained classifier και ρυθμίζεται το GGUF runtime. Μόνο ένα transformer μοντέλο φορτώνεται κάθε φορά. Η κανονική οθόνη περιμένει στο `You:` ή `Εσύ:` για την ερώτησή σας.
 
-### 3. Όνομα και Φυσική Συνομιλία
+### Όνομα και Φυσική Συνομιλία
 
 Η επιλογή επιτρέπει να ορίσετε:
 

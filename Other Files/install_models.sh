@@ -87,10 +87,11 @@ Start Pocket AI:
 
 Top-level package layout:
   Pocket AI.py
+  README.md
   Models/
   Other Files/
 
-All settings, scans, databases, generated models, chat history, backups,
-exports, and the llama.cpp runner are stored under:
+All settings, scans, persona data, databases, generated models, chat history,
+backups, exports, and the llama.cpp runner are stored under:
   $DATA_DIR
 EOF

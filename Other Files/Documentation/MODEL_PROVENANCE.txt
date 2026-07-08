@@ -72,3 +72,18 @@ Validation
 ----------
 Other Files/CHECKSUMS.sha256 covers all static package files. The installer and
 /llm-status additionally verify both GGUF files and their GGUF magic headers.
+
+
+HYBRID CONTROLLER COMPONENTS
+----------------------------
+PocketAI_Hybrid_Router, PocketAI_Query_Planner, PocketAI_Response_Verifier, and
+PocketAI_Resource_Guard are transparent compact controller models created for
+this package. They contain bilingual routing cues, scoring weights, and resource
+thresholds. They are not presented as transformer language models.
+
+ADDITIONAL LOCAL CONTROLLERS AND MODULES
+----------------------------------------
+The Adaptive Controller, Consensus Controller, Persona Controller, Context
+Optimizer, Confidence Calibrator, and Python runtime modules were created for
+this Pocket AI package. They are compact local routing, scoring, context, and
+conversation components. They are not represented as full transformer LLMs.

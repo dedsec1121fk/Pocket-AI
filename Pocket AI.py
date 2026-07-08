@@ -16,7 +16,10 @@ Everything is implemented with Python's standard library:
 - Bundled bilingual MicroLM generator
 - Safe public-web research using constrained search operators
 - Optional SmolLM2 135M GGUF reasoning through llama.cpp
-- Automatic RAM-aware model profiles
+- Automatic RAM, storage, temperature, battery, and processor-aware model profiles
+- Sequential hybrid inference with adaptive, expert, consensus, and cascade modes
+- Persistent custom AI name and human-style bilingual conversation profiles
+- Modular context optimization, confidence calibration, and resource explanations
 
 No root, TensorFlow, PyTorch, NumPy, or cloud API is needed. Core use remains offline; /dork and /web-learn use the public internet only when explicitly requested.
 
@@ -73,6 +76,44 @@ from dataclasses import dataclass
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any, Deque, Dict, Iterable, Iterator, List, Optional, Sequence, Tuple
+
+
+# Optional standard-library runtime modules bundled under Other Files/Modules.
+# Pocket AI remains usable with conservative fallbacks if a module file is
+# damaged or removed.
+RUNTIME_MODULE_DIR = Path(__file__).resolve().parent / "Other Files" / "Modules"
+if str(RUNTIME_MODULE_DIR) not in sys.path:
+    sys.path.insert(0, str(RUNTIME_MODULE_DIR))
+try:
+    from persona_engine import (
+        DEFAULT_PERSONA, PERSONA_STYLES, describe_persona, load_persona,
+        naturalize_response, persona_instruction, sanitize_name, save_persona,
+    )
+except Exception:
+    DEFAULT_PERSONA = {"assistant_name": "Pocket AI", "user_name": "", "style": "friendly", "human_style": True}
+    PERSONA_STYLES = {"friendly": {"label_en": "Friendly", "label_el": "Φιλικό"}}
+    def load_persona(data_dir: Path) -> dict: return dict(DEFAULT_PERSONA)
+    def save_persona(data_dir: Path, payload: dict) -> dict: return dict(payload)
+    def sanitize_name(value: str, fallback: str = "Pocket AI", maximum: int = 28) -> str: return str(value).strip()[:maximum] or fallback
+    def persona_instruction(config: dict, language: str) -> str: return "Speak naturally and clearly while identifying as an AI assistant."
+    def naturalize_response(text: str, language: str, config: dict, route: str = "", seed_text: str = "") -> str: return text.strip()
+    def describe_persona(config: dict, language: str = "en") -> str: return f"AI name: {config.get('assistant_name', 'Pocket AI')}"
+try:
+    from context_optimizer import optimize_context
+except Exception:
+    optimize_context = None
+try:
+    from consensus_engine import choose_consensus
+except Exception:
+    choose_consensus = None
+try:
+    from confidence_engine import calibrate as calibrate_confidence
+except Exception:
+    def calibrate_confidence(details: dict, response: str) -> dict: return {"score": 0.5, "label": "medium"}
+try:
+    from resource_advisor import concise_reason as resource_reason
+except Exception:
+    def resource_reason(scan: dict, recommendation: dict, language: str = "en") -> str: return ""
 
 
 APP_NAME = "PocketAI Bilingual MAX"
@@ -160,6 +201,42 @@ LLM_CPU_PROFILES = {
     },
 }
 DEFAULT_LLM_CPU_PROFILE = "auto"
+
+HYBRID_MODES = {
+    "off": "Internal classifier, retrieval, tools, and specialists only.",
+    "speed": "Use the lowest-memory GGUF model for fast single-pass answers.",
+    "smart": "Route each question to internal, fast, or quality inference.",
+    "quality": "Prefer the quality GGUF model when resources are safe.",
+    "adaptive": "Start fast and run a quality pass only when the draft or question needs it.",
+    "expert": "Use specialist guidance, optimized context, and the quality model for technical questions.",
+    "consensus": "Generate independent Fast and Quality answers sequentially and select the strongest result.",
+    "cascade": "Generate a fast draft, unload it, then verify and rewrite with the quality model.",
+    "auto": "Select speed, smart, quality, adaptive, or cascade from the live phone state.",
+}
+HYBRID_MODES_EL = {
+    "off": "Μόνο εσωτερικός classifier, ανάκτηση, εργαλεία και specialists.",
+    "speed": "Χρήση του μοντέλου με τη χαμηλότερη κατανάλωση RAM για γρήγορη απάντηση.",
+    "smart": "Αυτόματη επιλογή εσωτερικού, γρήγορου ή ποιοτικού μοντέλου ανά ερώτηση.",
+    "quality": "Προτίμηση του ποιοτικού GGUF όταν οι πόροι είναι ασφαλείς.",
+    "adaptive": "Ξεκινά γρήγορα και εκτελεί ποιοτικό δεύτερο πέρασμα μόνο όταν χρειάζεται.",
+    "expert": "Χρήση specialist, βελτιστοποιημένων συμφραζομένων και ποιοτικού μοντέλου για τεχνικές ερωτήσεις.",
+    "consensus": "Δημιουργία ανεξάρτητων απαντήσεων Fast και Quality διαδοχικά και επιλογή της ισχυρότερης.",
+    "cascade": "Γρήγορο πρόχειρο και μετά ξεχωριστός ποιοτικός έλεγχος και επανεγγραφή.",
+    "auto": "Επιλογή speed, smart, quality, adaptive ή cascade από τη ζωντανή κατάσταση του κινητού.",
+}
+DEFAULT_HYBRID_MODE = "auto"
+
+HYBRID_COMPONENT_FILES = {
+    "router": "PocketAI_Hybrid_Router.json.gz",
+    "planner": "PocketAI_Query_Planner.json.gz",
+    "verifier": "PocketAI_Response_Verifier.json.gz",
+    "resource_guard": "PocketAI_Resource_Guard.json.gz",
+    "adaptive": "PocketAI_Adaptive_Controller.json.gz",
+    "consensus": "PocketAI_Consensus_Controller.json.gz",
+    "persona": "PocketAI_Persona_Controller.json.gz",
+    "context": "PocketAI_Context_Optimizer.json.gz",
+    "confidence": "PocketAI_Confidence_Calibrator.json.gz",
+}
 
 # Rules identify major Android-phone SoC families and many common model-number
 # schemes. Unknown processors are still supported through architecture, core,
@@ -465,14 +542,14 @@ GREEK_RESPONSES = {
 
 FALLBACK_RESPONSES = {
     "en": [
-        "I do not have a reliable local answer for that yet. Use /teach or /ingest to add knowledge.",
-        "I am uncertain. Try a more specific question or teach me a direct answer with /teach.",
-        "That is outside my current model and indexed memory."
+        "I do not have a reliable local answer for that yet. Type help and choose Teach AI or Learn from a file.",
+        "I am uncertain. Try a more specific question, or type help to add knowledge.",
+        "That is outside my current model and indexed memory. Type help for learning options."
     ],
     "el": [
-        "Δεν έχω ακόμη αξιόπιστη τοπική απάντηση. Πρόσθεσε γνώση με /teach ή /ingest.",
-        "Δεν είμαι βέβαιο. Κάνε πιο συγκεκριμένη ερώτηση ή δίδαξέ μου άμεση απάντηση με /teach.",
-        "Αυτό βρίσκεται έξω από το τρέχον μοντέλο και την ευρετηριασμένη μνήμη μου."
+        "Δεν έχω ακόμη αξιόπιστη τοπική απάντηση. Γράψε βοήθεια και επίλεξε εκμάθηση ή αρχείο.",
+        "Δεν είμαι βέβαιο. Κάνε πιο συγκεκριμένη ερώτηση ή γράψε βοήθεια για να προσθέσεις γνώση.",
+        "Αυτό βρίσκεται έξω από το τρέχον μοντέλο και την ευρετηριασμένη μνήμη μου. Γράψε βοήθεια για επιλογές μάθησης."
     ]
 }
 
@@ -1317,6 +1394,103 @@ def _storage_snapshot(path: Path) -> dict:
         return {"path": str(path), "total": 0, "used": 0, "free": 0}
 
 
+def _read_integer(path: Path) -> int:
+    try:
+        return int(path.read_text(encoding="utf-8", errors="replace").strip())
+    except (OSError, ValueError):
+        return 0
+
+
+def _temperature_celsius(raw: int) -> float:
+    value = float(raw)
+    if abs(value) >= 1000:
+        value /= 1000.0
+    elif abs(value) >= 200:
+        value /= 10.0
+    return value if -30.0 <= value <= 150.0 else 0.0
+
+
+def _thermal_snapshot() -> dict:
+    readings: List[dict] = []
+    for zone in sorted(Path("/sys/class/thermal").glob("thermal_zone*")):
+        raw = _read_integer(zone / "temp")
+        value = _temperature_celsius(raw)
+        if value <= 0:
+            continue
+        zone_type = _read_text_file(zone / "type", 120) or zone.name
+        readings.append({"zone": zone.name, "type": zone_type, "celsius": round(value, 1)})
+    battery_temp = _temperature_celsius(_read_integer(Path("/sys/class/power_supply/battery/temp")))
+    if battery_temp > 0:
+        readings.append({"zone": "battery", "type": "battery", "celsius": round(battery_temp, 1)})
+    plausible = [item["celsius"] for item in readings if 10.0 <= float(item["celsius"]) <= 105.0]
+    maximum = max(plausible) if plausible else 0.0
+    if maximum >= 52.0:
+        state = "critical"
+    elif maximum >= 46.0:
+        state = "hot"
+    elif maximum >= 41.0:
+        state = "warm"
+    else:
+        state = "normal"
+    return {"maximum_celsius": round(maximum, 1), "state": state, "readings": readings[:24]}
+
+
+def _battery_snapshot() -> dict:
+    base = Path("/sys/class/power_supply/battery")
+    capacity = _read_integer(base / "capacity")
+    status = _read_text_file(base / "status", 80)
+    health = _read_text_file(base / "health", 80)
+    current_now = _read_integer(base / "current_now")
+    power_save = _android_property("power.save.mode") or _android_property("persist.sys.powersave")
+    return {
+        "capacity_percent": max(0, min(100, capacity)) if capacity else 0,
+        "status": status or "unknown",
+        "health": health or "unknown",
+        "current_now": current_now,
+        "power_save": str(power_save).casefold() in {"1", "true", "on", "yes"},
+    }
+
+
+def _gguf_header_valid(path: Path) -> bool:
+    try:
+        with path.open("rb") as handle:
+            return handle.read(4) == b"GGUF"
+    except OSError:
+        return False
+
+
+def _resource_pressure(scan: dict) -> dict:
+    total = int(scan.get("ram", {}).get("total", 0) or 0)
+    available = int(scan.get("ram", {}).get("available", 0) or 0)
+    ratio = available / total if total else 0.0
+    free_storage = int(scan.get("storage", {}).get("runtime", {}).get("free", 0) or 0)
+    temperature = float(scan.get("thermal", {}).get("maximum_celsius", 0.0) or 0.0)
+    battery = scan.get("battery", {})
+    score = 0
+    reasons: List[str] = []
+    if available and available < 240 * 1024 ** 2:
+        score += 4; reasons.append("very low available RAM")
+    elif available and available < 420 * 1024 ** 2:
+        score += 2; reasons.append("low available RAM")
+    if ratio and ratio < 0.12:
+        score += 2; reasons.append("Android is using most RAM")
+    if free_storage and free_storage < 300 * 1024 ** 2:
+        score += 2; reasons.append("low free application storage")
+    if temperature >= 52:
+        score += 5; reasons.append("critical temperature")
+    elif temperature >= 46:
+        score += 3; reasons.append("high temperature")
+    elif temperature >= 41:
+        score += 1; reasons.append("warm device")
+    if bool(battery.get("power_save")):
+        score += 1; reasons.append("power saving is active")
+    level = int(battery.get("capacity_percent", 0) or 0)
+    status = str(battery.get("status", "")).casefold()
+    if level and level <= 12 and "charging" not in status:
+        score += 1; reasons.append("battery is low")
+    return {"score": score, "reasons": reasons, "ram_ratio": ratio}
+
+
 def _quick_processor_benchmark() -> dict:
     # Fixed, short standard-library workload. It is not a synthetic benchmark
     # leaderboard; it only separates very slow, entry, mid, and fast devices.
@@ -1371,16 +1545,25 @@ def _derive_cpu_score(family: dict, benchmark: dict, cpu_count: int, max_khz: in
     return int(max(1, min(100, round(combined))))
 
 
-def _model_path_status(script_dir: Path) -> dict:
+def _model_path_status(script_dir: Path, verify_hashes: bool = False) -> dict:
     result: Dict[str, dict] = {}
     for model_id, config in EXTERNAL_LLM_MODELS.items():
         path = script_dir / "Models" / str(config["filename"])
         exists = path.is_file()
+        digest = ""
+        if exists and verify_hashes:
+            try:
+                digest = sha256_file(path)
+            except OSError:
+                digest = ""
         result[model_id] = {
             "path": str(path),
             "exists": exists,
             "size": path.stat().st_size if exists else 0,
+            "header_valid": _gguf_header_valid(path) if exists else False,
             "expected_sha256": str(config["sha256"]),
+            "sha256": digest,
+            "verified": bool(digest) and digest == str(config["sha256"]),
         }
     return result
 
@@ -1398,52 +1581,64 @@ def _check_model_compatibility(model_id: str, scan: dict) -> Tuple[bool, List[st
         reasons.append("processor score is below the recommended range")
     if bool(rules["requires_64_bit"]) and not scan["processor"]["is_64_bit"]:
         reasons.append("64-bit userspace is required")
-    if model_id in {"fast", "quality"} and not scan["models"][model_id]["exists"]:
-        reasons.append("model file is missing")
+    if model_id in {"fast", "quality"}:
+        model_state = scan["models"][model_id]
+        if not model_state["exists"]:
+            reasons.append("model file is missing")
+        elif not model_state.get("header_valid", False):
+            reasons.append("model has an invalid GGUF header")
+        elif model_state.get("sha256") and not model_state.get("verified", False):
+            reasons.append("model checksum does not match")
     return not reasons, reasons
 
 
 def _recommend_ai_configuration(scan: dict) -> dict:
-    total = scan["ram"]["total"]
-    available = scan["ram"]["available"]
-    free = scan["storage"]["runtime"]["free"]
-    score = scan["processor"]["score"]
-    is_64 = scan["processor"]["is_64_bit"]
+    total = int(scan["ram"]["total"] or 0)
+    available = int(scan["ram"]["available"] or 0)
+    score = int(scan["processor"]["score"] or 0)
+    is_64 = bool(scan["processor"]["is_64_bit"])
+    temperature = float(scan.get("thermal", {}).get("maximum_celsius", 0.0) or 0.0)
+    pressure = _resource_pressure(scan)
 
     compatibility: Dict[str, dict] = {}
     for model_id in AI_MODEL_COMPATIBILITY:
         compatible, reasons = _check_model_compatibility(model_id, scan)
         compatibility[model_id] = {"compatible": compatible, "reasons": reasons}
 
-    if compatibility["quality"]["compatible"] and score >= 45 and available >= 650 * 1024 ** 2:
+    selection_reasons: List[str] = []
+    if pressure["score"] >= 5 or temperature >= 52:
+        gguf_model = "internal"
+        selection_reasons.extend(pressure["reasons"] or ["resource pressure is too high"])
+    elif compatibility["quality"]["compatible"] and score >= 45 and available >= 650 * 1024 ** 2 and temperature < 46:
         gguf_model = "quality"
+        selection_reasons.append("quality model fits current RAM, CPU, storage, and temperature")
     elif compatibility["fast"]["compatible"]:
         gguf_model = "fast"
+        selection_reasons.append("fast model is the safest compatible transformer")
     else:
         gguf_model = "internal"
+        selection_reasons.append("transformer requirements are not currently satisfied")
 
     if total < 900 * 1024 ** 2 or available < 150 * 1024 ** 2 or not is_64:
-        runtime = "ultra_eco"
-        classifier = "micro"
+        runtime = "ultra_eco"; classifier = "micro"
     elif total < 1550 * 1024 ** 2 or available < 290 * 1024 ** 2:
-        runtime = "ultra_eco"
-        classifier = "lite"
+        runtime = "ultra_eco"; classifier = "lite"
     elif total < 2400 * 1024 ** 2 or score < 22 or available < 480 * 1024 ** 2:
-        runtime = "eco"
-        classifier = "balanced"
+        runtime = "eco"; classifier = "balanced"
     elif total < 3600 * 1024 ** 2 or score < 43 or available < 820 * 1024 ** 2:
-        runtime = "entry"
-        classifier = "standard"
+        runtime = "entry"; classifier = "standard"
     elif total < 5600 * 1024 ** 2 or score < 70:
-        runtime = "balanced"
-        classifier = "max"
+        runtime = "balanced"; classifier = "max"
     else:
-        runtime = "performance"
-        classifier = "max"
+        runtime = "performance"; classifier = "max"
 
-    # Every automatically selected classifier is bundled, preventing expensive
-    # first-run training on old phones. Fall back through progressively smaller
-    # pre-trained profiles if a file is damaged or manually removed.
+    if temperature >= 52 or pressure["score"] >= 6:
+        runtime = "ultra_eco"
+    elif temperature >= 46 or pressure["score"] >= 3:
+        runtime = "eco" if runtime not in {"ultra_eco", "eco"} else runtime
+    elif temperature >= 41 and runtime == "performance":
+        runtime = "balanced"
+
     script_dir = Path(__file__).resolve().parent
     fallback_order = {
         "max": ("max", "standard", "balanced", "lite", "micro"),
@@ -1458,13 +1653,27 @@ def _recommend_ai_configuration(scan: dict) -> dict:
             classifier = candidate
             break
 
-    confidence = "high" if gguf_model != "internal" and score >= 35 else "medium" if is_64 else "safe fallback"
+    if gguf_model == "internal":
+        hybrid_mode = "off"
+    elif total >= 5_200 * 1024 ** 2 and available >= 1_250 * 1024 ** 2 and score >= 62 and temperature < 43:
+        hybrid_mode = "cascade"
+    elif gguf_model == "quality" and total >= 3_200 * 1024 ** 2 and available >= 780 * 1024 ** 2:
+        hybrid_mode = "quality"
+    elif gguf_model in {"fast", "quality"} and total >= 2_300 * 1024 ** 2:
+        hybrid_mode = "smart"
+    else:
+        hybrid_mode = "speed"
+
+    confidence = "high" if gguf_model != "internal" and score >= 35 and pressure["score"] <= 1 else "medium" if is_64 else "safe fallback"
     return {
         "gguf_model": gguf_model,
         "classifier_profile": classifier,
         "runtime_profile": runtime,
+        "hybrid_mode": hybrid_mode,
         "llm_mode": "fallback" if gguf_model != "internal" else "off",
         "confidence": confidence,
+        "selection_reasons": selection_reasons,
+        "resource_pressure": pressure,
         "compatibility": compatibility,
     }
 
@@ -1505,9 +1714,11 @@ def scan_phone_hardware(data_dir: Path, save: bool = True, run_benchmark: bool =
     runtime_storage = _storage_snapshot(data_dir)
     shared_path = Path.home() / "storage" / "downloads"
     shared_storage = _storage_snapshot(shared_path) if shared_path.exists() else {"path": str(shared_path), "total": 0, "used": 0, "free": 0}
+    thermal = _thermal_snapshot()
+    battery = _battery_snapshot()
 
     scan = {
-        "schema_version": 1,
+        "schema_version": 2,
         "scanned_at": _dt.datetime.now().astimezone().isoformat(timespec="seconds"),
         "device": properties,
         "processor": {
@@ -1524,7 +1735,9 @@ def scan_phone_hardware(data_dir: Path, save: bool = True, run_benchmark: bool =
         },
         "ram": {"total": total_ram, "available": available_ram, "used": max(0, total_ram - available_ram)},
         "storage": {"runtime": runtime_storage, "home": home_storage, "shared_downloads": shared_storage},
-        "models": _model_path_status(script_dir),
+        "thermal": thermal,
+        "battery": battery,
+        "models": _model_path_status(script_dir, verify_hashes=run_benchmark),
         "profile_path": str(data_dir / "device_profile.json"),
     }
     scan["recommendation"] = _recommend_ai_configuration(scan)
@@ -1540,7 +1753,7 @@ def load_device_profile(data_dir: Path) -> Optional[dict]:
         return None
     try:
         profile = load_json(path)
-        return profile if isinstance(profile, dict) and profile.get("schema_version") == 1 else None
+        return profile if isinstance(profile, dict) and profile.get("schema_version") in {1, 2} else None
     except (OSError, ValueError, json.JSONDecodeError):
         return None
 
@@ -1575,6 +1788,12 @@ def print_phone_scan_report(scan: dict) -> None:
     max_ghz = freq["maximum_khz"] / 1_000_000 if freq["maximum_khz"] else 0
     print(f"CPU: {processor['logical_cores']} logical cores; {max_ghz:.2f} GHz reported maximum; score {processor['score']}/100")
     print(f"RAM: {human_size(scan['ram']['total'])} total; {human_size(scan['ram']['available'])} currently available")
+    thermal = scan.get("thermal", {})
+    battery = scan.get("battery", {})
+    if thermal.get("maximum_celsius"):
+        print(f"Temperature: {thermal['maximum_celsius']:.1f}°C ({thermal.get('state', 'unknown')})")
+    if battery.get("capacity_percent"):
+        print(f"Battery: {battery['capacity_percent']}% / {battery.get('status', 'unknown')} / health {battery.get('health', 'unknown')}")
     storage = scan["storage"]["runtime"]
     print(f"Application storage: {human_size(storage['free'])} free of {human_size(storage['total'])}")
     shared = scan["storage"]["shared_downloads"]
@@ -1584,57 +1803,89 @@ def print_phone_scan_report(scan: dict) -> None:
     print(_compatibility_line("internal", scan))
     print(_compatibility_line("fast", scan))
     print(_compatibility_line("quality", scan))
+    print("\nBundled model integrity:")
+    for model_id in ("fast", "quality"):
+        item = scan.get("models", {}).get(model_id, {})
+        checksum = "verified" if item.get("verified") else "not checked" if not item.get("sha256") else "FAILED"
+        print(f"  {model_id}: header={'valid' if item.get('header_valid') else 'invalid'}; checksum={checksum}; size={human_size(int(item.get('size', 0) or 0))}")
     print("\nBest automatic match:")
     print(f"  AI model: {recommendation['gguf_model']}")
     print(f"  Neural classifier: {recommendation['classifier_profile']}")
     print(f"  CPU/RAM runtime: {recommendation['runtime_profile']}")
     print(f"  Local LLM mode: {recommendation['llm_mode']}")
+    print(f"  Hybrid mode: {recommendation.get('hybrid_mode', 'auto')}")
     print(f"  Selection confidence: {recommendation['confidence']}")
+    for reason in recommendation.get("selection_reasons", []):
+        print(f"  Reason: {reason}")
     print(f"  Saved profile: {scan.get('profile_path', Path(default_data_dir()) / 'device_profile.json')}")
     print("=" * width)
 
 
-def launcher_menu(data_dir: Path) -> Optional[dict]:
-    while True:
-        width = terminal_width()
-        print("\n" + "=" * width)
-        print(" POCKETAI AUTOMATIC MODEL MATCHER ".center(width, "="))
-        print("=" * width)
-        print("1. Scan Phone To Find Matching AI Model")
-        print("2. Run Local AI")
-        try:
-            choice = input("\nSelect 1 or 2: ").strip()
-        except (EOFError, KeyboardInterrupt):
-            print("\nGoodbye.")
-            return None
-        if choice == "1":
-            print("\nScanning processor, architecture, RAM, available storage, and model compatibility...")
-            scan = scan_phone_hardware(data_dir, save=True, run_benchmark=True)
-            print_phone_scan_report(scan)
-            continue
-        if choice == "2":
-            scan = load_device_profile(data_dir)
-            if scan is None:
-                print("\nNo saved scan was found. Running the hardware scan automatically...")
-                scan = scan_phone_hardware(data_dir, save=True, run_benchmark=True)
-                print_phone_scan_report(scan)
-                return scan
-            else:
-                # Refresh volatile RAM/storage and recommendation while preserving
-                # the previous processor benchmark for a fast launch.
-                refreshed = scan_phone_hardware(data_dir, save=True, run_benchmark=False)
-                old_benchmark = scan.get("processor", {}).get("benchmark")
-                if isinstance(old_benchmark, dict) and old_benchmark.get("score"):
-                    refreshed["processor"]["benchmark"] = old_benchmark
-                    family = {key: refreshed["processor"].get(key) for key in ("vendor", "family", "known_score", "matched_pattern")}
-                    refreshed["processor"]["score"] = _derive_cpu_score(
-                        family, old_benchmark, refreshed["processor"]["logical_cores"],
-                        refreshed["processor"]["frequency"]["maximum_khz"], refreshed["processor"]["is_64_bit"]
-                    )
-                    refreshed["recommendation"] = _recommend_ai_configuration(refreshed)
-                    atomic_write_json(data_dir / "device_profile.json", refreshed)
-                return refreshed
-        print("Invalid option. Enter 1 or 2.")
+def configure_persona_menu(data_dir: Path) -> dict:
+    """Configure the persistent AI identity without starting the full model stack."""
+    config = load_persona(data_dir)
+    print("\nAI Name & Human Conversation / Όνομα AI και Φυσική Συζήτηση")
+    print("-" * 72)
+    print(describe_persona(config, "en"))
+    try:
+        entered_name = input(f"\nAI name [{config.get('assistant_name', 'Pocket AI')}]: ").strip()
+        if entered_name:
+            config["assistant_name"] = sanitize_name(entered_name)
+        entered_user = input(f"Your name (optional) [{config.get('user_name', '')}]: ").strip()
+        if entered_user:
+            config["user_name"] = sanitize_name(entered_user, fallback="", maximum=36)
+        print("\nConversation style:")
+        style_names = list(PERSONA_STYLES)
+        for index, style_name in enumerate(style_names, 1):
+            style = PERSONA_STYLES[style_name]
+            print(f"  {index}. {style.get('label_en', style_name)} / {style.get('label_el', style_name)}")
+        style_choice = input(f"Select style [current: {config.get('style', 'friendly')}]: ").strip()
+        if style_choice:
+            if style_choice.isdigit() and 1 <= int(style_choice) <= len(style_names):
+                config["style"] = style_names[int(style_choice) - 1]
+            elif style_choice.casefold() in PERSONA_STYLES:
+                config["style"] = style_choice.casefold()
+        human_choice = input("Enable human-like natural wording? [Y/n]: ").strip().casefold()
+        if human_choice in {"n", "no", "ο", "οχι", "όχι"}:
+            config["human_style"] = False
+        elif human_choice:
+            config["human_style"] = True
+        config = save_persona(data_dir, config)
+        print("\nSaved / Αποθηκεύτηκε")
+        print(describe_persona(config, "en"))
+        return config
+    except (EOFError, KeyboardInterrupt):
+        print("\nConfiguration cancelled.")
+        return config
+
+
+def automatic_startup_scan(data_dir: Path, *, quiet: bool = False) -> dict:
+    """Refresh RAM/storage and reuse a saved CPU benchmark when possible."""
+    saved = load_device_profile(data_dir)
+    if saved is None:
+        if not quiet:
+            print("Checking this phone and selecting the safest AI model...")
+        return scan_phone_hardware(data_dir, save=True, run_benchmark=True)
+
+    refreshed = scan_phone_hardware(data_dir, save=True, run_benchmark=False)
+    old_benchmark = saved.get("processor", {}).get("benchmark")
+    if isinstance(old_benchmark, dict) and old_benchmark.get("score"):
+        refreshed["processor"]["benchmark"] = old_benchmark
+        family = {
+            key: refreshed["processor"].get(key)
+            for key in ("vendor", "family", "known_score", "matched_pattern")
+        }
+        refreshed["processor"]["score"] = _derive_cpu_score(
+            family,
+            old_benchmark,
+            refreshed["processor"]["logical_cores"],
+            refreshed["processor"]["frequency"]["maximum_khz"],
+            refreshed["processor"]["is_64_bit"],
+        )
+        refreshed["recommendation"] = _recommend_ai_configuration(refreshed)
+        atomic_write_json(data_dir / "device_profile.json", refreshed)
+    return refreshed
+
 
 def terminal_width(default: int = 78) -> int:
     try:
@@ -3373,26 +3624,36 @@ class LocalGGUFModel:
             return "balanced"
         return "performance"
 
-    def runtime_settings(self) -> dict:
+    def runtime_settings(self, model_name: Optional[str] = None) -> dict:
         # Refresh available RAM before every generation. A12-class devices can lose
         # hundreds of MB when Android starts background services.
         available = available_memory_bytes()
+        selected_model = self._normalize_model_name(model_name) if model_name else self.active_model
         selected = self.resolved_cpu_profile
+        thermal = _thermal_snapshot()
+        temperature = float(thermal.get("maximum_celsius", 0.0) or 0.0)
         if available and available < 230_000_000:
             selected = "ultra_eco"
         elif available and available < 420_000_000 and selected not in {"ultra_eco", "eco"}:
             selected = "eco"
+        if temperature >= 52.0:
+            selected = "ultra_eco"
+        elif temperature >= 46.0 and selected not in {"ultra_eco", "eco"}:
+            selected = "eco"
+        elif temperature >= 41.0 and selected == "performance":
+            selected = "balanced"
         profile = LLM_CPU_PROFILES[selected]
         context = min(
-            int(EXTERNAL_LLM_MODELS[self.active_model]["context"]),
-            int(profile["context"][self.active_model]),
+            int(EXTERNAL_LLM_MODELS[selected_model]["context"]),
+            int(profile["context"][selected_model]),
         )
         max_tokens = min(
-            int(EXTERNAL_LLM_MODELS[self.active_model]["max_tokens"]),
-            int(profile["max_tokens"][self.active_model]),
+            int(EXTERNAL_LLM_MODELS[selected_model]["max_tokens"]),
+            int(profile["max_tokens"][selected_model]),
         )
         return {
             "requested": self.requested_cpu_profile,
+            "model": selected_model,
             "resolved": selected,
             "threads": max(1, min(int(profile["threads"]), os.cpu_count() or 1)),
             "context": context,
@@ -3402,6 +3663,8 @@ class LocalGGUFModel:
             "timeout": int(profile["timeout"]),
             "description": str(profile["description"]),
             "available_ram": available,
+            "temperature_celsius": temperature,
+            "thermal_state": thermal.get("state", "unknown"),
         }
 
     def set_cpu_profile(self, name: str) -> str:
@@ -3531,13 +3794,15 @@ class LocalGGUFModel:
         context: str = "",
         max_tokens: int = 160,
         specialist_instruction: str = "",
+        model_name: Optional[str] = None,
     ) -> str:
         self.refresh()
-        model_path = self.model_path
-        if not self.available or model_path is None or self.binary_path is None:
-            raise RuntimeError("The selected GGUF model or llama.cpp executable is not installed.")
+        model_key = self._normalize_model_name(model_name) if model_name else self.active_model
+        model_path = self.model_paths.get(model_key)
+        if model_path is None or self.binary_path is None:
+            raise RuntimeError(f"The {model_key} GGUF model or llama.cpp executable is not installed.")
 
-        runtime = self.runtime_settings()
+        runtime = self.runtime_settings(model_key)
         language_instruction = "Answer in Greek." if language == "el" else "Answer in English."
         context_limits = {"ultra_eco": 1200, "eco": 1800, "entry": 2400, "balanced": 3000, "performance": 3600}
         input_limits = {"ultra_eco": 650, "eco": 900, "entry": 1200, "balanced": 1450, "performance": 1700}
@@ -3545,7 +3810,7 @@ class LocalGGUFModel:
         input_limit = input_limits.get(runtime["resolved"], 1200)
         context = context.strip()[:context_limit]
         system = (
-            "You are PocketAI, a careful assistant running locally on a low-end Android phone. "
+            "You are a careful AI assistant running locally on an Android phone. "
             "You may communicate only in English or Greek. "
             + language_instruction
             + " Be concise and accurate. Use supplied local context when relevant. "
@@ -3611,6 +3876,146 @@ class LocalGGUFModel:
 # ---------------------------------------------------------------------------
 
 
+
+COMMON_DEFINITIONS: Dict[str, Dict[str, str]] = {
+    "apple": {
+        "en": "An apple is an edible fruit produced by an apple tree. It is commonly eaten fresh and contains fiber, water, vitamins, and natural sugars.",
+        "el": "Το μήλο είναι ένας βρώσιμος καρπός της μηλιάς. Τρώγεται συχνά φρέσκο και περιέχει φυτικές ίνες, νερό, βιταμίνες και φυσικά σάκχαρα.",
+    },
+    "banana": {
+        "en": "A banana is a soft, usually yellow fruit that grows in tropical regions and provides carbohydrates, fiber, and potassium.",
+        "el": "Η μπανάνα είναι ένας μαλακός, συνήθως κίτρινος καρπός που αναπτύσσεται σε τροπικές περιοχές και παρέχει υδατάνθρακες, φυτικές ίνες και κάλιο.",
+    },
+    "fruit": {
+        "en": "A fruit is the seed-bearing part of a flowering plant. In everyday food use, fruits are often sweet or tart and eaten fresh or cooked.",
+        "el": "Ο καρπός είναι το μέρος ενός ανθοφόρου φυτού που περιέχει σπόρους. Στην καθημερινή διατροφή τα φρούτα είναι συχνά γλυκά ή όξινα και τρώγονται φρέσκα ή μαγειρεμένα.",
+    },
+    "computer": {
+        "en": "A computer is an electronic device that processes data by following stored instructions called programs.",
+        "el": "Ο υπολογιστής είναι μια ηλεκτρονική συσκευή που επεξεργάζεται δεδομένα ακολουθώντας αποθηκευμένες οδηγίες που ονομάζονται προγράμματα.",
+    },
+    "internet": {
+        "en": "The internet is a worldwide network of connected computer networks that exchange data using standard communication protocols.",
+        "el": "Το διαδίκτυο είναι ένα παγκόσμιο δίκτυο συνδεδεμένων δικτύων υπολογιστών που ανταλλάσσουν δεδομένα με κοινά πρωτόκολλα επικοινωνίας.",
+    },
+    "artificial intelligence": {
+        "en": "Artificial intelligence is a field of computing that builds systems able to perform tasks associated with human intelligence, such as recognizing patterns, understanding language, or making predictions.",
+        "el": "Η τεχνητή νοημοσύνη είναι κλάδος της πληροφορικής που δημιουργεί συστήματα ικανά να εκτελούν εργασίες που συνδέονται με την ανθρώπινη νοημοσύνη, όπως αναγνώριση προτύπων, κατανόηση γλώσσας και προβλέψεις.",
+    },
+    "machine learning": {
+        "en": "Machine learning is a part of artificial intelligence in which a model learns patterns from examples instead of receiving a separate hand-written rule for every situation.",
+        "el": "Η μηχανική μάθηση είναι μέρος της τεχνητής νοημοσύνης όπου ένα μοντέλο μαθαίνει πρότυπα από παραδείγματα αντί να λαμβάνει έναν ξεχωριστό χειρόγραφο κανόνα για κάθε περίπτωση.",
+    },
+    "neural network": {
+        "en": "A neural network is a machine-learning model made of connected mathematical units arranged in layers. Training adjusts their numerical weights so the network can recognize patterns or make predictions.",
+        "el": "Ένα νευρωνικό δίκτυο είναι μοντέλο μηχανικής μάθησης από συνδεδεμένες μαθηματικές μονάδες σε επίπεδα. Η εκπαίδευση προσαρμόζει τα αριθμητικά βάρη τους ώστε να αναγνωρίζει πρότυπα ή να κάνει προβλέψεις.",
+    },
+    "python": {
+        "en": "Python is a general-purpose programming language known for readable syntax and a large ecosystem of libraries.",
+        "el": "Η Python είναι μια γλώσσα προγραμματισμού γενικού σκοπού, γνωστή για την ευανάγνωστη σύνταξη και το μεγάλο οικοσύστημα βιβλιοθηκών της.",
+    },
+    "termux": {
+        "en": "Termux is an Android terminal application that provides a Linux-like command-line environment without requiring root.",
+        "el": "Το Termux είναι εφαρμογή τερματικού για Android που παρέχει περιβάλλον γραμμής εντολών παρόμοιο με Linux χωρίς να απαιτεί root.",
+    },
+    "ram": {
+        "en": "RAM is fast temporary memory used by running applications. Its contents are normally lost when the device is powered off.",
+        "el": "Η RAM είναι γρήγορη προσωρινή μνήμη που χρησιμοποιείται από εφαρμογές που εκτελούνται. Τα περιεχόμενά της συνήθως χάνονται όταν απενεργοποιηθεί η συσκευή.",
+    },
+    "storage": {
+        "en": "Storage is persistent space used to keep applications, documents, photos, models, and other files even after the device is turned off.",
+        "el": "Ο αποθηκευτικός χώρος είναι μόνιμος χώρος για εφαρμογές, έγγραφα, φωτογραφίες, μοντέλα και άλλα αρχεία ακόμη και μετά την απενεργοποίηση της συσκευής.",
+    },
+    "cpu": {
+        "en": "A CPU, or central processing unit, executes program instructions and coordinates much of a device's computation.",
+        "el": "Η CPU, ή κεντρική μονάδα επεξεργασίας, εκτελεί τις εντολές των προγραμμάτων και συντονίζει μεγάλο μέρος των υπολογισμών μιας συσκευής.",
+    },
+    "ai model": {
+        "en": "An AI model is a trained mathematical system that transforms input data into predictions, classifications, generated text, or other outputs.",
+        "el": "Ένα μοντέλο AI είναι ένα εκπαιδευμένο μαθηματικό σύστημα που μετατρέπει δεδομένα εισόδου σε προβλέψεις, κατηγορίες, παραγόμενο κείμενο ή άλλα αποτελέσματα.",
+    },
+    "water": {
+        "en": "Water is a chemical compound made of two hydrogen atoms and one oxygen atom, written H₂O. It is essential for known life.",
+        "el": "Το νερό είναι χημική ένωση από δύο άτομα υδρογόνου και ένα άτομο οξυγόνου, με τύπο H₂O. Είναι απαραίτητο για τη γνωστή ζωή.",
+    },
+    "gravity": {
+        "en": "Gravity is the attraction between objects with mass. Near Earth, it pulls objects toward the planet's center.",
+        "el": "Η βαρύτητα είναι η έλξη μεταξύ αντικειμένων που έχουν μάζα. Κοντά στη Γη τραβά τα αντικείμενα προς το κέντρο του πλανήτη.",
+    },
+    "earth": {
+        "en": "Earth is the third planet from the Sun and the only world currently known to support life.",
+        "el": "Η Γη είναι ο τρίτος πλανήτης από τον Ήλιο και ο μόνος κόσμος που γνωρίζουμε σήμερα ότι υποστηρίζει ζωή.",
+    },
+    "sun": {
+        "en": "The Sun is the star at the center of our Solar System. Its light and heat are powered mainly by nuclear fusion in its core.",
+        "el": "Ο Ήλιος είναι το άστρο στο κέντρο του Ηλιακού Συστήματος. Το φως και η θερμότητά του παράγονται κυρίως από πυρηνική σύντηξη στον πυρήνα του.",
+    },
+    "moon": {
+        "en": "The Moon is Earth's natural satellite. It orbits Earth and strongly influences ocean tides.",
+        "el": "Η Σελήνη είναι ο φυσικός δορυφόρος της Γης. Περιφέρεται γύρω από τη Γη και επηρεάζει σημαντικά τις παλίρροιες.",
+    },
+    "atom": {
+        "en": "An atom is the smallest unit of an element that retains that element's chemical properties. It contains a nucleus surrounded by electrons.",
+        "el": "Το άτομο είναι η μικρότερη μονάδα ενός στοιχείου που διατηρεί τις χημικές ιδιότητές του. Περιέχει πυρήνα που περιβάλλεται από ηλεκτρόνια.",
+    },
+    "dna": {
+        "en": "DNA is the molecule that stores hereditary biological information in most living organisms.",
+        "el": "Το DNA είναι το μόριο που αποθηκεύει τις κληρονομικές βιολογικές πληροφορίες στους περισσότερους ζωντανούς οργανισμούς.",
+    },
+    "electricity": {
+        "en": "Electricity describes phenomena caused by electric charge, including the movement of electrons through a conductor.",
+        "el": "Ο ηλεκτρισμός περιγράφει φαινόμενα που προκαλούνται από ηλεκτρικό φορτίο, όπως η κίνηση ηλεκτρονίων μέσα από έναν αγωγό.",
+    },
+    "photosynthesis": {
+        "en": "Photosynthesis is the process by which plants, algae, and some microorganisms use light energy to produce chemical energy, usually from carbon dioxide and water.",
+        "el": "Η φωτοσύνθεση είναι η διαδικασία με την οποία φυτά, φύκη και ορισμένοι μικροοργανισμοί χρησιμοποιούν φωτεινή ενέργεια για να παράγουν χημική ενέργεια, συνήθως από διοξείδιο του άνθρακα και νερό.",
+    },
+    "greece": {
+        "en": "Greece is a country in southeastern Europe with its capital in Athens. It includes a mountainous mainland and many islands.",
+        "el": "Η Ελλάδα είναι χώρα της νοτιοανατολικής Ευρώπης με πρωτεύουσα την Αθήνα. Περιλαμβάνει ορεινή ηπειρωτική χώρα και πολλά νησιά.",
+    },
+}
+
+COMMON_DEFINITION_ALIASES = {
+    "apple": "apple", "an apple": "apple", "μηλο": "apple", "μηλο καρποσ": "apple",
+    "banana": "banana", "a banana": "banana", "μπανανα": "banana",
+    "fruit": "fruit", "a fruit": "fruit", "φρουτο": "fruit", "καρποσ": "fruit",
+    "computer": "computer", "a computer": "computer", "υπολογιστησ": "computer",
+    "internet": "internet", "the internet": "internet", "διαδικτυο": "internet", "ιντερνετ": "internet",
+    "artificial intelligence": "artificial intelligence", "ai": "artificial intelligence", "τεχνητη νοημοσυνη": "artificial intelligence",
+    "machine learning": "machine learning", "μηχανικη μαθηση": "machine learning",
+    "neural network": "neural network", "νευρωνικο δικτυο": "neural network",
+    "python": "python", "termux": "termux", "ram": "ram", "memory": "ram", "μνημη ram": "ram",
+    "storage": "storage", "phone storage": "storage", "αποθηκευτικοσ χωροσ": "storage",
+    "cpu": "cpu", "processor": "cpu", "επεξεργαστησ": "cpu",
+    "ai model": "ai model", "model": "ai model", "μοντελο ai": "ai model",
+    "water": "water", "νερο": "water", "gravity": "gravity", "βαρυτητα": "gravity",
+    "earth": "earth", "γη": "earth", "sun": "sun", "ηλιοσ": "sun", "moon": "moon", "σεληνη": "moon", "φεγγαρι": "moon",
+    "atom": "atom", "ατομο": "atom", "dna": "dna", "electricity": "electricity", "ηλεκτρισμοσ": "electricity",
+    "photosynthesis": "photosynthesis", "φωτοσυνθεση": "photosynthesis", "greece": "greece", "ελλαδα": "greece",
+}
+
+
+def common_definition_response(text: str, language: str) -> Optional[str]:
+    normalized = normalize_text(text).strip(" ?.!,:;")
+    prefixes = (
+        "what is ", "what's ", "define ", "tell me what ", "tell me about ",
+        "τι ειναι ", "ορισε ", "πες μου τι ειναι ", "πες μου για ",
+    )
+    subject = None
+    for prefix in prefixes:
+        if normalized.startswith(prefix):
+            subject = normalized[len(prefix):].strip(" ?.!,:;")
+            break
+    if subject is None:
+        return None
+    subject = re.sub(r"^(?:a|an|the|ενα|ενας|μια|το|η|ο)\s+", "", subject).strip()
+    key = COMMON_DEFINITION_ALIASES.get(subject)
+    if key is None:
+        return None
+    return COMMON_DEFINITIONS[key]["el" if language == "el" else "en"]
+
+
 class PocketAssistant:
     def __init__(
         self,
@@ -3645,6 +4050,7 @@ class PocketAssistant:
         self.pattern_index = self._build_pattern_index(dataset)
         self.intent_profiles, self.intent_idf = self._build_intent_profiles(dataset)
         self.rng = random.Random(time.time_ns())
+        self.persona = load_persona(self.data_dir)
         stored_mode = self.store.get_setting("language_mode", "auto") or "auto"
         self.language_mode = stored_mode if stored_mode in {"auto", "en", "el"} else "auto"
         stored_last = self.store.get_setting("last_language", "en") or "en"
@@ -3681,6 +4087,16 @@ class PocketAssistant:
                 self.language_model = None
         self.web_research = SafeWebResearch(self.store)
         self.specialists = SpecialistModelRouter(Path(__file__).resolve().parent / "Models")
+        self.hybrid_components: Dict[str, dict] = {}
+        for component_id, filename in HYBRID_COMPONENT_FILES.items():
+            component_path = models_dir / filename
+            try:
+                with gzip.open(component_path, "rt", encoding="utf-8") as handle:
+                    payload = json.load(handle)
+                if isinstance(payload, dict):
+                    self.hybrid_components[component_id] = payload
+            except (OSError, ValueError, json.JSONDecodeError):
+                continue
         stored_llm_model = self.store.get_setting("llm_model", DEFAULT_EXTERNAL_LLM_MODEL) or DEFAULT_EXTERNAL_LLM_MODEL
         stored_cpu_profile = self.store.get_setting("llm_cpu_profile", DEFAULT_LLM_CPU_PROFILE) or DEFAULT_LLM_CPU_PROFILE
         self.local_llm = LocalGGUFModel(
@@ -3690,6 +4106,8 @@ class PocketAssistant:
         )
         stored_llm_mode = self.store.get_setting("llm_mode", "fallback") or "fallback"
         self.llm_mode = stored_llm_mode if stored_llm_mode in {"off", "fallback", "always"} else "fallback"
+        stored_hybrid_mode = self.store.get_setting("hybrid_mode", DEFAULT_HYBRID_MODE) or DEFAULT_HYBRID_MODE
+        self.hybrid_mode = stored_hybrid_mode if stored_hybrid_mode in HYBRID_MODES else DEFAULT_HYBRID_MODE
 
     @staticmethod
     def _build_pattern_index(dataset: dict) -> List[Tuple[str, str, set, set]]:
@@ -3820,7 +4238,35 @@ class PocketAssistant:
 
     @property
     def assistant_name(self) -> str:
-        return self.dataset.get("assistant_name", APP_NAME)
+        return sanitize_name(self.persona.get("assistant_name", self.dataset.get("assistant_name", APP_NAME)))
+
+    def update_persona(self, *, assistant_name: Optional[str] = None, user_name: Optional[str] = None,
+                       style: Optional[str] = None, human_style: Optional[bool] = None) -> dict:
+        config = dict(self.persona)
+        if assistant_name is not None:
+            config["assistant_name"] = sanitize_name(assistant_name)
+        if user_name is not None:
+            config["user_name"] = sanitize_name(user_name, fallback="", maximum=36) if user_name else ""
+        if style is not None:
+            normalized = style.casefold().strip()
+            if normalized not in PERSONA_STYLES:
+                raise ValueError("Unknown style. Use friendly, calm_expert, casual, mentor, or direct.")
+            config["style"] = normalized
+        if human_style is not None:
+            config["human_style"] = bool(human_style)
+        self.persona = save_persona(self.data_dir, config)
+        if self.persona.get("user_name"):
+            try:
+                self.store.set_memory("user_name", str(self.persona["user_name"]))
+            except sqlite3.Error:
+                pass
+        return self.persona
+
+    def persona_guidance(self, language: str) -> str:
+        return persona_instruction(self.persona, language)
+
+    def apply_persona(self, response: str, language: str, route: str, seed_text: str) -> str:
+        return naturalize_response(response, language, self.persona, route=route, seed_text=seed_text)
 
     def close(self) -> None:
         self.store.close()
@@ -3873,7 +4319,7 @@ class PocketAssistant:
     def format_response(self, text: str, language: Optional[str] = None) -> str:
         language = language or self.last_language
         now = _dt.datetime.now().astimezone()
-        name = self.store.get_memory("name") or self.store.get_memory("user_name") or ""
+        name = self.persona.get("user_name") or self.store.get_memory("name") or self.store.get_memory("user_name") or ""
         if language == "el":
             date_text = f"{GREEK_WEEKDAYS[now.weekday()]}, {now.day} {GREEK_MONTHS[now.month - 1]} {now.year}"
         else:
@@ -4005,9 +4451,11 @@ class PocketAssistant:
         except OSError:
             disk_en = "unavailable"
             disk_el = "μη διαθέσιμο"
+        thermal = _thermal_snapshot()
+        temperature = thermal.get("maximum_celsius", 0.0)
         return self.t(
-            f"Python {sys.version.split()[0]}; platform {sys.platform}; RAM {human_size(available)} available of {human_size(total)}; storage {disk_en}; profile {self.profile_name}; language mode {self.language_mode}.",
-            f"Python {sys.version.split()[0]}; πλατφόρμα {sys.platform}; διαθέσιμη RAM {human_size(available)} από {human_size(total)}; αποθήκευση {disk_el}; profile {self.profile_name}; λειτουργία γλώσσας {self.language_mode}.",
+            f"Python {sys.version.split()[0]}; platform {sys.platform}; RAM {human_size(available)} available of {human_size(total)}; storage {disk_en}; temperature {temperature:.1f}°C ({thermal.get('state', 'unknown')}); profile {self.profile_name}; hybrid {self.hybrid_mode}; language mode {self.language_mode}.",
+            f"Python {sys.version.split()[0]}; πλατφόρμα {sys.platform}; διαθέσιμη RAM {human_size(available)} από {human_size(total)}; αποθήκευση {disk_el}; θερμοκρασία {temperature:.1f}°C ({thermal.get('state', 'unknown')}); profile {self.profile_name}; υβριδική λειτουργία {self.hybrid_mode}; λειτουργία γλώσσας {self.language_mode}.",
             language
         )
 
@@ -4138,16 +4586,23 @@ class PocketAssistant:
             response, route = utility
             details = {"route": route, "language": language, "context_used": False}
         else:
-            candidates = self.store.retrieve_many(contextual_text, limit=6, language=language)
-            response = ""
-            details: dict = {"language": language, "context_used": context_used}
+            common_answer = common_definition_response(original_text, language)
+            if common_answer is not None:
+                response = common_answer
+                details = {"route": "common_knowledge", "language": language, "context_used": False}
+                candidates = []
+            else:
+                candidates = self.store.retrieve_many(contextual_text, limit=6, language=language)
+            if common_answer is None:
+                response = ""
+                details = {"language": language, "context_used": context_used}
 
-            qa_candidates = [candidate for candidate in candidates if candidate["kind"] == "qa"]
+            qa_candidates = [candidate for candidate in candidates if candidate["kind"] == "qa"] if common_answer is None else []
             best_qa = qa_candidates[0] if qa_candidates else None
-            if best_qa and best_qa["overlap"] >= 1 and best_qa["score"] >= 0.43:
+            if common_answer is None and best_qa and best_qa["overlap"] >= 1 and best_qa["score"] >= 0.43:
                 response = str(best_qa["response"])
                 details = {"route": "retrieval_qa", **details, **best_qa}
-            else:
+            elif common_answer is None:
                 document_candidates = [candidate for candidate in candidates if candidate["kind"] == "document"]
                 best_document = document_candidates[0] if document_candidates else None
                 if best_document and best_document["overlap"] >= 1 and best_document["score"] >= 0.37:
@@ -4181,7 +4636,8 @@ class PocketAssistant:
                 response, neural_details = self.neural_response(contextual_text, language)
                 details = {**details, **neural_details}
                 should_use_llm = (
-                    self.llm_mode == "always"
+                    self.hybrid_mode in {"quality", "cascade"}
+                    or self.llm_mode == "always"
                     or (self.llm_mode == "fallback" and neural_details.get("route") == "fallback")
                     or (
                         self.llm_mode != "off"
@@ -4209,6 +4665,12 @@ class PocketAssistant:
                         }
                         for candidate in candidates[:3]
                     ]
+
+        route_name = str(details.get("route", ""))
+        response = self.apply_persona(response, language, route_name, original_text)
+        details["calibrated_confidence"] = calibrate_confidence(details, response)
+        details["assistant_name"] = self.assistant_name
+        details["persona_style"] = self.persona.get("style", "friendly")
 
         self.session_history.append(("user", original_text))
         self.session_history.append(("assistant", response))
@@ -4288,17 +4750,184 @@ class PocketAssistant:
         self.store.set_setting("llm_cpu_profile", selected)
         return selected
 
-    def llm_context(self, candidates: Sequence[dict]) -> str:
+    def llm_context(self, candidates: Sequence[dict], query: str = "") -> str:
+        memories = self.store.list_memories(12)
+        if optimize_context is not None:
+            try:
+                return optimize_context(query, candidates, memories, self.session_history, max_chars=5000)
+            except Exception:
+                pass
         pieces: List[str] = []
         for candidate in candidates[:4]:
             response = str(candidate.get("response", "")).strip()
             source = str(candidate.get("source", "")).strip()
             if response:
                 pieces.append((f"Source: {source}\n" if source else "") + response[:1100])
-        memories = self.store.list_memories(12)
         if memories:
             pieces.append("Saved user facts:\n" + "\n".join(f"{key} = {value}" for key, value in memories))
+        if self.session_history:
+            recent = list(self.session_history)[-8:]
+            transcript = "\n".join(f"{role.title()}: {message[:500]}" for role, message in recent)
+            pieces.append("Recent conversation:\n" + transcript)
         return "\n\n".join(pieces)[:5000]
+
+    def set_hybrid_mode(self, mode: str) -> str:
+        aliases = {
+            "automatic": "auto", "best": "auto", "fast": "speed", "balanced": "smart",
+            "verify": "cascade", "compare": "consensus", "dynamic": "adaptive",
+            "specialist": "expert", "none": "off",
+        }
+        selected = aliases.get(mode.casefold().strip(), mode.casefold().strip())
+        if selected not in HYBRID_MODES:
+            raise ValueError("Hybrid mode must be auto, off, speed, smart, quality, adaptive, expert, consensus, or cascade.")
+        self.hybrid_mode = selected
+        self.store.set_setting("hybrid_mode", selected)
+        return selected
+
+    def query_complexity(self, text: str, specialist: Optional[dict] = None) -> float:
+        words = word_tokens(text)
+        normalized = normalize_text(text)
+        score = min(0.34, len(words) / 95.0)
+        cues = [
+            "explain why", "compare", "analyze", "analyse", "step by step", "debug", "fix", "design",
+            "summarize", "reason", "prove", "write code", "architecture", "tradeoff", "security",
+            "εξηγησε", "συγκρινε", "αναλυσε", "βημα βημα", "διορθωσε", "σχεδιασε", "αποδειξε",
+        ]
+        planner = self.hybrid_components.get("planner", {})
+        for language_cues in planner.get("complexity_cues", {}).values() if isinstance(planner, dict) else ():
+            if isinstance(language_cues, list):
+                cues.extend(str(cue) for cue in language_cues)
+        score += min(0.40, sum(0.08 for cue in set(cues) if normalize_text(cue) in normalized))
+        if specialist is not None:
+            score += min(0.22, float(specialist.get("score", 0.0)) / 25.0)
+        if any(char in text for char in ("```", "{", "}", "->", "=>")):
+            score += 0.12
+        if text.count("?") + text.count(";") >= 2:
+            score += 0.08
+        return max(0.0, min(1.0, score))
+
+    def resolve_hybrid_plan(self, text: str, specialist: Optional[dict] = None) -> dict:
+        self.local_llm.refresh()
+        available_models = set(self.local_llm.model_paths)
+        complexity = self.query_complexity(text, specialist)
+        mode = self.hybrid_mode
+        try:
+            scan = scan_phone_hardware(self.data_dir, save=False, run_benchmark=False)
+            saved_scan = load_device_profile(self.data_dir)
+            saved_benchmark = (saved_scan or {}).get("processor", {}).get("benchmark")
+            if isinstance(saved_benchmark, dict) and saved_benchmark.get("score"):
+                scan["processor"]["benchmark"] = saved_benchmark
+                family = {key: scan["processor"].get(key) for key in ("vendor", "family", "known_score", "matched_pattern")}
+                scan["processor"]["score"] = _derive_cpu_score(
+                    family, saved_benchmark, scan["processor"]["logical_cores"],
+                    scan["processor"]["frequency"]["maximum_khz"], scan["processor"]["is_64_bit"]
+                )
+        except Exception:
+            scan = {
+                "ram": {"total": total_memory_bytes(), "available": available_memory_bytes()},
+                "processor": {"score": 30, "is_64_bit": sys.maxsize > 2 ** 32},
+                "thermal": _thermal_snapshot(), "battery": _battery_snapshot(),
+                "storage": {"runtime": _storage_snapshot(self.data_dir)},
+            }
+        total = int(scan.get("ram", {}).get("total", 0) or 0)
+        available = int(scan.get("ram", {}).get("available", 0) or 0)
+        cpu_score = int(scan.get("processor", {}).get("score", 30) or 30)
+        temperature = float(scan.get("thermal", {}).get("maximum_celsius", 0.0) or 0.0)
+        pressure = _resource_pressure(scan)
+
+        if not available_models or self.local_llm.binary_path is None or mode == "off":
+            return {"mode": "off", "steps": [], "complexity": complexity, "reason": "GGUF runtime unavailable or hybrid mode disabled", "scan": scan}
+
+        resolved = mode
+        if mode == "auto":
+            if pressure["score"] >= 5 or temperature >= 52 or available < 300 * 1024 ** 2:
+                resolved = "speed"
+            elif {"fast", "quality"}.issubset(available_models) and total >= 6_000 * 1024 ** 2 and available >= 1_450 * 1024 ** 2 and cpu_score >= 70 and temperature < 42 and complexity >= 0.70:
+                resolved = "consensus"
+            elif {"fast", "quality"}.issubset(available_models) and total >= 4_500 * 1024 ** 2 and available >= 980 * 1024 ** 2 and cpu_score >= 52 and temperature < 44 and complexity >= 0.48:
+                resolved = "adaptive"
+            elif specialist is not None and "quality" in available_models and available >= 700 * 1024 ** 2 and cpu_score >= 42 and temperature < 45 and complexity >= 0.42:
+                resolved = "expert"
+            elif "quality" in available_models and total >= 3_100 * 1024 ** 2 and available >= 720 * 1024 ** 2 and cpu_score >= 38 and temperature < 46 and complexity >= 0.32:
+                resolved = "quality"
+            elif total >= 2_200 * 1024 ** 2 and available >= 430 * 1024 ** 2:
+                resolved = "smart"
+            else:
+                resolved = "speed"
+
+        if resolved in {"cascade", "adaptive", "consensus"}:
+            minimum_available = {"adaptive": 760, "cascade": 900, "consensus": 1150}[resolved] * 1024 ** 2
+            maximum_temperature = {"adaptive": 47, "cascade": 46, "consensus": 44}[resolved]
+            if not {"fast", "quality"}.issubset(available_models) or available < minimum_available or temperature >= maximum_temperature:
+                resolved = "quality" if "quality" in available_models and available >= 560 * 1024 ** 2 else "speed"
+        if resolved == "expert" and ("quality" not in available_models or available < 560 * 1024 ** 2 or temperature >= 47):
+            resolved = "smart"
+        if resolved == "quality" and "quality" not in available_models:
+            resolved = "speed"
+        if resolved == "speed" and "fast" not in available_models:
+            resolved = "quality" if "quality" in available_models else "off"
+
+        if resolved == "smart":
+            prefer_quality = complexity >= 0.40 or (specialist is not None and float(specialist.get("score", 0.0)) >= 4.0)
+            model = "quality" if prefer_quality and "quality" in available_models and available >= 560 * 1024 ** 2 and temperature < 46 else "fast"
+            if model not in available_models:
+                model = next(iter(sorted(available_models)))
+            steps = [model]
+        elif resolved in {"cascade", "adaptive", "consensus"}:
+            steps = ["fast", "quality"]
+        elif resolved == "expert":
+            steps = ["quality" if "quality" in available_models else "fast"]
+        elif resolved in {"speed", "quality"}:
+            steps = ["fast" if resolved == "speed" else "quality"]
+        else:
+            steps = []
+
+        return {
+            "mode": resolved,
+            "requested_mode": mode,
+            "steps": steps,
+            "complexity": complexity,
+            "available_ram": available,
+            "total_ram": total,
+            "cpu_score": cpu_score,
+            "temperature_celsius": temperature,
+            "pressure": pressure,
+            "reason": f"complexity={complexity:.2f}, CPU={cpu_score}, free RAM={human_size(available)}, temperature={temperature:.1f}°C",
+            "scan": scan,
+        }
+
+    @staticmethod
+    def response_quality_score(response: str, language: str, question: str) -> dict:
+        cleaned = response.strip()
+        words = word_tokens(cleaned)
+        score = 0.50
+        issues: List[str] = []
+        if not cleaned:
+            return {"score": 0.0, "issues": ["empty response"]}
+        detected = detect_language(cleaned)
+        if detected not in {language, "neutral"}:
+            score -= 0.45; issues.append("wrong output language")
+        if len(words) < 4:
+            score -= 0.22; issues.append("too short")
+        elif len(words) >= 12:
+            score += 0.10
+        if len(cleaned) > 2800:
+            score -= 0.08; issues.append("excessively long")
+        lines = [line.strip() for line in cleaned.splitlines() if line.strip()]
+        if lines and len(set(lines)) / len(lines) < 0.65:
+            score -= 0.22; issues.append("repetitive lines")
+        tokens = [normalize_text(token) for token in words]
+        if len(tokens) >= 10 and len(set(tokens)) / len(tokens) < 0.36:
+            score -= 0.18; issues.append("repetitive wording")
+        uncertainty = ("i do not know", "i'm not sure", "δεν γνωριζω", "δεν ειμαι σιγουρ")
+        if any(marker in normalize_text(cleaned) for marker in uncertainty):
+            score -= 0.04
+        query_terms = set(retrieval_terms(question))
+        answer_terms = set(retrieval_terms(cleaned))
+        if query_terms and answer_terms:
+            overlap = len(query_terms & answer_terms) / max(1, min(len(query_terms), 8))
+            score += min(0.18, overlap * 0.24)
+        return {"score": max(0.0, min(1.0, score)), "issues": issues}
 
     def ask_local_llm(
         self,
@@ -4307,22 +4936,94 @@ class PocketAssistant:
         candidates: Sequence[dict] = (),
         specialist: Optional[dict] = None,
     ) -> Tuple[str, dict]:
-        context = self.llm_context(candidates)
+        context = self.llm_context(candidates, text)
         specialist_instruction = self.specialists.instruction(specialist, language)
-        response = self.local_llm.generate(
-            text,
-            language,
-            context=context,
+        persona_text = self.persona_guidance(language)
+        specialist_instruction = (persona_text + "\n" + specialist_instruction).strip()
+        plan = self.resolve_hybrid_plan(text, specialist)
+        steps = list(plan.get("steps", []))
+        mode = str(plan.get("mode", "smart"))
+        if not steps:
+            raise RuntimeError(str(plan.get("reason", "No compatible local GGUF model is available.")))
+        if mode == "expert":
+            specialist_instruction += self.t(
+                "\nAct as a careful task expert. Use the local context first, state uncertainty honestly, and make commands directly usable.",
+                "\nΛειτούργησε ως προσεκτικός ειδικός. Χρησιμοποίησε πρώτα τα τοπικά συμφραζόμενα, δήλωσε καθαρά την αβεβαιότητα και δώσε άμεσα χρήσιμες εντολές.",
+                language,
+            )
+
+        first_model = steps[0]
+        draft = self.local_llm.generate(
+            text, language, context=context,
             specialist_instruction=specialist_instruction,
+            model_name=first_model,
         )
-        return response, {
-            "route": "local_gguf_llm",
+        draft_quality = self.response_quality_score(draft, language, text)
+        final = draft
+        passes = [{"model": first_model, "quality": draft_quality, "role": "draft"}]
+        degraded = False
+        second_pass_skipped = False
+        consensus_details: dict = {}
+
+        if len(steps) > 1:
+            adaptive_threshold = float(self.hybrid_components.get("adaptive", {}).get("draft_accept_score", 0.80) or 0.80)
+            if mode == "adaptive" and draft_quality["score"] >= adaptive_threshold and float(plan.get("complexity", 0.0)) < 0.72:
+                second_pass_skipped = True
+            available_after = available_memory_bytes()
+            temperature_after = float(_thermal_snapshot().get("maximum_celsius", 0.0) or 0.0)
+            minimum_ram = 760 * 1024 ** 2 if mode == "adaptive" else 900 * 1024 ** 2
+            if mode == "consensus":
+                minimum_ram = 1_100 * 1024 ** 2
+            if not second_pass_skipped and ((available_after and available_after < minimum_ram) or temperature_after >= (44.0 if mode == "consensus" else 46.0)):
+                degraded = True
+            elif not second_pass_skipped:
+                if mode == "consensus":
+                    second_prompt = self.t(
+                        "Answer the original question independently. Do not refer to another draft. Use the local context, be accurate, and return only your best final answer.",
+                        "Απάντησε ανεξάρτητα στην αρχική ερώτηση. Μην αναφερθείς σε άλλο πρόχειρο. Χρησιμοποίησε τα τοπικά συμφραζόμενα, να είσαι ακριβής και επέστρεψε μόνο την καλύτερη τελική απάντηση.",
+                        language,
+                    ) + "\n\n" + text[:1600]
+                else:
+                    second_prompt = self.t(
+                        "Review the draft below against the original question and local context. Correct factual, logical, command, and language errors. Remove repetition. Return only the improved final answer.\n\nOriginal question:\n{question}\n\nDraft:\n{draft}",
+                        "Έλεγξε το παρακάτω πρόχειρο με βάση την αρχική ερώτηση και τα τοπικά συμφραζόμενα. Διόρθωσε πραγματολογικά, λογικά, γλωσσικά και τεχνικά λάθη. Αφαίρεσε επαναλήψεις. Επίστρεψε μόνο την τελική βελτιωμένη απάντηση.\n\nΑρχική ερώτηση:\n{question}\n\nΠρόχειρο:\n{draft}",
+                        language,
+                    ).format(question=text[:1400], draft=draft[:2200])
+                try:
+                    refined = self.local_llm.generate(
+                        second_prompt, language, context=context,
+                        max_tokens=208,
+                        specialist_instruction=specialist_instruction + " Verify carefully; do not blindly preserve prior wording.",
+                        model_name=steps[1],
+                    )
+                    refined_quality = self.response_quality_score(refined, language, text)
+                    passes.append({"model": steps[1], "quality": refined_quality, "role": "independent" if mode == "consensus" else "verification"})
+                    if mode == "consensus" and choose_consensus is not None:
+                        final, consensus_details = choose_consensus(text, draft, refined, draft_quality, refined_quality)
+                    elif refined_quality["score"] + 0.04 >= draft_quality["score"]:
+                        final = refined
+                    else:
+                        degraded = True
+                except RuntimeError:
+                    degraded = True
+
+        final_quality = self.response_quality_score(final, language, text)
+        return final, {
+            "route": "hybrid_" + mode,
             "language": language,
             "llm_mode": self.llm_mode,
-            "model": str(self.local_llm.model_path or "missing"),
-            "model_profile": self.local_llm.active_model,
+            "hybrid_mode": self.hybrid_mode,
+            "hybrid_plan": {key: value for key, value in plan.items() if key != "scan"},
+            "passes": passes,
+            "second_pass_skipped": second_pass_skipped,
+            "degraded_to_safe_result": degraded,
+            "consensus": consensus_details,
+            "final_quality": final_quality,
+            "model": str(self.local_llm.model_paths.get(steps[-1]) or self.local_llm.model_paths.get(steps[0]) or "missing"),
+            "model_profile": steps[-1] if len(steps) > 1 and not degraded and not second_pass_skipped else steps[0],
             "context_chars": len(context),
             "specialist": specialist.get("id") if specialist else None,
+            "persona_style": self.persona.get("style", "friendly"),
         }
 
     def stats_text(self) -> str:
@@ -4346,11 +5047,16 @@ class PocketAssistant:
             f"  History entries:     {counts['history']}",
             f"  Micro language model:{human_size(self.language_model_path.stat().st_size) if self.language_model_path.exists() else ' not installed'} ({self.micro_model_variant})",
             f"  GGUF LLM mode:       {self.llm_mode}",
+            f"  Hybrid mode:         {self.hybrid_mode}",
+            f"  AI name/persona:     {self.assistant_name} / {self.persona.get('style', 'friendly')}",
+            f"  Human conversation: {'enabled' if self.persona.get('human_style', True) else 'disabled'}",
+            f"  Runtime modules:     {sum(1 for name in ('persona_engine', 'context_optimizer', 'consensus_engine', 'confidence_engine', 'resource_advisor') if name in sys.modules)}/5 loaded",
             f"  Active GGUF model:   {self.local_llm.active_model}",
             f"  CPU runtime profile: {self.local_llm.requested_cpu_profile} -> {self.local_llm.runtime_settings()['resolved']}",
             f"  Active model size:   {human_size(self.local_llm.model_path.stat().st_size) if self.local_llm.model_path else 'not installed'}",
             f"  Bundled GGUF models: {len(self.local_llm.model_paths)}/{len(EXTERNAL_LLM_MODELS)} detected",
             f"  Specialist models:   {sum(1 for item in self.specialists.status() if item['loaded'])}/{len(self.specialists.FILES)} loaded",
+            f"  Hybrid controllers:  {len(self.hybrid_components)}/{len(HYBRID_COMPONENT_FILES)} loaded",
             f"  llama.cpp:           {str(self.local_llm.binary_path) if self.local_llm.binary_path else 'not installed'}"
         ]
         return "\n".join(lines)
@@ -4366,6 +5072,11 @@ Core commands
   /help                         Show this command list
   /quit                         Exit safely
   /language auto|en|el          Automatic, English, or Greek output mode
+  /persona                      Show AI name and conversation personality
+  /name NAME                    Change the AI name
+  /style friendly|calm_expert|casual|mentor|direct
+                                Change human conversation style
+  /human on|off                 Enable or disable natural wording
   /stats                        Show neural and knowledge statistics
   /models                       Show every bundled model and active selection
   /where                        Show every important file path
@@ -4386,7 +5097,9 @@ Learning and knowledge
   /train                        Retrain the neural intent model
   /build-lm [PATH]              Build the experimental local generator
   /generate [PROMPT]            Generate with the bundled bilingual MicroLM
-  /llm off|fallback|always      Control the local GGUF fallback
+  /llm off|fallback|always      Control when transformer inference is allowed
+  /hybrid auto|off|speed|smart|quality|adaptive|expert|consensus|cascade
+                                Select resource-aware hybrid orchestration
   /llm-model fast|quality       Select low-RAM or higher-quality model
   /cpu-profile auto|ultra_eco|eco|entry|balanced|performance
                                 Override automatic hardware tuning
@@ -4413,6 +5126,11 @@ HELP_TEXT_EL = """
   /βοήθεια                      Εμφάνιση όλων των εντολών
   /έξοδος                       Ασφαλής έξοδος
   /γλώσσα auto|en|el            Αυτόματη, αγγλική ή ελληνική λειτουργία
+  /προσωπικότητα                 Προβολή ονόματος και προσωπικότητας AI
+  /όνομα ΟΝΟΜΑ                  Αλλαγή ονόματος AI
+  /στυλ friendly|calm_expert|casual|mentor|direct
+                                Αλλαγή φυσικού τρόπου συζήτησης
+  /ανθρώπινο on|off             Ενεργοποίηση ή απενεργοποίηση φυσικής διατύπωσης
   /stats                        Στατιστικά μοντέλου και γνώσης
   /μοντέλα                      Όλα τα μοντέλα και η ενεργή επιλογή
   /where                        Διαδρομές σημαντικών αρχείων
@@ -4433,7 +5151,9 @@ HELP_TEXT_EL = """
   /train                        Επανεκπαίδευση νευρωνικού μοντέλου
   /build-lm [ΔΙΑΔΡΟΜΗ]          Δημιουργία πειραματικού generator
   /generate [PROMPT]            Παραγωγή με το ενσωματωμένο MicroLM
-  /llm off|fallback|always      Έλεγχος του τοπικού GGUF fallback
+  /llm off|fallback|always      Έλεγχος χρήσης του τοπικού transformer
+  /υβριδικό auto|off|speed|smart|quality|adaptive|expert|consensus|cascade
+                                Επιλογή υβριδικής δρομολόγησης
   /μοντέλο fast|quality        Επιλογή χαμηλής RAM ή καλύτερης ποιότητας
   /επεξεργαστής auto|ultra_eco|eco|entry|balanced|performance
                                 Παράκαμψη αυτόματης ρύθμισης hardware
@@ -4516,8 +5236,12 @@ def handle_command(assistant: PocketAssistant, command_line: str) -> Tuple[bool,
         "/μοντέλα": "/models", "/μοντελα": "/models",
         "/επεξεργαστησ": "/cpu-profile", "/επεξεργαστής": "/cpu-profile", "/cpu": "/cpu-profile",
         "/λειτουργια-llm": "/llm", "/λειτουργία-llm": "/llm",
+        "/υβριδικο": "/hybrid", "/υβριδικό": "/hybrid", "/hybrid-mode": "/hybrid",
         "/εξοδοσ": "/quit", "/έξοδοσ": "/quit", "/εξοδος": "/quit",
         "/γλωσσα": "/language", "/γλώσσα": "/language",
+        "/προσωπικοτητα": "/persona", "/προσωπικότητα": "/persona",
+        "/ονομα": "/name", "/όνομα": "/name",
+        "/στυλ": "/style", "/ανθρωπινο": "/human", "/ανθρώπινο": "/human",
         "/μαθε": "/teach", "/μάθε": "/teach",
         "/διορθωση": "/correct", "/διόρθωση": "/correct",
         "/συνοψη": "/summarize", "/σύνοψη": "/summarize",
@@ -4551,6 +5275,35 @@ def handle_command(assistant: PocketAssistant, command_line: str) -> Tuple[bool,
             return True, assistant.t(f"Language mode set to {display}.", f"Η λειτουργία γλώσσας ορίστηκε σε {display}.", assistant.last_language)
         except ValueError as error:
             return True, assistant.t(str(error), "Η γλώσσα πρέπει να είναι auto, en ή el.", language)
+    if command == "/persona":
+        return True, describe_persona(assistant.persona, language)
+    if command == "/name":
+        if not argument:
+            return True, assistant.t("Usage: /name AI_NAME", "Χρήση: /όνομα ΟΝΟΜΑ_AI", language)
+        assistant.update_persona(assistant_name=argument)
+        return True, assistant.t(
+            f"My name is now {assistant.assistant_name}.",
+            f"Το όνομά μου είναι πλέον {assistant.assistant_name}.", language,
+        )
+    if command == "/style":
+        if not argument:
+            choices = ", ".join(PERSONA_STYLES)
+            return True, assistant.t(f"Current style: {assistant.persona.get('style')}. Choices: {choices}", f"Τρέχον στυλ: {assistant.persona.get('style')}. Επιλογές: {choices}", language)
+        try:
+            assistant.update_persona(style=argument)
+            return True, assistant.t(f"Conversation style set to {assistant.persona.get('style')}.", f"Το στυλ συζήτησης ορίστηκε σε {assistant.persona.get('style')}.", language)
+        except ValueError as error:
+            return True, assistant.t(str(error), "Άγνωστο στυλ. Χρησιμοποίησε friendly, calm_expert, casual, mentor ή direct.", language)
+    if command == "/human":
+        if not argument:
+            state = "on" if assistant.persona.get("human_style", True) else "off"
+            return True, assistant.t(f"Human-like wording is {state}.", f"Η φυσική διατύπωση είναι {state}.", language)
+        normalized = normalize_text(argument)
+        if normalized not in {"on", "off", "yes", "no", "ενεργο", "ανενεργο", "ναι", "οχι"}:
+            return True, assistant.t("Usage: /human on|off", "Χρήση: /ανθρώπινο on|off", language)
+        enabled = normalized in {"on", "yes", "ενεργο", "ναι"}
+        assistant.update_persona(human_style=enabled)
+        return True, assistant.t(f"Human-like wording {'enabled' if enabled else 'disabled'}.", f"Η φυσική διατύπωση {'ενεργοποιήθηκε' if enabled else 'απενεργοποιήθηκε'}.", language)
     if command == "/stats":
         return True, assistant.stats_text()
     if command == "/models":
@@ -4568,6 +5321,7 @@ def handle_command(assistant: PocketAssistant, command_line: str) -> Tuple[bool,
             f"Active neural classifier: {selected_classifier}",
             f"Active GGUF model: {selected_gguf}",
             f"MicroLM variant: {assistant.micro_model_variant}",
+            f"Hybrid orchestration: {assistant.hybrid_mode}",
             "",
         ]
         lines_el = [
@@ -4575,6 +5329,7 @@ def handle_command(assistant: PocketAssistant, command_line: str) -> Tuple[bool,
             f"Ενεργός νευρωνικός classifier: {selected_classifier}",
             f"Ενεργό GGUF μοντέλο: {selected_gguf}",
             f"Παραλλαγή MicroLM: {assistant.micro_model_variant}",
+            f"Υβριδική δρομολόγηση: {assistant.hybrid_mode}",
             "",
         ]
         if entries:
@@ -4730,6 +5485,22 @@ def handle_command(assistant: PocketAssistant, command_line: str) -> Tuple[bool,
             return True, assistant.t(f"GGUF LLM mode set to {assistant.llm_mode}.", f"Η λειτουργία GGUF LLM ορίστηκε σε {assistant.llm_mode}.", language)
         except ValueError as error:
             return True, assistant.t(str(error), "Η λειτουργία LLM πρέπει να είναι off, fallback ή always.", language)
+    if command == "/hybrid":
+        if not argument:
+            return True, assistant.t(
+                f"Hybrid mode: {assistant.hybrid_mode}. Use auto, off, speed, smart, quality, adaptive, expert, consensus, or cascade.",
+                f"Υβριδική λειτουργία: {assistant.hybrid_mode}. Χρησιμοποίησε auto, off, speed, smart, quality, adaptive, expert, consensus ή cascade.",
+                language,
+            )
+        try:
+            selected = assistant.set_hybrid_mode(argument)
+            return True, assistant.t(
+                f"Hybrid mode set to {selected}: {HYBRID_MODES[selected]}",
+                f"Η υβριδική λειτουργία ορίστηκε σε {selected}: {HYBRID_MODES_EL[selected]}",
+                language,
+            )
+        except ValueError as error:
+            return True, assistant.t(str(error), "Η λειτουργία πρέπει να είναι auto, off, speed, smart, quality, adaptive, expert, consensus ή cascade.", language)
     if command == "/llm-model":
         if not argument:
             return True, assistant.t(
@@ -4774,6 +5545,7 @@ def handle_command(assistant: PocketAssistant, command_line: str) -> Tuple[bool,
             f"GGUF ready: {status['available']}",
             f"Active model: {status['active_model']}",
             f"Mode: {assistant.llm_mode}",
+            f"Hybrid mode: {assistant.hybrid_mode}",
             f"llama.cpp: {status['binary']}",
             f"CPU profile: {status['cpu_profile_requested']} -> {status['cpu_profile_resolved']}",
             f"Runtime: threads={runtime['threads']}, context={runtime['context']}, batch={runtime['batch']}, ubatch={runtime['ubatch']}, token cap={runtime['max_tokens']}",
@@ -4783,6 +5555,7 @@ def handle_command(assistant: PocketAssistant, command_line: str) -> Tuple[bool,
             f"GGUF έτοιμο: {status['available']}",
             f"Ενεργό μοντέλο: {status['active_model']}",
             f"Λειτουργία: {assistant.llm_mode}",
+            f"Υβριδική λειτουργία: {assistant.hybrid_mode}",
             f"llama.cpp: {status['binary']}",
             f"Profile επεξεργαστή: {status['cpu_profile_requested']} -> {status['cpu_profile_resolved']}",
             f"Ρυθμίσεις: νήματα={runtime['threads']}, context={runtime['context']}, batch={runtime['batch']}, ubatch={runtime['ubatch']}, όριο tokens={runtime['max_tokens']}",
@@ -4898,13 +5671,230 @@ def handle_command(assistant: PocketAssistant, command_line: str) -> Tuple[bool,
         return True, "\n".join(lines)
     return True, assistant.t("Unknown command. Type /help.", "Άγνωστη εντολή. Γράψε /βοήθεια.", language)
 
+
+SIMPLE_HELP_TRIGGERS = {
+    "help", "help me", "options", "show options", "menu", "commands",
+    "βοηθεια", "βοήθεια", "βοηθησε με", "βοήθησέ με", "μενου", "μενού",
+    "επιλογες", "επιλογές", "εντολες", "εντολές",
+}
+
+PLAIN_EXIT_TRIGGERS = {
+    "exit", "quit", "close", "goodbye", "bye",
+    "εξοδος", "έξοδος", "κλεισε", "κλείσε", "αντιο", "αντίο",
+}
+
+PLAIN_SCAN_TRIGGERS = {
+    "scan phone", "scan my phone", "check my phone", "find best model",
+    "choose best model", "select best model", "scan device",
+    "σαρωση κινητου", "σάρωση κινητού", "ελεγξε το κινητο", "έλεγξε το κινητό",
+    "βρες το καλυτερο μοντελο", "βρες το καλύτερο μοντέλο",
+}
+
+PLAIN_PERSONA_TRIGGERS = {
+    "change your name", "name the ai", "name ai", "change ai name",
+    "change personality", "humanize ai",
+    "αλλαξε ονομα", "άλλαξε όνομα", "ονομασε το ai", "ονόμασε το ai",
+    "αλλαξε προσωπικοτητα", "άλλαξε προσωπικότητα",
+}
+
+
+def _easy_scan_and_apply(assistant: PocketAssistant, language: str) -> str:
+    print(assistant.t(
+        "Scanning the phone and checking available RAM and storage...",
+        "Γίνεται σάρωση του κινητού, της διαθέσιμης RAM και του χώρου...",
+        language,
+    ))
+    scan = scan_phone_hardware(assistant.data_dir, save=True, run_benchmark=True)
+    recommendation = scan.get("recommendation", {})
+    selected_model = str(recommendation.get("gguf_model", "internal"))
+    runtime_profile = str(recommendation.get("runtime_profile", "auto"))
+    hybrid_mode = str(recommendation.get("hybrid_mode", DEFAULT_HYBRID_MODE))
+
+    try:
+        assistant.set_llm_cpu_profile(runtime_profile)
+    except (OSError, ValueError):
+        pass
+    if hybrid_mode in HYBRID_MODES:
+        try:
+            assistant.set_hybrid_mode(hybrid_mode)
+        except ValueError:
+            pass
+    if selected_model in {"fast", "quality"}:
+        try:
+            assistant.set_llm_model(selected_model)
+            assistant.set_llm_mode("fallback")
+        except (OSError, ValueError):
+            assistant.set_llm_mode("off")
+            selected_model = "internal"
+    else:
+        assistant.set_llm_mode("off")
+
+    total_ram = human_size(int(scan.get("ram", {}).get("total", 0) or 0))
+    available_ram = human_size(int(scan.get("ram", {}).get("available", 0) or 0))
+    storage_free = human_size(int(scan.get("storage", {}).get("runtime", {}).get("free", 0) or 0))
+    if language == "el":
+        return (
+            "Η σάρωση ολοκληρώθηκε.\n"
+            f"RAM: {total_ram} συνολικά, {available_ram} διαθέσιμα\n"
+            f"Ελεύθερος χώρος: {storage_free}\n"
+            f"Επιλεγμένο μοντέλο: {selected_model}\n"
+            f"Runtime: {runtime_profile}\n"
+            f"Υβριδική λειτουργία: {hybrid_mode}\n"
+            "Οι ασφαλείς ρυθμίσεις εφαρμόστηκαν σε αυτή τη συνομιλία."
+        )
+    return (
+        "Scan complete.\n"
+        f"RAM: {total_ram} total, {available_ram} available\n"
+        f"Free storage: {storage_free}\n"
+        f"Selected model: {selected_model}\n"
+        f"Runtime: {runtime_profile}\n"
+        f"Hybrid mode: {hybrid_mode}\n"
+        "The safe settings were applied to this conversation."
+    )
+
+
+def easy_help_menu(assistant: PocketAssistant, language: str) -> bool:
+    """Open a simple numbered menu after the user types help."""
+    if language == "el":
+        print("\nΤι θέλεις να κάνεις;")
+        print("  1. Επιστροφή στη συνομιλία")
+        print("  2. Σάρωση κινητού και αυτόματη επιλογή καλύτερου μοντέλου")
+        print("  3. Αλλαγή ονόματος και τρόπου ομιλίας του AI")
+        print("  4. Δίδαξε στο AI μία ερώτηση και απάντηση")
+        print("  5. Μάθηση από αρχείο ή φάκελο")
+        print("  6. Ασφαλής έρευνα στο διαδίκτυο και μάθηση")
+        print("  7. Προβολή ενεργού μοντέλου και κατάστασης")
+        print("  8. Προβολή προχωρημένων εντολών")
+        print("  9. Έξοδος")
+        menu_prompt = "Επίλεξε 1-9: "
+    else:
+        print("\nWhat would you like to do?")
+        print("  1. Return to chat")
+        print("  2. Scan phone and automatically choose the best model")
+        print("  3. Change the AI name and speaking style")
+        print("  4. Teach the AI a question and answer")
+        print("  5. Learn from a file or folder")
+        print("  6. Safely research the web and learn")
+        print("  7. Show active model and status")
+        print("  8. Show advanced commands")
+        print("  9. Exit")
+        menu_prompt = "Choose 1-9: "
+
+    try:
+        choice = input(menu_prompt).strip()
+    except (EOFError, KeyboardInterrupt):
+        print()
+        return True
+
+    if choice in {"", "1"}:
+        return True
+    if choice == "2":
+        print(_easy_scan_and_apply(assistant, language))
+        return True
+    if choice == "3":
+        configure_persona_menu(assistant.data_dir)
+        assistant.persona = load_persona(assistant.data_dir)
+        print(assistant.t(
+            f"Done. My name is {assistant.assistant_name}.",
+            f"Έτοιμο. Το όνομά μου είναι {assistant.assistant_name}.",
+            language,
+        ))
+        return True
+    if choice == "4":
+        try:
+            question = input("Question: " if language != "el" else "Ερώτηση: ").strip()
+            answer = input("Answer: " if language != "el" else "Απάντηση: ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print()
+            return True
+        if not question or not answer:
+            print(assistant.t("Nothing was saved.", "Δεν αποθηκεύτηκε κάτι.", language))
+            return True
+        if detect_language(question) == "unsupported" or detect_language(answer) == "unsupported":
+            print(assistant.t(
+                "Teaching supports English and Greek only.",
+                "Η εκμάθηση υποστηρίζει μόνο Αγγλικά και Ελληνικά.",
+                language,
+            ))
+            return True
+        item_id = assistant.store.teach(question, answer)
+        print(assistant.t(
+            f"Learned and saved locally as item {item_id}.",
+            f"Το έμαθα και αποθηκεύτηκε τοπικά ως στοιχείο {item_id}.",
+            language,
+        ))
+        return True
+    if choice == "5":
+        try:
+            raw_path = input(
+                "File or folder path: " if language != "el" else "Διαδρομή αρχείου ή φακέλου: "
+            ).strip()
+        except (EOFError, KeyboardInterrupt):
+            print()
+            return True
+        if not raw_path:
+            return True
+        try:
+            result = ingest_path(assistant.store, Path(raw_path).expanduser())
+            print(assistant.t(
+                f"Indexed {result['files_indexed']} file(s) and added {result['chunks_added']} knowledge chunks.",
+                f"Έγινε ευρετηρίαση {result['files_indexed']} αρχείου/ων και προστέθηκαν {result['chunks_added']} τμήματα γνώσης.",
+                language,
+            ))
+        except (OSError, ValueError) as error:
+            print(assistant.t(
+                f"Could not learn from that path: {error}",
+                f"Δεν ήταν δυνατή η μάθηση από αυτή τη διαδρομή: {error}",
+                language,
+            ))
+        return True
+    if choice == "6":
+        try:
+            query = input(
+                "Public research topic: " if language != "el" else "Θέμα δημόσιας έρευνας: "
+            ).strip()
+        except (EOFError, KeyboardInterrupt):
+            print()
+            return True
+        if not query:
+            return True
+        try:
+            result = assistant.web_research.learn(query, max_pages=3)
+            print(assistant.t(
+                f"Research complete: {len(result['results'])} result(s), {result['pages']} page(s), "
+                f"{result['chunks']} knowledge chunks saved.",
+                f"Η έρευνα ολοκληρώθηκε: {len(result['results'])} αποτέλεσμα/τα, {result['pages']} σελίδα/ες "
+                f"και {result['chunks']} τμήματα γνώσης αποθηκεύτηκαν.",
+                language,
+            ))
+        except (OSError, ValueError) as error:
+            print(assistant.t(
+                f"Web learning failed: {error}",
+                f"Η μάθηση από το διαδίκτυο απέτυχε: {error}",
+                language,
+            ))
+        return True
+    if choice == "7":
+        print("\n" + assistant.stats_text())
+        return True
+    if choice == "8":
+        print("\n" + (HELP_TEXT_EL if language == "el" else HELP_TEXT_EN))
+        return True
+    if choice == "9":
+        return False
+
+    print(assistant.t("Choose a number from 1 to 9.", "Επίλεξε αριθμό από 1 έως 9.", language))
+    return True
+
+
 def chat_loop(assistant: PocketAssistant) -> None:
     if assistant.language_mode == "el":
-        print(f"\n{assistant.assistant_name} είναι έτοιμο. Γράψε /βοήθεια για εντολές.")
+        print(f"\n{assistant.assistant_name} είναι έτοιμο. Ρώτησέ με οτιδήποτε ή γράψε help για επιλογές.")
     elif assistant.language_mode == "en":
-        print(f"\n{assistant.assistant_name} is ready. Type /help for commands.")
+        print(f"\n{assistant.assistant_name} is ready. Ask me anything, or type help for options.")
     else:
-        print(f"\n{assistant.assistant_name} is ready / είναι έτοιμο. Type /help or /βοήθεια.")
+        print(f"\n{assistant.assistant_name} is ready / είναι έτοιμο. Ask anything, or type help / βοήθεια.")
+
     while True:
         try:
             prompt = "Εσύ: " if assistant.last_language == "el" else "You: "
@@ -4915,6 +5905,34 @@ def chat_loop(assistant: PocketAssistant) -> None:
             return
         if not text:
             continue
+
+        normalized_plain = normalize_text(text.lstrip("/"))
+        detected_language = "el" if GREEK_CHAR_RE.search(text) else assistant.last_language
+        if assistant.language_mode in SUPPORTED_LANGUAGES:
+            detected_language = assistant.language_mode
+
+        if normalized_plain in SIMPLE_HELP_TRIGGERS:
+            if not easy_help_menu(assistant, detected_language):
+                farewell = assistant.t("Goodbye.", "Αντίο.", detected_language)
+                print(f"{assistant.assistant_name}: {farewell}")
+                return
+            continue
+        if normalized_plain in PLAIN_EXIT_TRIGGERS:
+            farewell = assistant.t("Goodbye.", "Αντίο.", detected_language)
+            print(f"{assistant.assistant_name}: {farewell}")
+            return
+        if normalized_plain in PLAIN_SCAN_TRIGGERS:
+            print(f"{assistant.assistant_name}: {_easy_scan_and_apply(assistant, detected_language)}")
+            continue
+        if normalized_plain in PLAIN_PERSONA_TRIGGERS:
+            configure_persona_menu(assistant.data_dir)
+            assistant.persona = load_persona(assistant.data_dir)
+            print(
+                f"{assistant.assistant_name}: "
+                + assistant.t("Ready. Ask me anything.", "Έτοιμο. Ρώτησέ με οτιδήποτε.", detected_language)
+            )
+            continue
+
         if text.startswith("/"):
             keep_running, message = handle_command(assistant, text)
             if message:
@@ -4922,6 +5940,7 @@ def chat_loop(assistant: PocketAssistant) -> None:
             if not keep_running:
                 return
             continue
+
         response, details = assistant.answer(text)
         print(f"{assistant.assistant_name}: {response}")
         if assistant.debug:
@@ -4972,6 +5991,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--cpu-profile", choices=("auto", *LLM_CPU_PROFILES.keys()),
         help="GGUF processor preset selected automatically from CPU, RAM, and storage.",
+    )
+    parser.add_argument(
+        "--hybrid", dest="hybrid_mode", choices=tuple(HYBRID_MODES), default=DEFAULT_HYBRID_MODE,
+        help="Hybrid inference mode including adaptive, expert, consensus, and cascade.",
     )
     parser.add_argument(
         "--confidence", type=float, default=DEFAULT_CONFIDENCE,
@@ -5071,16 +6094,18 @@ def main() -> int:
     args = parse_args()
     data_dir = args.data.expanduser().resolve()
     recommendation: Optional[dict] = None
+    simple_startup = len(sys.argv) == 1
 
-    # With no command-line arguments, the program intentionally exposes only
-    # the two requested top-level menu actions.
-    if len(sys.argv) == 1:
-        scan = launcher_menu(data_dir)
-        if scan is None:
-            return 0
+    # Normal launch enters chat immediately. Hardware matching is automatic.
+    if simple_startup:
+        scan = automatic_startup_scan(
+            data_dir,
+            quiet=load_device_profile(data_dir) is not None,
+        )
         recommendation = scan.get("recommendation", {})
         args.profile = str(recommendation.get("classifier_profile", "balanced"))
         args.cpu_profile = str(recommendation.get("runtime_profile", "auto"))
+        args.hybrid_mode = str(recommendation.get("hybrid_mode", DEFAULT_HYBRID_MODE))
 
     dataset_path = data_dir / "dataset.json"
     model_path = data_dir / "neural_model.pkl.gz"
@@ -5099,16 +6124,18 @@ def main() -> int:
         data_dir.mkdir(parents=True, exist_ok=True)
         ensure_dataset(dataset_path)
         profile_name = choose_auto_profile() if args.profile == "auto" else args.profile
-        print_banner(profile_name)
         profile = MODEL_PROFILES[profile_name]
-        print(profile["description"])
-        print(f"Data: {data_dir}")
-        if recommendation:
-            print(
-                f"Automatic match: model={recommendation.get('gguf_model')}, "
-                f"runtime={recommendation.get('runtime_profile')}, classifier={profile_name}."
-            )
-        if bootstrap_pretrained_model(dataset_path, model_path, metadata_path, profile_name):
+        if not simple_startup:
+            print_banner(profile_name)
+            print(profile["description"])
+            print(f"Data: {data_dir}")
+            if recommendation:
+                print(
+                    f"Automatic match: model={recommendation.get('gguf_model')}, "
+                    f"runtime={recommendation.get('runtime_profile')}, classifier={profile_name}, hybrid={recommendation.get('hybrid_mode')}."
+                )
+        installed_pretrained = bootstrap_pretrained_model(dataset_path, model_path, metadata_path, profile_name)
+        if installed_pretrained and not simple_startup:
             print("Installed a bundled pre-trained classifier.")
 
         model, dataset, metadata = load_or_train_model(
@@ -5136,10 +6163,14 @@ def main() -> int:
         try:
             if args.cpu_profile:
                 assistant.set_llm_cpu_profile(args.cpu_profile)
-                runtime = assistant.local_llm.runtime_settings()
+            if getattr(args, "hybrid_mode", None):
+                assistant.set_hybrid_mode(args.hybrid_mode)
+            runtime = assistant.local_llm.runtime_settings()
+            if not simple_startup:
                 print(
-                    f"GGUF CPU profile: {args.cpu_profile} -> {runtime['resolved']} "
-                    f"({runtime['threads']} thread(s), context {runtime['context']}, batch {runtime['batch']})."
+                    f"GGUF CPU profile: {assistant.local_llm.requested_cpu_profile} -> {runtime['resolved']} "
+                    f"({runtime['threads']} thread(s), context {runtime['context']}, batch {runtime['batch']}); "
+                    f"hybrid={assistant.hybrid_mode}."
                 )
             if recommendation:
                 selected_model = str(recommendation.get("gguf_model", "internal"))

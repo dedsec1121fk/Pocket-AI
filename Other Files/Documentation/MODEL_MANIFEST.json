@@ -1,11 +1,7 @@
 {
-  "package": "Pocket AI Expanded Model Pack",
-  "package_version": 12,
+  "package": "Pocket AI Hybrid Automatic Model Pack",
+  "package_version": 18,
   "target": "Termux on unrooted Android phones from legacy low-end devices through modern phones",
-  "main_menu": [
-    "Scan Phone To Find Matching AI Model",
-    "Run Local AI"
-  ],
   "automatic_scan": {
     "checks": [
       "processor identifiers and family",
@@ -14,7 +10,11 @@
       "short integer and floating-point benchmark",
       "total and currently available RAM",
       "free application and shared storage",
-      "bundled model presence"
+      "bundled model presence",
+      "live thermal-zone and battery temperature",
+      "battery level, health, charging and power-saving state",
+      "GGUF header and SHA-256 integrity during full scan",
+      "resource pressure between sequential hybrid passes"
     ],
     "unknown_processor_fallback": true,
     "loads_simultaneous_gguf_models": 1,
@@ -29,9 +29,17 @@
       "code",
       "math",
       "research"
+    ],
+    "hybrid_modes": [
+      "off",
+      "speed",
+      "smart",
+      "quality",
+      "cascade",
+      "auto"
     ]
   },
-  "model_count": 12,
+  "model_count": 21,
   "models": [
     {
       "id": "fast",
@@ -200,6 +208,116 @@
       "minimum_total_ram_bytes": 536870912,
       "requires_64_bit": false,
       "processor_combinations": "Any processor; loaded as a compact task overlay and does not start a second GGUF model"
+    },
+    {
+      "id": "hybrid_router",
+      "name": "PocketAI Hybrid Router",
+      "kind": "resource-aware hybrid routing model",
+      "file": "Models/PocketAI_Hybrid_Router.json.gz",
+      "size_bytes": 524,
+      "sha256": "ad582fcbb6bc1757b73c24bacd0719ccdf65f539de359841ac0bc6fe877e0ff5",
+      "requires_64_bit": false,
+      "processor_combinations": "Any processor; this compact controller coordinates other bundled models and does not run a transformer by itself."
+    },
+    {
+      "id": "query_planner",
+      "name": "PocketAI Query Planner",
+      "kind": "bilingual query complexity and task planning model",
+      "file": "Models/PocketAI_Query_Planner.json.gz",
+      "size_bytes": 572,
+      "sha256": "d1196e9d7726b0dbd662fac2869e971cae0152e44ba0a208d716da47f01242ee",
+      "requires_64_bit": false,
+      "processor_combinations": "Any processor; this compact controller coordinates other bundled models and does not run a transformer by itself."
+    },
+    {
+      "id": "response_verifier",
+      "name": "PocketAI Response Verifier",
+      "kind": "bilingual response-quality scoring model",
+      "file": "Models/PocketAI_Response_Verifier.json.gz",
+      "size_bytes": 376,
+      "sha256": "fbf8a5fa754ee121b0e835c6ccdabc2b5e022d7b7a17211902c6784556a452a3",
+      "requires_64_bit": false,
+      "processor_combinations": "Any processor; this compact controller coordinates other bundled models and does not run a transformer by itself."
+    },
+    {
+      "id": "resource_guard",
+      "name": "PocketAI Resource Guard",
+      "kind": "live phone resource protection model",
+      "file": "Models/PocketAI_Resource_Guard.json.gz",
+      "size_bytes": 439,
+      "sha256": "0caaa2e2fafadb51027fb75bd8e56f3031876df69423dacda280afeed20c2d23",
+      "requires_64_bit": false,
+      "processor_combinations": "Any processor; this compact controller coordinates other bundled models and does not run a transformer by itself."
+    },
+    {
+      "id": "adaptive_controller",
+      "name": "Pocket AI Adaptive Controller",
+      "kind": "hybrid control model",
+      "file": "Models/PocketAI_Adaptive_Controller.json.gz",
+      "size_bytes": 261,
+      "sha256": "4a4319b6c72f8d3627cdf9b5a6dec3d973690c3caae50feca609a69953b0eebf",
+      "parameters": 0,
+      "minimum_total_ram_bytes": 536870912,
+      "minimum_available_ram_bytes": 83886080,
+      "minimum_cpu_score": 0,
+      "requires_64_bit": false,
+      "processor_combinations": "Any processor supported by Pocket AI; controller runs in standard Python."
+    },
+    {
+      "id": "consensus_controller",
+      "name": "Pocket AI Consensus Controller",
+      "kind": "hybrid control model",
+      "file": "Models/PocketAI_Consensus_Controller.json.gz",
+      "size_bytes": 258,
+      "sha256": "c5ead29eeb0f602820aa4a859200485ba751e49acc13f50fe19a965021235de7",
+      "parameters": 0,
+      "minimum_total_ram_bytes": 536870912,
+      "minimum_available_ram_bytes": 83886080,
+      "minimum_cpu_score": 0,
+      "requires_64_bit": false,
+      "processor_combinations": "Any processor supported by Pocket AI; controller runs in standard Python."
+    },
+    {
+      "id": "persona_controller",
+      "name": "Pocket AI Persona Controller",
+      "kind": "conversation control model",
+      "file": "Models/PocketAI_Persona_Controller.json.gz",
+      "size_bytes": 241,
+      "sha256": "78f5bb2ddb0878a3d013aa0fc23a50b1ca4f729d8bda9f213d3208535c762046",
+      "parameters": 0,
+      "minimum_total_ram_bytes": 536870912,
+      "minimum_available_ram_bytes": 83886080,
+      "minimum_cpu_score": 0,
+      "requires_64_bit": false,
+      "processor_combinations": "Any processor supported by Pocket AI; controller runs in standard Python."
+    },
+    {
+      "id": "context_optimizer",
+      "name": "Pocket AI Context Optimizer",
+      "kind": "retrieval context control model",
+      "file": "Models/PocketAI_Context_Optimizer.json.gz",
+      "size_bytes": 230,
+      "sha256": "d6650f28a00359af85be657fab4f6cd238bcef1235b6883725033aa6977a2ace",
+      "parameters": 0,
+      "minimum_total_ram_bytes": 536870912,
+      "minimum_available_ram_bytes": 83886080,
+      "minimum_cpu_score": 0,
+      "requires_64_bit": false,
+      "processor_combinations": "Any processor supported by Pocket AI; controller runs in standard Python."
+    },
+    {
+      "id": "confidence_calibrator",
+      "name": "Pocket AI Confidence Calibrator",
+      "kind": "answer confidence control model",
+      "file": "Models/PocketAI_Confidence_Calibrator.json.gz",
+      "size_bytes": 209,
+      "sha256": "7cb303c4c08a45cbd84deeb8bb994600148184484ab655e3a12057f9e7a566c6",
+      "parameters": 0,
+      "minimum_total_ram_bytes": 536870912,
+      "minimum_available_ram_bytes": 83886080,
+      "minimum_cpu_score": 0,
+      "requires_64_bit": false,
+      "processor_combinations": "Any processor supported by Pocket AI; controller runs in standard Python."
     }
   ],
   "runtime_profiles": {
@@ -248,6 +366,56 @@
     "main_script": "Pocket AI.py",
     "models_folder": "Models",
     "other_files_folder": "Other Files",
-    "generated_data_folder": "Other Files/Saved Data"
+    "generated_data_folder": "Other Files/Saved Data",
+    "github_readme": "README.md",
+    "runtime_modules": "Other Files/Modules/"
+  },
+  "persona_system": {
+    "persistent_file": "Other Files/Saved Data/persona.json",
+    "styles": [
+      "friendly",
+      "calm_expert",
+      "casual",
+      "mentor",
+      "direct"
+    ],
+    "commands": [
+      "/persona",
+      "/name",
+      "/style",
+      "/human"
+    ],
+    "disclosure": "Natural conversation style; the assistant still identifies as AI."
+  },
+  "hybrid_modes": [
+    "auto",
+    "off",
+    "speed",
+    "smart",
+    "quality",
+    "adaptive",
+    "expert",
+    "consensus",
+    "cascade"
+  ],
+  "interface": {
+    "startup": "Direct chat",
+    "help_trigger": [
+      "help",
+      "/help",
+      "βοήθεια",
+      "/βοήθεια"
+    ],
+    "help_menu": [
+      "Return to chat",
+      "Scan phone and automatically choose the best model",
+      "Change the AI name and speaking style",
+      "Teach the AI a question and answer",
+      "Learn from a file or folder",
+      "Safely research the web and learn",
+      "Show active model and status",
+      "Show advanced commands",
+      "Exit"
+    ]
   }
 }
