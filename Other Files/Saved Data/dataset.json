@@ -1,0 +1,942 @@
+{
+  "dataset_version": 6,
+  "assistant_name": "PocketAI Bilingual MAX",
+  "language": "English and Greek only",
+  "fallback_responses": [
+    "I do not have a reliable local answer for that yet. Use /teach or /ingest to add knowledge.",
+    "That request is outside my current model and indexed memory.",
+    "I am uncertain. Teach me a direct answer with /teach question | answer.",
+    "I could not match that confidently. Try a more specific question or index relevant notes."
+  ],
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": [
+        "hello",
+        "hi",
+        "hey",
+        "hello there",
+        "good morning",
+        "good afternoon",
+        "good evening",
+        "are you there",
+        "hi assistant",
+        "hey pocket ai",
+        "γεια",
+        "γεια σου",
+        "καλημέρα",
+        "καλησπέρα",
+        "είσαι εκεί"
+      ],
+      "responses": [
+        "Hello{name_suffix}. I am ready.",
+        "Hi{name_suffix}. What should we work on?",
+        "I am here and running locally on this phone.",
+        "Γεια σου{name_suffix}. Είμαι έτοιμο."
+      ]
+    },
+    {
+      "tag": "goodbye",
+      "patterns": [
+        "bye",
+        "goodbye",
+        "see you",
+        "see you later",
+        "talk later",
+        "I have to go",
+        "close chat",
+        "exit assistant",
+        "good night",
+        "αντίο",
+        "τα λέμε",
+        "καληνύχτα"
+      ],
+      "responses": [
+        "Goodbye{name_suffix}.",
+        "See you later.",
+        "The local session is closing.",
+        "Αντίο{name_suffix}."
+      ]
+    },
+    {
+      "tag": "identity",
+      "patterns": [
+        "who are you",
+        "what are you",
+        "what is your name",
+        "tell me your name",
+        "are you artificial intelligence",
+        "are you an ai",
+        "describe yourself",
+        "who made you",
+        "what model are you",
+        "ποιος είσαι",
+        "τι είσαι",
+        "πως σε λένε"
+      ],
+      "responses": [
+        "I am PocketAI MAX, a hybrid offline assistant built from scratch in standard Python.",
+        "I combine a small neural network, indexed retrieval memory, and local utilities.",
+        "My name is PocketAI MAX. I run without root, cloud APIs, or heavy AI frameworks."
+      ]
+    },
+    {
+      "tag": "capabilities",
+      "patterns": [
+        "what can you do",
+        "how can you help",
+        "show your abilities",
+        "show features",
+        "what do you know",
+        "can you learn",
+        "can I teach you",
+        "what are your functions",
+        "list your capabilities",
+        "τι μπορείς να κάνεις",
+        "πως μπορείς να βοηθήσεις"
+      ],
+      "responses": [
+        "I can classify requests, retrieve taught answers, index text documents, remember facts, calculate expressions, and run offline utilities.",
+        "Use /help for commands. My knowledge can grow through /teach, /remember, and /ingest.",
+        "I am best at custom offline assistance, FAQs, notes, document search, and lightweight automation guidance."
+      ]
+    },
+    {
+      "tag": "help",
+      "patterns": [
+        "help",
+        "show help",
+        "show commands",
+        "commands",
+        "usage",
+        "how do I use you",
+        "what commands exist",
+        "command list",
+        "βοήθεια",
+        "δείξε εντολές",
+        "πως σε χρησιμοποιώ"
+      ],
+      "responses": [
+        "Type /help to see every command, including teaching, document ingestion, memories, training, statistics, backup, and generation."
+      ]
+    },
+    {
+      "tag": "thanks",
+      "patterns": [
+        "thanks",
+        "thank you",
+        "many thanks",
+        "that helped",
+        "great job",
+        "nice work",
+        "perfect",
+        "very helpful",
+        "excellent",
+        "ευχαριστώ",
+        "σε ευχαριστώ",
+        "τέλεια"
+      ],
+      "responses": [
+        "You are welcome{name_suffix}.",
+        "Glad it helped.",
+        "Understood."
+      ]
+    },
+    {
+      "tag": "apology",
+      "patterns": [
+        "sorry",
+        "my mistake",
+        "I apologize",
+        "forgive me",
+        "oops",
+        "συγγνώμη",
+        "λάθος μου"
+      ],
+      "responses": [
+        "No problem.",
+        "That is fine. We can continue.",
+        "Δεν υπάρχει πρόβλημα."
+      ]
+    },
+    {
+      "tag": "status",
+      "patterns": [
+        "how are you",
+        "are you working",
+        "model status",
+        "are you running",
+        "is everything okay",
+        "system status",
+        "how do you feel",
+        "πως είσαι",
+        "δουλεύεις"
+      ],
+      "responses": [
+        "I am running normally. Use /stats for technical details.",
+        "The assistant is loaded and ready.",
+        "Everything appears operational."
+      ]
+    },
+    {
+      "tag": "offline",
+      "patterns": [
+        "do you need internet",
+        "are you offline",
+        "does this work offline",
+        "internet required",
+        "can you work without wifi",
+        "do you use cloud",
+        "χρειάζεσαι ίντερνετ",
+        "δουλεύεις offline",
+        "λειτουργείς χωρίς σύνδεση"
+      ],
+      "responses": [
+        "I run offline after Python is installed. Neural inference, memory, and document search stay on the device.",
+        "No internet is required for my normal operation.",
+        "I do not call a cloud AI service."
+      ]
+    },
+    {
+      "tag": "privacy",
+      "patterns": [
+        "is my data private",
+        "do you send my data",
+        "where is data stored",
+        "are chats uploaded",
+        "privacy",
+        "do you track me",
+        "is this secure",
+        "είναι ιδιωτικά τα δεδομένα",
+        "στέλνεις τα δεδομένα μου"
+      ],
+      "responses": [
+        "Your model, memories, documents, and chat history are stored locally under {data_dir}.",
+        "This script does not upload chats. Protect the phone and its storage because local files can still be read by anyone with device access.",
+        "Use /where to see the exact local storage paths."
+      ]
+    },
+    {
+      "tag": "training",
+      "patterns": [
+        "how are you trained",
+        "how do I train you",
+        "train the model",
+        "retrain",
+        "how does learning work",
+        "where is the dataset",
+        "neural training",
+        "πως εκπαιδεύεσαι",
+        "πως κάνω training",
+        "εκπαίδευση μοντέλου"
+      ],
+      "responses": [
+        "The neural classifier learns from dataset.json with backpropagation. Run /train after changing intent examples.",
+        "Use /teach for instant retrieval knowledge. Neural intent changes belong in dataset.json and require /train.",
+        "Training uses hashed text features and two hidden layers, then stores a compressed local model."
+      ]
+    },
+    {
+      "tag": "termux",
+      "patterns": [
+        "what is termux",
+        "does this run in termux",
+        "termux support",
+        "android terminal",
+        "can I use this on android",
+        "does it need root",
+        "old android phone",
+        "low end phone",
+        "τι είναι το termux",
+        "τρέχει σε android",
+        "χρειάζεται root"
+      ],
+      "responses": [
+        "This assistant is designed for Python in Termux and does not require root.",
+        "It avoids TensorFlow and PyTorch so it can run on older Android hardware.",
+        "Install Python in Termux, copy this file, and run it normally."
+      ]
+    },
+    {
+      "tag": "android",
+      "patterns": [
+        "tell me about android",
+        "android phone",
+        "android operating system",
+        "phone performance",
+        "old samsung",
+        "galaxy j6",
+        "android storage",
+        "πες μου για android",
+        "παλιό κινητό"
+      ],
+      "responses": [
+        "Android can run local Python through Termux. Performance depends on RAM, thermal limits, and background apps.",
+        "For older phones, use the balanced or max profile and keep large document collections reasonable.",
+        "The assistant is CPU-only and stores its files in the selected data directory."
+      ]
+    },
+    {
+      "tag": "python",
+      "patterns": [
+        "what is python",
+        "learn python",
+        "python programming",
+        "python error",
+        "run python script",
+        "install python",
+        "python language",
+        "τι είναι python",
+        "πως τρέχω python"
+      ],
+      "responses": [
+        "Python is a general-purpose programming language. In Termux, install it with pkg install python.",
+        "For a Python error, provide the complete traceback and the relevant code around the failing line.",
+        "This entire assistant is implemented with Python's standard library."
+      ]
+    },
+    {
+      "tag": "linux",
+      "patterns": [
+        "what is linux",
+        "linux command",
+        "terminal command",
+        "shell help",
+        "bash command",
+        "filesystem linux",
+        "permissions chmod",
+        "τι είναι linux",
+        "εντολές linux"
+      ],
+      "responses": [
+        "Linux-like environments organize files under directories and use commands such as ls, cd, cp, mv, and chmod.",
+        "Use pwd to show the current directory and ls -la to inspect files and permissions.",
+        "Be careful with destructive commands such as rm -rf; verify the path first."
+      ]
+    },
+    {
+      "tag": "files",
+      "patterns": [
+        "where are my files",
+        "how do I copy a file",
+        "move file",
+        "rename file",
+        "delete file",
+        "list files",
+        "file path",
+        "find a file",
+        "που είναι τα αρχεία",
+        "αντιγραφή αρχείου"
+      ],
+      "responses": [
+        "In Termux, ls lists files, cp copies, mv moves or renames, and rm deletes. Quote paths containing spaces.",
+        "Use /where for PocketAI files. Shared Downloads are usually available through ~/storage/downloads after termux-setup-storage.",
+        "Always inspect a target path before deleting or overwriting files."
+      ]
+    },
+    {
+      "tag": "storage",
+      "patterns": [
+        "storage space",
+        "disk space",
+        "phone is full",
+        "check free space",
+        "termux storage permission",
+        "access downloads",
+        "χώρος αποθήκευσης",
+        "γεμάτη μνήμη"
+      ],
+      "responses": [
+        "Run df -h to inspect storage. In Termux, termux-setup-storage creates shortcuts after Android grants permission.",
+        "Use /system for a quick local storage and memory summary.",
+        "Large indexed documents and backups consume more space than the neural model itself."
+      ]
+    },
+    {
+      "tag": "battery",
+      "patterns": [
+        "battery usage",
+        "save battery",
+        "phone gets hot",
+        "overheating",
+        "training drains battery",
+        "battery optimization",
+        "μπαταρία",
+        "ζεσταίνεται το κινητό"
+      ],
+      "responses": [
+        "Neural training uses sustained CPU. Keep the phone ventilated, avoid charging under heavy heat, and use the balanced profile if needed.",
+        "Inference is light; first-run training and large ingestion jobs use more battery.",
+        "Close unnecessary background apps before a large training run."
+      ]
+    },
+    {
+      "tag": "time",
+      "patterns": [
+        "what time is it",
+        "tell me the time",
+        "current time",
+        "local time",
+        "ώρα",
+        "τι ώρα είναι",
+        "πες μου την ώρα"
+      ],
+      "responses": [
+        "The local time is {time}.",
+        "It is {time} on this device."
+      ]
+    },
+    {
+      "tag": "date",
+      "patterns": [
+        "what date is it",
+        "today's date",
+        "what day is today",
+        "current date",
+        "ημερομηνία",
+        "τι μέρα είναι",
+        "τι ημερομηνία έχουμε"
+      ],
+      "responses": [
+        "The local date is {date}.",
+        "Today is {date}."
+      ]
+    },
+    {
+      "tag": "weather",
+      "patterns": [
+        "what is the weather",
+        "weather forecast",
+        "will it rain",
+        "temperature outside",
+        "καιρός",
+        "τι καιρό κάνει",
+        "θα βρέξει"
+      ],
+      "responses": [
+        "I cannot know live weather while fully offline. You can teach me static climate notes, but current forecasts require an external data source.",
+        "Live weather changes constantly and is not available to this offline model."
+      ]
+    },
+    {
+      "tag": "news",
+      "patterns": [
+        "latest news",
+        "what happened today",
+        "current events",
+        "breaking news",
+        "νέα",
+        "ειδήσεις",
+        "τι έγινε σήμερα"
+      ],
+      "responses": [
+        "I cannot verify current news without an internet source. You can ingest downloaded articles and search them locally.",
+        "My built-in knowledge is static; current events require fresh external information."
+      ]
+    },
+    {
+      "tag": "calculator",
+      "patterns": [
+        "can you calculate",
+        "do math",
+        "calculator",
+        "solve arithmetic",
+        "calculate expression",
+        "κάνε υπολογισμό",
+        "αριθμομηχανή"
+      ],
+      "responses": [
+        "Start a message with = or calc, for example: = (12 + 8) * 3.",
+        "I include a safe offline calculator supporting arithmetic and selected mathematical functions."
+      ]
+    },
+    {
+      "tag": "math",
+      "patterns": [
+        "what is mathematics",
+        "help with algebra",
+        "geometry help",
+        "math problem",
+        "equation",
+        "percentage",
+        "average",
+        "μαθηματικά",
+        "άλγεβρα",
+        "εξίσωση"
+      ],
+      "responses": [
+        "Give me a concrete arithmetic expression with = for calculation. For symbolic problems, explain the variables and the required result.",
+        "Mathematics becomes easier when the known values, unknowns, and constraints are written explicitly.",
+        "For percentages: percentage = part divided by total, multiplied by 100."
+      ]
+    },
+    {
+      "tag": "science",
+      "patterns": [
+        "tell me about science",
+        "physics",
+        "chemistry",
+        "biology",
+        "scientific method",
+        "experiment",
+        "επιστήμη",
+        "φυσική",
+        "χημεία",
+        "βιολογία"
+      ],
+      "responses": [
+        "The scientific method uses observations, testable hypotheses, controlled experiments, evidence, and reproducible analysis.",
+        "Ask a specific science question or ingest reference notes for local retrieval.",
+        "Good scientific conclusions distinguish measured evidence from assumptions."
+      ]
+    },
+    {
+      "tag": "history",
+      "patterns": [
+        "tell me history",
+        "historical event",
+        "ancient history",
+        "world history",
+        "ιστορία",
+        "ιστορικό γεγονός",
+        "αρχαία ιστορία"
+      ],
+      "responses": [
+        "Ask about a specific period, place, or event. For detailed accuracy, ingest a trusted reference document and query it locally.",
+        "Historical analysis should separate primary evidence, later interpretation, and uncertainty."
+      ]
+    },
+    {
+      "tag": "geography",
+      "patterns": [
+        "geography",
+        "countries",
+        "capital city",
+        "continents",
+        "maps",
+        "γεωγραφία",
+        "χώρες",
+        "πρωτεύουσα"
+      ],
+      "responses": [
+        "Ask a specific geography question. Static facts can be taught with /teach or loaded from a text document.",
+        "Geography covers physical landscapes, human settlement, borders, climate, and spatial relationships."
+      ]
+    },
+    {
+      "tag": "study",
+      "patterns": [
+        "help me study",
+        "study tips",
+        "how to learn",
+        "memorize better",
+        "exam preparation",
+        "focus on studying",
+        "διάβασμα",
+        "πως να μάθω",
+        "εξετάσεις"
+      ],
+      "responses": [
+        "Use active recall, spaced repetition, short focused sessions, and practice questions instead of rereading alone.",
+        "Break the subject into small objectives, test yourself, then revisit weak areas.",
+        "You can ingest your notes and ask me to retrieve matching passages offline."
+      ]
+    },
+    {
+      "tag": "motivation",
+      "patterns": [
+        "motivate me",
+        "I feel lazy",
+        "I cannot start",
+        "need motivation",
+        "encourage me",
+        "give me confidence",
+        "κίνητρο",
+        "δεν μπορώ να ξεκινήσω"
+      ],
+      "responses": [
+        "Reduce the task to one action that takes less than five minutes, then begin before evaluating your motivation.",
+        "Progress is easier to sustain when the next step is specific and small.",
+        "Start with one measurable action. Momentum can follow action rather than precede it."
+      ]
+    },
+    {
+      "tag": "joke",
+      "patterns": [
+        "tell me a joke",
+        "make me laugh",
+        "say something funny",
+        "joke",
+        "πες αστείο",
+        "κάνε με να γελάσω"
+      ],
+      "responses": [
+        "Why did the local AI refuse the cloud? It had too many attachment issues.",
+        "A programmer's favorite place is the cache. It is where everything temporarily makes sense.",
+        "I tried to tell a recursion joke, but first I had to tell a recursion joke."
+      ]
+    },
+    {
+      "tag": "bored",
+      "patterns": [
+        "I am bored",
+        "nothing to do",
+        "give me an activity",
+        "boredom",
+        "βαριέμαι",
+        "δεν έχω τι να κάνω"
+      ],
+      "responses": [
+        "Choose one: teach me five useful facts, index a document, write a tiny Python tool, or organize ten files.",
+        "Try a twenty-minute project with a visible result, such as a terminal quiz or personal knowledge file.",
+        "Use /ingest on notes you care about, then test how well I retrieve them."
+      ]
+    },
+    {
+      "tag": "coding",
+      "patterns": [
+        "help me code",
+        "programming help",
+        "write software",
+        "coding project",
+        "how to program",
+        "source code",
+        "βοήθεια με κώδικα",
+        "προγραμματισμός"
+      ],
+      "responses": [
+        "Define the input, expected output, constraints, and failure cases before implementing the program.",
+        "For coding help, provide the language, complete error, relevant code, and expected behavior.",
+        "Build in small testable functions and validate each stage before adding more features."
+      ]
+    },
+    {
+      "tag": "debugging",
+      "patterns": [
+        "fix my error",
+        "debug code",
+        "program crashes",
+        "traceback",
+        "syntax error",
+        "name error",
+        "type error",
+        "διόρθωσε το λάθος",
+        "σφάλμα κώδικα"
+      ],
+      "responses": [
+        "Read the traceback from the final line upward, identify the first line in your own code, and inspect the values used there.",
+        "Provide the complete traceback and the surrounding function. Error text without code often hides the real cause.",
+        "Reproduce the failure with the smallest input possible before changing several parts at once."
+      ]
+    },
+    {
+      "tag": "git",
+      "patterns": [
+        "what is git",
+        "git command",
+        "github",
+        "clone repository",
+        "commit changes",
+        "push code",
+        "pull updates",
+        "τι είναι git",
+        "εντολές git"
+      ],
+      "responses": [
+        "Git tracks file history. Common commands include git status, git add, git commit, git pull, and git push.",
+        "Before destructive Git operations, inspect git status and create a backup or branch.",
+        "Use git clone URL to copy a repository, then cd into its folder."
+      ]
+    },
+    {
+      "tag": "networking",
+      "patterns": [
+        "what is an ip address",
+        "network help",
+        "wifi problem",
+        "dns",
+        "router",
+        "localhost",
+        "port",
+        "δικτύωση",
+        "διεύθυνση ip",
+        "θύρα δικτύου"
+      ],
+      "responses": [
+        "An IP address identifies a network interface, while a port identifies a service endpoint on that host.",
+        "127.0.0.1 is the local loopback address and is reachable only from the same device unless a service binds elsewhere.",
+        "Diagnose networking layer by layer: interface, address, route, DNS, connection, then application."
+      ]
+    },
+    {
+      "tag": "cybersecurity",
+      "patterns": [
+        "cybersecurity",
+        "stay safe online",
+        "protect my account",
+        "security tips",
+        "online safety",
+        "secure phone",
+        "κυβερνοασφάλεια",
+        "ασφάλεια στο ίντερνετ"
+      ],
+      "responses": [
+        "Use unique passwords, a password manager, multi-factor authentication, current software, and verified backups.",
+        "Treat unexpected links, attachments, login prompts, and urgency as warning signs.",
+        "Security is risk reduction: minimize exposed services, permissions, reused credentials, and unverified software."
+      ]
+    },
+    {
+      "tag": "passwords",
+      "patterns": [
+        "strong password",
+        "password security",
+        "forgot password",
+        "password manager",
+        "reuse password",
+        "κωδικός πρόσβασης",
+        "ισχυρός κωδικός"
+      ],
+      "responses": [
+        "Use a unique randomly generated password for every important account and store it in a reputable password manager.",
+        "Length and uniqueness matter more than predictable substitutions. Enable multi-factor authentication where possible.",
+        "Never send passwords or recovery codes through ordinary chat."
+      ]
+    },
+    {
+      "tag": "phishing",
+      "patterns": [
+        "what is phishing",
+        "suspicious email",
+        "fake login",
+        "scam message",
+        "malicious link",
+        "phishing attack",
+        "ηλεκτρονικό ψάρεμα",
+        "ύποπτο μήνυμα"
+      ],
+      "responses": [
+        "Phishing impersonates a trusted party to steal credentials, money, or data. Verify the sender and navigate through the official app or site rather than the supplied link.",
+        "Urgency, unexpected attachments, mismatched domains, and requests for secrets are common phishing indicators.",
+        "Do not enter credentials after following an unverified message link."
+      ]
+    },
+    {
+      "tag": "malware",
+      "patterns": [
+        "what is malware",
+        "phone virus",
+        "trojan",
+        "ransomware",
+        "malicious app",
+        "remove malware",
+        "κακόβουλο λογισμικό",
+        "ιός στο κινητό"
+      ],
+      "responses": [
+        "Malware is software designed to harm, spy, disrupt, or gain unauthorized access. Remove suspicious apps, update the device, review permissions, and preserve important evidence before resetting.",
+        "Install applications only from trusted sources and avoid granting permissions unrelated to their function.",
+        "A factory reset can remove many infections, but backup and account recovery planning should come first."
+      ]
+    },
+    {
+      "tag": "backup",
+      "patterns": [
+        "make a backup",
+        "backup data",
+        "restore files",
+        "copy important files",
+        "backup strategy",
+        "αντίγραφο ασφαλείας",
+        "backup αρχείων"
+      ],
+      "responses": [
+        "Keep multiple copies of important data, with at least one copy separated from the phone. Test that restoration actually works.",
+        "Use /backup to archive PocketAI's local model, dataset, memories, and indexed knowledge.",
+        "A backup is only reliable after a successful restore test."
+      ]
+    },
+    {
+      "tag": "updates",
+      "patterns": [
+        "update termux",
+        "update packages",
+        "software update",
+        "upgrade python",
+        "package update",
+        "ενημέρωση termux",
+        "αναβάθμιση πακέτων"
+      ],
+      "responses": [
+        "In Termux, pkg update refreshes package lists and pkg upgrade installs available updates. Review errors before forcing changes.",
+        "Back up important scripts before a major runtime or package upgrade.",
+        "After updating Python, rerun PocketAI and rebuild the local model if its saved format becomes incompatible."
+      ]
+    },
+    {
+      "tag": "ai",
+      "patterns": [
+        "what is ai",
+        "artificial intelligence",
+        "how does ai work",
+        "ai model",
+        "machine intelligence",
+        "τεχνητή νοημοσύνη",
+        "μοντέλο ai"
+      ],
+      "responses": [
+        "Artificial intelligence is a broad field of systems performing tasks associated with perception, prediction, language, planning, or decision-making.",
+        "This assistant uses narrow AI methods: supervised classification, information retrieval, and statistical text generation.",
+        "AI output should be evaluated against evidence because confidence and fluency do not guarantee correctness."
+      ]
+    },
+    {
+      "tag": "machine_learning",
+      "patterns": [
+        "what is machine learning",
+        "supervised learning",
+        "training data",
+        "classification model",
+        "features and labels",
+        "μηχανική μάθηση"
+      ],
+      "responses": [
+        "Machine learning fits parameters from examples. In supervised classification, inputs have known labels used to calculate training error.",
+        "Data quality, representative examples, validation, and error analysis matter as much as model size.",
+        "PocketAI's classifier maps hashed text features to intent labels."
+      ]
+    },
+    {
+      "tag": "neural_network",
+      "patterns": [
+        "what is a neural network",
+        "hidden layer",
+        "backpropagation",
+        "softmax",
+        "activation function",
+        "deep learning",
+        "νευρωνικό δίκτυο",
+        "backpropagation"
+      ],
+      "responses": [
+        "A neural network applies learned weighted transformations. Backpropagation calculates how each weight contributed to prediction error.",
+        "PocketAI uses sparse hashed input features, two tanh hidden layers, and a softmax output over intents.",
+        "Larger networks can represent more patterns but require more computation, data, and careful validation."
+      ]
+    },
+    {
+      "tag": "limitations",
+      "patterns": [
+        "what are your limitations",
+        "are you like chatgpt",
+        "can you understand everything",
+        "do you hallucinate",
+        "how smart are you",
+        "weaknesses",
+        "περιορισμοί"
+      ],
+      "responses": [
+        "I am not a large language model. I have limited built-in knowledge and work best with taught answers and indexed documents.",
+        "I can misclassify unfamiliar text or retrieve a superficially similar passage. Verify important answers.",
+        "My strength is private, lightweight, customizable offline assistance rather than broad open-ended reasoning."
+      ]
+    },
+    {
+      "tag": "memory",
+      "patterns": [
+        "can you remember",
+        "what do you remember",
+        "long term memory",
+        "save a fact",
+        "forget something",
+        "personal memory",
+        "θυμάσαι",
+        "μνήμη"
+      ],
+      "responses": [
+        "Use /remember key = value to store a local memory, /memories to list keys, and /forget key to remove one.",
+        "My persistent memories are stored locally in SQLite and remain available after restart.",
+        "Do not store secrets that should not exist in plain local application data."
+      ]
+    },
+    {
+      "tag": "documents",
+      "patterns": [
+        "read my document",
+        "search documents",
+        "ingest file",
+        "index notes",
+        "learn from text file",
+        "document knowledge",
+        "διάβασε αρχείο",
+        "αναζήτηση εγγράφων"
+      ],
+      "responses": [
+        "Use /ingest PATH to index text files or a folder. Then ask questions using words that occur in the material.",
+        "Document retrieval is local and can hold much more knowledge than the neural classifier itself.",
+        "Plain text, Markdown, code, CSV, JSON, HTML, and several configuration formats are supported."
+      ]
+    },
+    {
+      "tag": "teach",
+      "patterns": [
+        "teach you something",
+        "add an answer",
+        "learn this question",
+        "custom knowledge",
+        "save question and answer",
+        "να σου μάθω",
+        "πρόσθεσε απάντηση"
+      ],
+      "responses": [
+        "Use /teach question | answer for immediate persistent knowledge, or run /teach interactively.",
+        "Taught question-and-answer pairs are indexed immediately and do not require neural retraining.",
+        "For a new broad intent, edit dataset.json and run /train."
+      ]
+    },
+    {
+      "tag": "creator",
+      "patterns": [
+        "who created pocket ai",
+        "who is the creator",
+        "who wrote this",
+        "who built you",
+        "author",
+        "ποιος σε έφτιαξε"
+      ],
+      "responses": [
+        "This local build belongs to the person running it. You can set creator information with /remember creator = your name.",
+        "I am a self-contained Python program that can be customized by editing its local files."
+      ]
+    },
+    {
+      "tag": "dedsec",
+      "patterns": [
+        "dedsec project",
+        "what is dedsec",
+        "ded sec",
+        "ded-sec.space",
+        "dedsec tools",
+        "project creator"
+      ],
+      "responses": [
+        "DedSec Project is the user's broader Termux and cybersecurity-tool project. Store current project facts with /teach or index its documentation with /ingest.",
+        "You can make me a project assistant by ingesting the DedSec README and teaching project-specific questions."
+      ]
+    },
+    {
+      "tag": "unknown",
+      "patterns": [
+        "something unrelated",
+        "random unknown request",
+        "unrecognized words",
+        "question outside training",
+        "I need a different topic"
+      ],
+      "responses": [
+        "I may need more local knowledge for that. Use /teach or /ingest to extend me.",
+        "That does not closely match my built-in intents. I can learn a direct answer with /teach."
+      ]
+    }
+  ]
+}
