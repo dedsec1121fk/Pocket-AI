@@ -1,0 +1,27 @@
+SIMPLE ENGLISH WIKIPEDIA OFFLINE INDEX — ATTRIBUTION NOTICE
+
+Pocket AI includes an indexed transformation of text described by its source
+publisher as a plain-text Simple English Wikipedia corpus.
+
+Source repository:
+https://huggingface.co/ffatty/plain-text-wikipedia-simpleenglish
+
+Original encyclopedia project:
+https://simple.wikipedia.org/
+
+Retrieved for this transformation: 2026-07-09
+
+Simple English Wikipedia's copyright footer states that text is available under
+the Creative Commons Attribution-ShareAlike License and the GNU Free
+Documentation License; additional terms may apply. Wikipedia contributors
+retain their rights. Reusers are responsible for satisfying applicable
+attribution, license-linking, indication-of-changes, and share-alike terms.
+
+Pocket AI does not claim authorship or copyright ownership of third-party
+Wikipedia text. The bundled SQLite databases are a technical indexing and
+chunking transformation for offline retrieval. They may be incomplete or
+outdated and are provided without warranty.
+
+Relevant licensing information:
+https://simple.wikipedia.org/wiki/MediaWiki:Wikimedia-copyright-footer
+https://foundation.wikimedia.org/wiki/Policy:Terms_of_Use
