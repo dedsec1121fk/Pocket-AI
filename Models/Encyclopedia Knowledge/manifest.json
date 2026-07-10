@@ -1,0 +1,114 @@
+{
+  "format_version": 1,
+  "name": "Pocket AI Offline Simple English Encyclopedia",
+  "source_repository": "ffatty/plain-text-wikipedia-simpleenglish",
+  "source_description": "Plain-text corpus described by its publisher as Simple English Wikipedia, ported from Kaggle.",
+  "retrieved_utc": "2026-07-09T18:14:23.882519+00:00",
+  "warning": "Offline snapshot may be incomplete or outdated. Verify time-sensitive, medical, legal, financial, political, and safety-critical claims.",
+  "shards": [
+    {
+      "file": "PocketAI_SimpleWiki_01.sqlite3",
+      "bytes": 21225472,
+      "sha256": "3e18b80bbcf51ae3e2077b4c1b260203135d33a2995ea31fd8df0132fc677d93",
+      "source_files": [
+        "wiki_00",
+        "wiki_01",
+        "wiki_02",
+        "wiki_03",
+        "wiki_04",
+        "wiki_05",
+        "wiki_06",
+        "wiki_07",
+        "wiki_08",
+        "wiki_09"
+      ],
+      "articles": 4038,
+      "chunks": 9910,
+      "characters": 10302259
+    },
+    {
+      "file": "PocketAI_SimpleWiki_02.sqlite3",
+      "bytes": 21241856,
+      "sha256": "9f3a5f021e9c24f7c34299cd728300dc724fe417d8b912c5e8ca5fcf7715a503",
+      "source_files": [
+        "wiki_10",
+        "wiki_11",
+        "wiki_12",
+        "wiki_13",
+        "wiki_14",
+        "wiki_15",
+        "wiki_16",
+        "wiki_17",
+        "wiki_18",
+        "wiki_19"
+      ],
+      "articles": 6262,
+      "chunks": 11181,
+      "characters": 10298214
+    },
+    {
+      "file": "PocketAI_SimpleWiki_03.sqlite3",
+      "bytes": 21307392,
+      "sha256": "e890213fe5278d90b8793be4a1db73b7ed69254d630a22797869b3f590f3667f",
+      "source_files": [
+        "wiki_20",
+        "wiki_21",
+        "wiki_22",
+        "wiki_23",
+        "wiki_24",
+        "wiki_25",
+        "wiki_26",
+        "wiki_27",
+        "wiki_28",
+        "wiki_29"
+      ],
+      "articles": 7374,
+      "chunks": 11794,
+      "characters": 10266395
+    },
+    {
+      "file": "PocketAI_SimpleWiki_04.sqlite3",
+      "bytes": 21331968,
+      "sha256": "05d167ff47f26cbe38408525eef3e1e40af667213513723f5f97dc28d93bcfda",
+      "source_files": [
+        "wiki_30",
+        "wiki_31",
+        "wiki_32",
+        "wiki_33",
+        "wiki_34",
+        "wiki_35",
+        "wiki_36",
+        "wiki_37",
+        "wiki_38",
+        "wiki_39"
+      ],
+      "articles": 10015,
+      "chunks": 14130,
+      "characters": 10160624
+    },
+    {
+      "file": "PocketAI_SimpleWiki_05.sqlite3",
+      "bytes": 21868544,
+      "sha256": "7c725fdae092245c3477fd0cc1ab84236d87e9e169337dd6df2aeaa43a6cc151",
+      "source_files": [
+        "wiki_40",
+        "wiki_41",
+        "wiki_42",
+        "wiki_43",
+        "wiki_44",
+        "wiki_45",
+        "wiki_46",
+        "wiki_47",
+        "wiki_48",
+        "wiki_49"
+      ],
+      "articles": 17902,
+      "chunks": 21327,
+      "characters": 10059714
+    }
+  ],
+  "source_files": 50,
+  "articles": 45591,
+  "chunks": 68342,
+  "characters": 51087206
+}
