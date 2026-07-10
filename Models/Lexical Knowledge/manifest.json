@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "source": "Princeton WordNet 3.0 + Open Multilingual Wordnet Greek mapping",
+  "total_synsets": 117659,
+  "greek_linked_synsets": 17891,
+  "english_lemmas": 206978,
+  "greek_lemmas": 23853,
+  "shards": [
+    {
+      "name": "noun_01",
+      "synsets": 26000,
+      "english_lemmas": 45102,
+      "greek_lemmas": 6311,
+      "source_version": "WordNet 3.0 / OMW Greek",
+      "filename": "PocketAI_WordNet_noun_01.sqlite3",
+      "bytes": 17698816,
+      "sha256": "da7c5fdb916c58e5c56b51c96eaf791e61077ca22a3e8306652a40b3ac73b7b1"
+    },
+    {
+      "name": "noun_02",
+      "synsets": 26000,
+      "english_lemmas": 43085,
+      "greek_lemmas": 7263,
+      "source_version": "WordNet 3.0 / OMW Greek",
+      "filename": "PocketAI_WordNet_noun_02.sqlite3",
+      "bytes": 18309120,
+      "sha256": "e64c6dad2770676164007d6283f7987329f480a75beb30aca8bb53ca7d892a23"
+    },
+    {
+      "name": "noun_03",
+      "synsets": 26000,
+      "english_lemmas": 51436,
+      "greek_lemmas": 4076,
+      "source_version": "WordNet 3.0 / OMW Greek",
+      "filename": "PocketAI_WordNet_noun_03.sqlite3",
+      "bytes": 19148800,
+      "sha256": "1446bc8936bf263fc93465ec0a8fc783f315d84bee9857bd04ec5fb5da5562bb"
+    },
+    {
+      "name": "noun_04",
+      "synsets": 4115,
+      "english_lemmas": 6724,
+      "greek_lemmas": 519,
+      "source_version": "WordNet 3.0 / OMW Greek",
+      "filename": "PocketAI_WordNet_noun_04.sqlite3",
+      "bytes": 2772992,
+      "sha256": "895ea21ef19955121c788e76aa03a29d87864ec8494696b1c7962c1a27be82a7"
+    },
+    {
+      "name": "verb_01",
+      "synsets": 13767,
+      "english_lemmas": 25047,
+      "greek_lemmas": 5110,
+      "source_version": "WordNet 3.0 / OMW Greek",
+      "filename": "PocketAI_WordNet_verb_01.sqlite3",
+      "bytes": 9424896,
+      "sha256": "3da01f7c4969a6fa50b5bc968476670a51af0d09bc9df74db4d94d5a1be2376c"
+    },
+    {
+      "name": "adjective_01",
+      "synsets": 18156,
+      "english_lemmas": 30004,
+      "greek_lemmas": 544,
+      "source_version": "WordNet 3.0 / OMW Greek",
+      "filename": "PocketAI_WordNet_adjective_01.sqlite3",
+      "bytes": 11177984,
+      "sha256": "9bdb97af6375d8222fe81e411530f8ab9262777cabef13d1758c4de945665ba7"
+    },
+    {
+      "name": "adverb_01",
+      "synsets": 3621,
+      "english_lemmas": 5580,
+      "greek_lemmas": 30,
+      "source_version": "WordNet 3.0 / OMW Greek",
+      "filename": "PocketAI_WordNet_adverb_01.sqlite3",
+      "bytes": 2039808,
+      "sha256": "a757806744287021c6f38971f7224351299fb91e2f6b643ebfa8e0dec114ada0"
+    }
+  ]
+}
