@@ -1,0 +1,91 @@
+POCKET AI HYBRID ARCHITECTURE
+=============================
+
+Pocket AI combines multiple local layers:
+
+1. Direct utilities
+   Calculator, unit conversion, dates, time, and structured local commands.
+
+2. Persistent retrieval
+   Taught question/answer pairs, indexed documents, public research snippets,
+   memories, and recent conversation.
+
+3. Bilingual intent classifiers
+   Micro, Lite, Balanced, Standard, and Max pre-trained profiles.
+
+4. Task specialists
+   Coding/Termux, mathematics, and public-research routing/knowledge models.
+
+5. Bilingual MicroLM
+   Lite or Quality compact n-gram generation selected from phone resources.
+
+6. GGUF models
+   SmolLM2-135M Q2_K Fast and SmolLM2-135M Q4_1 Quality.
+
+7. Runtime modules
+   Persona, context optimizer, consensus engine, confidence calibrator, and
+   resource advisor under Other Files/Modules/.
+
+HYBRID MODES
+------------
+
+OFF
+  Internal tools, retrieval, specialists, classifier, and MicroLM only.
+
+SPEED
+  One Fast Q2_K pass with the lowest safe runtime settings.
+
+SMART
+  Chooses Fast or Quality from question complexity and current resources.
+
+QUALITY
+  One Quality Q4_1 pass when RAM and temperature permit it.
+
+ADAPTIVE
+  Runs Fast first. If the draft quality is high and the question is not
+  complex, the Quality pass is skipped. Otherwise Quality verifies it.
+
+EXPERT
+  Uses the strongest task specialist, optimized local context, persona
+  guidance, and the Quality model. It falls back safely when resources drop.
+
+CONSENSUS
+  Runs a compact tier and a stronger tier independently, sequentially. The consensus module
+  compares answer quality, question coverage, repetition, and lexical
+  agreement, then selects the stronger answer.
+
+CASCADE
+  Runs Fast for a draft, exits that process, checks live RAM/temperature, and
+  asks Quality to correct and rewrite the draft.
+
+AUTO
+  Uses live total/available RAM, CPU score, architecture, storage, temperature,
+  model integrity, specialist relevance, and query complexity to choose a mode.
+
+MEMORY SAFETY
+-------------
+
+- GGUF processes run sequentially, never simultaneously.
+- Available RAM and temperature are checked before a second pass.
+- Context, batch, micro-batch, thread count, and output tokens are capped by the
+  selected phone profile.
+- A valid first answer is preserved if a second pass becomes unsafe.
+- The internal bilingual engine remains the universal fallback.
+
+SHARED SCHOOL FOUNDATION
+------------------------
+School questions are handled before generic transformer fallback. The shared layer provides
+bilingual grade 1-12 topic retrieval and deterministic solvers for arithmetic, fractions,
+percentages, statistics, equations, and common geometry. This makes the capability available
+regardless of the phone's selected classifier or GGUF tier.
+
+NO-KEY PUBLIC LEARNING
+----------------------
+The web-learning route combines safe operator validation, Bing RSS, Wikipedia MediaWiki search,
+robots-aware public page fetching, language filtering, size limits, and local source-aware storage.
+Official Google Gemini access is not attempted without credentials.
+
+
+VERSION 20 SHARED PIPELINE
+School deterministic tools -> Universal bilingual knowledge -> Learned local retrieval -> Task specialist -> Neural classifier -> Optional GGUF/hybrid.
+The continuous runtime controller rechecks live RAM and temperature before every GGUF pass and keeps only one GGUF process active.
