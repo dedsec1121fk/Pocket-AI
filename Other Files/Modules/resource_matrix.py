@@ -1,22 +1,28 @@
-"""Continuous Android CPU/RAM/storage/thermal runtime optimizer for Pocket AI."""
+"""Continuous Android CPU/RAM/storage runtime optimizer for Pocket AI.
+
+The coarse matrix chooses a useful starting point. The separate thermal governor
+then adjusts it from live battery/skin/SoC sensors before and during inference.
+"""
 from __future__ import annotations
 from typing import Dict
 
-MODULE_VERSION = 4
+MODULE_VERSION = 7
 MiB = 1024 ** 2
 GiB = 1024 ** 3
 
-# Conservative operational bands. Qwen3 0.6B Q8_0 is allowed on A12-class
-# 4 GB phones only with short context, one pass, sufficient live RAM, and thermal guards.
 COMBINATION_TIERS = [
     {"id": "internal_critical", "min_ram": 0, "min_free": 0, "min_cpu": 0, "model": "internal", "profile": "ultra_eco"},
     {"id": "legacy_1gb", "min_ram": 512 * MiB, "min_free": 90 * MiB, "min_cpu": 0, "model": "internal", "profile": "ultra_eco"},
-    {"id": "fast_2gb_slow", "min_ram": 1450 * MiB, "min_free": 280 * MiB, "min_cpu": 14, "model": "fast", "profile": "eco"},
-    {"id": "quality_2gb_capable", "min_ram": 2050 * MiB, "min_free": 560 * MiB, "min_cpu": 25, "model": "quality", "profile": "entry"},
-    {"id": "smart_4gb_entry", "min_ram": 3400 * MiB, "min_free": 900 * MiB, "min_cpu": 24, "model": "smart", "profile": "entry"},
-    {"id": "smart_4gb_mid", "min_ram": 3600 * MiB, "min_free": 1250 * MiB, "min_cpu": 45, "model": "smart", "profile": "balanced"},
-    {"id": "ultra_8gb_mid", "min_ram": 7000 * MiB, "min_free": 2500 * MiB, "min_cpu": 58, "model": "ultra", "profile": "balanced"},
-    {"id": "ultra_12gb_strong", "min_ram": 10500 * MiB, "min_free": 3800 * MiB, "min_cpu": 75, "model": "ultra", "profile": "performance"},
+    {"id": "fast_2gb", "min_ram": 1450 * MiB, "min_free": 280 * MiB, "min_cpu": 12, "model": "fast", "profile": "eco"},
+    {"id": "quality_2gb", "min_ram": 2050 * MiB, "min_free": 500 * MiB, "min_cpu": 22, "model": "quality", "profile": "entry"},
+    {"id": "smart_4gb", "min_ram": 3300 * MiB, "min_free": 950 * MiB, "min_cpu": 27, "model": "smart", "profile": "balanced"},
+    {"id": "smart_6gb", "min_ram": 5200 * MiB, "min_free": 1900 * MiB, "min_cpu": 55, "model": "smart", "profile": "performance"},
+    {"id": "ultra_6gb", "min_ram": 5000 * MiB, "min_free": 1600 * MiB, "min_cpu": 47, "model": "ultra", "profile": "balanced"},
+    {"id": "ultra_8gb", "min_ram": 7200 * MiB, "min_free": 2800 * MiB, "min_cpu": 68, "model": "ultra", "profile": "performance"},
+    {"id": "pro_8gb", "min_ram": 7500 * MiB, "min_free": 3300 * MiB, "min_cpu": 66, "model": "pro", "profile": "performance"},
+    {"id": "pro_12gb", "min_ram": 11000 * MiB, "min_free": 5200 * MiB, "min_cpu": 80, "model": "pro", "profile": "flagship"},
+    {"id": "max_12gb", "min_ram": 12000 * MiB, "min_free": 6300 * MiB, "min_cpu": 82, "model": "max", "profile": "performance"},
+    {"id": "max_16gb", "min_ram": 15000 * MiB, "min_free": 8200 * MiB, "min_cpu": 88, "model": "max", "profile": "flagship"},
 ]
 
 
@@ -25,11 +31,28 @@ def _coarse(total: int, available: int, cpu: int, is64: bool, temp: float) -> st
         return "ultra_eco"
     if total < 2200 * MiB or available < 420 * MiB or cpu < 18:
         return "eco"
-    if total < 3500 * MiB or available < 900 * MiB or cpu < 36:
+    if total < 3400 * MiB or available < 850 * MiB or cpu < 34:
         return "entry"
-    if total < 5400 * MiB or available < 1500 * MiB or cpu < 66:
+    if total < 6500 * MiB or available < 1700 * MiB or cpu < 66:
         return "balanced"
+    if total >= 9000 * MiB and available >= 3800 * MiB and cpu >= 78:
+        return "flagship"
     return "performance"
+
+
+def _base_profile(profile: str, cores: int) -> tuple[int, int, int, int, int, int]:
+    spare_core_limit = max(1, min(6, cores - 1 if cores > 1 else 1))
+    if profile == "ultra_eco":
+        return 320, 8, 8, 64, 1, 106
+    if profile == "eco":
+        return 512, 16, 8, 96, 1, 106
+    if profile == "entry":
+        return 896, 32, 16, 168, min(2, spare_core_limit), 104
+    if profile == "balanced":
+        return 1536, 64, 32, 288, min(4, spare_core_limit), 102
+    if profile == "flagship":
+        return 3584, 112, 56, 640, spare_core_limit, 98
+    return 2560, 96, 48, 448, spare_core_limit, 100
 
 
 def optimize_runtime(
@@ -44,61 +67,72 @@ def optimize_runtime(
     cores = max(1, int(cores))
     temp = float(temperature or 0.0)
     coarse = _coarse(total, free, cpu, is_64_bit, temp) if requested == "auto" else requested
-    memory_budget = max(80 * MiB, int(free * 0.44))
+    context, batch, ubatch, out_tokens, threads, timeout = _base_profile(coarse, cores)
 
-    if coarse == "ultra_eco":
-        context, batch, ubatch, out_tokens, threads, timeout = 320, 8, 8, 64, 1, 106
-    elif coarse == "eco":
-        context, batch, ubatch, out_tokens, threads, timeout = 448, 16, 8, 88, 1, 106
-    elif coarse == "entry":
-        context, batch, ubatch, out_tokens, threads, timeout = 768, 32, 16, 144, 2, 104
-    elif coarse == "balanced":
-        context, batch, ubatch, out_tokens, threads, timeout = 1280, 48, 24, 240, min(3, cores), 102
-    else:
-        context, batch, ubatch, out_tokens, threads, timeout = 2048, 64, 32, 352, min(4, cores), 100
-
-    # Per-model ceilings and practical token budgets.
-    if model == "ultra":
+    # Model-specific sustainable ceilings. The thermal governor can still lower
+    # these values or use the cool-device burst headroom.
+    if model == "max":
+        if coarse == "flagship":
+            context, out_tokens = min(context, 1536), min(out_tokens, 320)
+        elif coarse == "performance":
+            context, out_tokens = min(context, 1280), min(out_tokens, 224)
+        else:
+            context, out_tokens = min(context, 384), min(out_tokens, 64)
+        batch, ubatch = min(batch, 24), min(ubatch, 12)
+    elif model == "pro":
+        if coarse == "flagship":
+            context, out_tokens = min(context, 2560), min(out_tokens, 448)
+        elif coarse == "performance":
+            context, out_tokens = min(context, 1792), min(out_tokens, 304)
+        elif coarse == "balanced":
+            context, out_tokens = min(context, 896), min(out_tokens, 160)
+        else:
+            context, out_tokens = min(context, 384), min(out_tokens, 72)
+        batch, ubatch = min(batch, 40), min(ubatch, 20)
+    elif model == "ultra":
         if coarse in {"ultra_eco", "eco"}:
             context, out_tokens = min(context, 384), min(out_tokens, 64)
         elif coarse == "entry":
-            context, out_tokens = min(context, 640), min(out_tokens, 112)
+            context, out_tokens = min(context, 768), min(out_tokens, 128)
         elif coarse == "balanced":
-            context, out_tokens = min(context, 1024), min(out_tokens, 192)
+            context, out_tokens = min(context, 1536), min(out_tokens, 256)
+        elif coarse == "flagship":
+            context, out_tokens = min(context, 3584), min(out_tokens, 640)
         else:
-            context, out_tokens = min(context, 2048), min(out_tokens, 320)
-        batch = min(batch, 48)
-        ubatch = min(ubatch, 24)
+            context, out_tokens = min(context, 2560), min(out_tokens, 416)
+        batch, ubatch = min(batch, 64), min(ubatch, 32)
     elif model == "smart":
         if coarse in {"ultra_eco", "eco"}:
-            context = min(context, 512)
-            out_tokens = min(out_tokens, 96)
+            context, out_tokens = min(context, 512), min(out_tokens, 96)
         elif coarse == "entry":
-            context = min(context, 768)
-            out_tokens = min(out_tokens, 160)
+            context, out_tokens = min(context, 896), min(out_tokens, 192)
         elif coarse == "balanced":
-            context = min(context, 1280)
-            out_tokens = min(out_tokens, 256)
+            context, out_tokens = min(context, 1792), min(out_tokens, 320)
+        elif coarse == "flagship":
+            context, out_tokens = min(context, 4096), min(out_tokens, 640)
         else:
-            context = min(context, 2048)
-            out_tokens = min(out_tokens, 384)
-        batch = min(batch, 64)
+            context, out_tokens = min(context, 3072), min(out_tokens, 480)
+        batch, ubatch = min(batch, 80), min(ubatch, 40)
     elif model == "quality":
-        context = min(1536, context + (128 if free >= 900 * MiB else 0))
-        out_tokens = min(320, out_tokens + (24 if free >= 900 * MiB else 0))
+        context = min(2048 if coarse == "flagship" else 1792, context + (256 if free >= 900 * MiB else 0))
+        out_tokens = min(384 if coarse == "flagship" else 352, out_tokens + (32 if free >= 900 * MiB else 0))
     else:
-        context = min(context, 1024)
-        out_tokens = min(out_tokens, 224)
+        context = min(context, 1536 if coarse == "flagship" else 1152)
+        out_tokens = min(out_tokens, 288 if coarse == "flagship" else 240)
 
-    # LITTLE-core phones often slow down with excessive threads.
+    # Avoid occupying every logical core. This normally gives better sustained
+    # throughput because Android and Termux still need scheduling headroom.
+    spare_core_limit = max(1, min(6, cores - 1 if cores > 1 else 1))
     if cpu < 20:
         threads = 1
-    elif cpu < 42:
-        threads = min(2, cores)
-    elif cpu < 68:
-        threads = min(3, cores)
+    elif cpu < 40:
+        threads = min(2, spare_core_limit)
+    elif cpu < 60:
+        threads = min(3, spare_core_limit)
+    elif cpu < 78:
+        threads = min(4, spare_core_limit)
     else:
-        threads = min(4, cores)
+        threads = spare_core_limit
     if cores <= 4:
         threads = min(threads, 2)
 
@@ -113,24 +147,20 @@ def optimize_runtime(
     elif free < 520 * MiB:
         context, batch, ubatch, out_tokens = min(context, 448), min(batch, 24), min(ubatch, 12), min(out_tokens, 96)
         guards.append("limited free RAM")
-    elif model == "ultra" and free < 2500 * MiB:
-        context, batch, ubatch, out_tokens = min(context, 640), min(batch, 24), min(ubatch, 12), min(out_tokens, 96)
-        guards.append("ultra model running in low-memory mode")
-    elif model == "smart" and free < 900 * MiB:
-        context, batch, ubatch, out_tokens = min(context, 512), min(batch, 24), min(ubatch, 12), min(out_tokens, 104)
-        guards.append("smart model running in low-memory mode")
 
-    if temp >= 52:
-        threads, context, batch, ubatch, out_tokens = 1, min(context, 256), min(batch, 8), min(ubatch, 8), min(out_tokens, 48)
-        guards.append("critical temperature")
-    elif temp >= 47:
-        threads, context, batch, ubatch, out_tokens = 1, min(context, 384), min(batch, 16), min(ubatch, 8), min(out_tokens, 72)
-        guards.append("high temperature")
-    elif temp >= 42:
-        threads, batch, out_tokens = min(2, threads), min(batch, 32), min(out_tokens, 128)
-        guards.append("warm device")
+    # Initial raw-temperature fallback. The sensor-aware governor applies the
+    # real battery/skin/SoC thresholds immediately afterwards.
+    if temp >= 88:
+        threads, context, batch, ubatch, out_tokens = 1, 192, 8, 8, 32
+        guards.append("emergency raw thermal sensor")
+    elif temp >= 78:
+        threads, context, batch, ubatch, out_tokens = 1, min(context, 384), 8, 8, min(out_tokens, 64)
+        guards.append("critical raw thermal sensor")
+    elif temp >= 68:
+        threads, batch, out_tokens = min(2, threads), min(batch, 24), min(out_tokens, 144)
+        guards.append("hot raw thermal sensor")
 
-    if battery_percent and battery_percent <= 12 and not charging:
+    if battery_percent and battery_percent <= 10 and not charging:
         threads, out_tokens, context = 1, min(out_tokens, 80), min(context, 448)
         guards.append("low battery")
 
@@ -142,12 +172,7 @@ def optimize_runtime(
         if total >= item["min_ram"] and free >= item["min_free"] and cpu >= item["min_cpu"]:
             combo = item
 
-    # Qwen3 explicitly performs worse with greedy decoding. These settings keep
-    # its hybrid reasoning usable while the output-token and wall-clock guards
-    # still enforce the phone's two-minute target.
-    temperature_setting = 0.60 if model in {"smart", "ultra"} else (0.10 if model == "quality" else 0.14)
-    top_p = 0.95 if model in {"smart", "ultra"} else (0.86 if model == "quality" else 0.84)
-    repeat_penalty = 1.05 if model in {"smart", "ultra"} else 1.12
+    qwen = model in {"smart", "ultra", "pro", "max"}
     return {
         "requested": requested,
         "model": model,
@@ -159,12 +184,12 @@ def optimize_runtime(
         "ubatch": max(4, min(batch, ubatch)),
         "max_tokens": max(32, out_tokens),
         "timeout": min(106, timeout),
-        "temperature": temperature_setting,
-        "top_p": top_p,
-        "repeat_penalty": repeat_penalty,
-        "memory_budget_bytes": memory_budget,
+        "temperature": 0.26 if qwen else (0.07 if model == "quality" else 0.08),
+        "top_p": 0.90 if qwen else (0.84 if model == "quality" else 0.82),
+        "repeat_penalty": 1.07 if qwen else 1.13,
+        "memory_budget_bytes": max(80 * MiB, int(free * 0.70)),
         "guards": guards,
-        "description": f"Dynamic {combo['id']} plan using {threads} thread(s), context {context}, batch {batch}, and {out_tokens} output tokens.",
+        "description": f"Burst-capable {combo['id']} plan: {threads} thread(s), context {context}, batch {batch}, {out_tokens} output tokens.",
     }
 
 
@@ -182,20 +207,20 @@ def recommend_configuration(scan: dict, compatibility: dict) -> Dict:
 
     model = "internal"
     reasons = []
-    if temp >= 52 or free < 180 * MiB:
-        reasons.append("live RAM or temperature requires the internal engine")
-    elif compatibility.get("ultra", {}).get("compatible") and total >= 7000 * MiB and free >= 2500 * MiB and cpu >= 58 and temp < 45:
-        model = "ultra"
-        reasons.append("the Qwen3 1.7B ultra model is the strongest safe live match")
-    elif compatibility.get("smart", {}).get("compatible") and total >= 3400 * MiB and free >= 900 * MiB and cpu >= 24 and temp < 47:
-        model = "smart"
-        reasons.append("the Qwen3 0.6B smart model fits the live resource budget")
-    elif compatibility.get("quality", {}).get("compatible") and free >= 560 * MiB and cpu >= 25:
-        model = "quality"
-        reasons.append("the 135M Q4 model is the strongest safe fallback")
+    if free < 180 * MiB or not is64:
+        reasons.append("live RAM or architecture requires the internal engine")
+    elif compatibility.get("max", {}).get("compatible") and total >= 12000 * MiB and free >= 6300 * MiB and cpu >= 82:
+        model = "max"; reasons.append("Qwen3 8B is the strongest sustainable installed match")
+    elif compatibility.get("pro", {}).get("compatible") and total >= 7500 * MiB and free >= 3300 * MiB and cpu >= 66:
+        model = "pro"; reasons.append("Qwen3 4B fits the live memory and CPU budget")
+    elif compatibility.get("ultra", {}).get("compatible") and total >= 5000 * MiB and free >= 1600 * MiB and cpu >= 47:
+        model = "ultra"; reasons.append("Qwen3 1.7B Q4_K_M is the strongest practical midrange match")
+    elif compatibility.get("smart", {}).get("compatible") and total >= 3300 * MiB and free >= 950 * MiB and cpu >= 27:
+        model = "smart"; reasons.append("Qwen3 0.6B Q8_0 fits the live budget")
+    elif compatibility.get("quality", {}).get("compatible") and free >= 500 * MiB and cpu >= 22:
+        model = "quality"; reasons.append("SmolLM2 Q4_1 is the strongest safe bundled fallback")
     elif compatibility.get("fast", {}).get("compatible"):
-        model = "fast"
-        reasons.append("the 135M Q2 model is the strongest safe live match")
+        model = "fast"; reasons.append("SmolLM2 Q2_K is the safe emergency model")
     else:
         reasons.append("transformer requirements are not currently satisfied")
 
@@ -219,13 +244,9 @@ def recommend_configuration(scan: dict, compatibility: dict) -> Dict:
 
     if model == "internal":
         hybrid = "off"
-    elif model == "ultra":
-        hybrid = "quality"
-    elif model == "smart":
-        hybrid = "quality" if free >= 900 * MiB else "smart"
-    elif total >= 5400 * MiB and free >= 1450 * MiB and cpu >= 65 and temp < 43:
-        hybrid = "adaptive"
-    elif total >= 2500 * MiB and temp < 48:
+    elif model in {"max", "pro", "ultra"} and free >= 2200 * MiB:
+        hybrid = "fusion"
+    elif model in {"smart", "quality"}:
         hybrid = "smart"
     else:
         hybrid = "speed"
