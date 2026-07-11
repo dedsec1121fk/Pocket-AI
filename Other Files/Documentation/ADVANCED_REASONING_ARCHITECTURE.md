@@ -23,4 +23,4 @@ All local generation shares a 112-second inference plan. Retrieval and exact too
 
 ## Capability boundary
 
-The 135M models are emergency natural-language renderers. They cannot become equivalent to a modern cloud model. Their effective accuracy improves because exact and factual work is performed outside the model. Qwen3 0.6B and 1.7B are optional local upgrades for devices that can run them safely.
+The 135M models are emergency natural-language renderers. They cannot become equivalent to a modern cloud model. Their effective accuracy improves because exact and factual work is performed outside the model. The normal ladder spans 0.6B, 0.8B, 1.5B, 1.7B, 2B, and 3.09B, with optional 4B/8B tiers for devices that can run them safely.
