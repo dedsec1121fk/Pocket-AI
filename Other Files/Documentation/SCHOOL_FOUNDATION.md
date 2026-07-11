@@ -1,6 +1,6 @@
 # School Foundation
 
-Pocket AI includes a shared offline grade 1–12 school foundation for every model profile. The current build contains 758 concepts and 3,893 grade-adapted lessons in English and Greek.
+Pocket AI includes a shared offline grade 1–12 school foundation for every model profile. The current build contains 771 topics and 3,994 grade-adapted lessons in English and Greek.
 
 Detailed records cover goals, prerequisites, explanations, teaching strategy, vocabulary, examples, misconceptions, practice, mastery, related topics, and local evidence. Deterministic mathematics remains available before model inference.
 
