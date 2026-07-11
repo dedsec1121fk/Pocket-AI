@@ -1,7 +1,7 @@
 {
   "package": "Pocket AI Hybrid Automatic Model Pack",
-  "package_version": "9.0-natural-complete-school",
-  "target": "Termux on unrooted Android phones with natural bilingual conversation, a detailed grade 1-12 school foundation, evidence-first reasoning, exact local tools, guarded sub-two-minute local inference, and live hardware tuning",
+  "package_version": "14.0-spec-max-cognitive-scaling",
+  "target": "Termux on unrooted Android phones with bilingual multi-turn conversation, grades 1-12 knowledge, web grounding/learning, evidence-first reasoning, and per-model spec-max cognitive scaling from SmolLM2 135M through optional Qwen3 8B. Live RAM/CPU/thermal/deadline controls maximise each tier safely.",
   "automatic_scan": {
     "checks": [
       "processor identifiers and family",
@@ -27,7 +27,13 @@
       "official optional-model LFS metadata and local sidecar integrity",
       "detailed school curriculum database availability and integrity",
       "natural follow-up and confusion-recovery module availability",
-      "grade/depth detection and school evidence routing"
+      "grade/depth detection and school evidence routing",
+      "rapid web-search cache availability",
+      "shared model-learning database availability",
+      "trusted-source batch-learning readiness",
+      "per-model cognitive profile and sampling plan",
+      "flagship hardware profile eligibility",
+      "model-targeted evidence compression and output budgeting"
     ],
     "unknown_processor_fallback": true,
     "loads_simultaneous_gguf_models": 1,
@@ -61,7 +67,6 @@
     ],
     "shared_foundations": [
       "natural English/Greek conversation with contextual follow-ups",
-      "758-concept / 3,893-lesson grade 1-12 school foundation",
       "deterministic school mathematics",
       "persistent retrieval memory",
       "safe no-key public web learning",
@@ -76,11 +81,18 @@
       "source-prior evidence diagnostics",
       "grounded deterministic synthesis",
       "post-generation answer audit and repair",
-      "adaptive Qwen3 thinking/non-thinking control"
+      "adaptive Qwen3 thinking/non-thinking control",
+      "parallel cached no-key web research",
+      "trusted batch web learning",
+      "cross-model high-confidence lesson sharing",
+      "771-topic / 3994-lesson bilingual grade 1-12 school foundation",
+      "12842-entry / 78509-alias maximum-knowledge database",
+      "per-model spec-max cognitive instructions, sampling, context compression, and output budgeting",
+      "six live hardware profiles including flagship"
     ],
-    "runtime_controller": "PocketAI_Continuous_Runtime_Controller.json.gz"
+    "runtime_controller": "PocketAI_Spec_Max_Cognitive_Scaler.json.gz plus PocketAI_Continuous_Runtime_Controller.json.gz"
   },
-  "model_count": 42,
+  "model_count": 47,
   "models": [
     {
       "id": "fast",
@@ -164,9 +176,9 @@
     },
     {
       "id": "ultra",
-      "name": "Qwen3 1.7B Q8_0",
+      "name": "Qwen3 1.7B Q4_K_M Ultra",
       "kind": "optional GGUF reasoning language model",
-      "file": "Models/Qwen3-1.7B-Q8_0.gguf",
+      "file": "Models/Qwen3-1.7B-Q4_K_M.gguf",
       "size_bytes": 0,
       "size_note": "Resolved and verified from official Hugging Face LFS metadata at installation time",
       "sha256": "resolved from official Hugging Face LFS metadata at installation time",
@@ -180,7 +192,49 @@
       "source": "Qwen/Qwen3-1.7B-GGUF",
       "processor_combinations": "Strongest guarded phone tier for capable 8 GB-class 64-bit devices.",
       "native_context_tokens": 32768,
-      "quantization": "Q8_0",
+      "quantization": "Q4_K_M",
+      "verification": "official LFS SHA-256 and size + GGUF header + local checksum sidecar"
+    },
+    {
+      "id": "pro",
+      "name": "Qwen3 4B Q4_K_M",
+      "kind": "optional GGUF reasoning language model",
+      "file": "Models/Qwen3-4B-Q4_K_M.gguf",
+      "size_bytes": 0,
+      "size_note": "Resolved and verified from official Hugging Face LFS metadata at installation time",
+      "sha256": "resolved from official Hugging Face LFS metadata at installation time",
+      "parameters": 4000000000,
+      "minimum_total_ram_bytes": 7600000000,
+      "minimum_available_ram_bytes": 3000000000,
+      "minimum_cpu_score": 66,
+      "requires_64_bit": true,
+      "bundled": false,
+      "installer": "Other Files/install_smart_models.sh pro",
+      "source": "Qwen/Qwen3-4B-GGUF",
+      "processor_combinations": "Strong 8 GB-class phones with short guarded context.",
+      "native_context_tokens": 32768,
+      "quantization": "Q4_K_M",
+      "verification": "official LFS SHA-256 and size + GGUF header + local checksum sidecar"
+    },
+    {
+      "id": "max",
+      "name": "Qwen3 8B Q4_K_M",
+      "kind": "optional GGUF reasoning language model",
+      "file": "Models/Qwen3-8B-Q4_K_M.gguf",
+      "size_bytes": 0,
+      "size_note": "Resolved and verified from official Hugging Face LFS metadata at installation time",
+      "sha256": "resolved from official Hugging Face LFS metadata at installation time",
+      "parameters": 8000000000,
+      "minimum_total_ram_bytes": 11800000000,
+      "minimum_available_ram_bytes": 5700000000,
+      "minimum_cpu_score": 82,
+      "requires_64_bit": true,
+      "bundled": false,
+      "installer": "Other Files/install_smart_models.sh max",
+      "source": "Qwen/Qwen3-8B-GGUF",
+      "processor_combinations": "High-end 12 GB+ phones with substantial free RAM and storage.",
+      "native_context_tokens": 32768,
+      "quantization": "Q4_K_M",
       "verification": "official LFS SHA-256 and size + GGUF header + local checksum sidecar"
     },
     {
@@ -438,14 +492,14 @@
       "name": "PocketAI Grade 1-12 Bilingual School Knowledge",
       "kind": "shared bilingual school knowledge model",
       "file": "Models/PocketAI_School_Knowledge.json.gz",
-      "size_bytes": 112317,
-      "sha256": "eabedf9dac23401ff3589bb970fe120b5b14f1d8bd40fa6fcd3ff113c2c4247d",
+      "size_bytes": 119329,
+      "sha256": "a640b168c18d6f5128163e83a49eaa8c14707b4076a07f6a4d55be9bb4ee41f8",
       "requires_64_bit": false,
       "minimum_total_ram_bytes": 0,
       "minimum_available_ram_bytes": 0,
       "minimum_cpu_score": 0,
       "processor_combinations": "Shared standard-library layer available on every Pocket AI profile",
-      "coverage": "Grades 1-12; mathematics, science, language, humanities, computing, and study skills"
+      "coverage": "771 topics and 3,994 grade-adapted lessons across grades 1-12, English and Greek"
     },
     {
       "id": "school_math",
@@ -550,8 +604,8 @@
       "name": "Pocket AI Universal Bilingual Knowledge Foundation",
       "kind": "shared bilingual offline knowledge model",
       "file": "Models/PocketAI_Universal_Knowledge.json.gz",
-      "size_bytes": 28245,
-      "sha256": "afd3af96d1caeef3861b7ce56d0fc0a90f17959b19ac11f502e9d5f19ca9684c",
+      "size_bytes": 44810,
+      "sha256": "ce6504781d3e6da89882437e5033bf120e6d6c31d32ce67fddcb5a3f115ac726",
       "requires_64_bit": false,
       "minimum_total_ram_bytes": 0,
       "minimum_available_ram_bytes": 0,
@@ -611,9 +665,9 @@
       "minimum_available_ram_bytes": 25000000,
       "minimum_cpu_score": 0,
       "processor_combinations": "Every supported phone; queried lazily from disk",
-      "coverage": "12,775 records and 78,149 indexed aliases across 51 categories",
-      "size_bytes": 23314432,
-      "sha256": "d5d833b7ba67af206297b63b601993bea05db506c9811b0c33f95f21dc588ef7"
+      "coverage": "12,842 records and 78,509 indexed aliases across 56 categories",
+      "size_bytes": 25800704,
+      "sha256": "c7130ade93c1378d5402b95a95219a4cdc5716efa49f86f89502ed376bce3ded"
     },
     {
       "id": "knowledge_retriever",
@@ -695,41 +749,84 @@
       "minimum_available_ram_bytes": 0,
       "minimum_cpu_score": 0,
       "processor_combinations": "Shared read-only retrieval layer for every Pocket AI profile",
-      "coverage": "758 concepts and 3,893 grade-adapted lessons across 9 subject fields, English and Greek",
-      "size_bytes": 29274112,
-      "sha256": "bec7906a8355ecc8d2daf3a6b8bb236e26049dfc0688bf233361cba38d74bcc6"
+      "coverage": "771 topics and 3,994 grade-adapted lessons across 9 subject fields, English and Greek",
+      "size_bytes": 29999104,
+      "sha256": "562380b778a5aef241eb09ade0cb8c9f144081b02cac68e19ca83c988768dc0f"
+    },
+    {
+      "id": "maxsafe_thermal_hybrid",
+      "name": "PocketAI MaxSafe Thermal Hybrid Controller",
+      "kind": "thermal, RAM, deadline, and sequential-fusion control model",
+      "file": "Models/PocketAI_MaxSafe_Thermal_Hybrid_Controller.json.gz",
+      "languages": [
+        "English",
+        "Greek"
+      ],
+      "coverage": "Strongest-safe live model selection, sustained performance and sequential analyst/synthesizer fusion"
+    },
+    {
+      "id": "adaptive_compute_controller",
+      "name": "Adaptive MaxSafe Compute Controller",
+      "kind": "runtime controller",
+      "file": "Models/PocketAI_Adaptive_Compute_Controller.json.gz",
+      "module": "Other Files/Modules/adaptive_compute.py",
+      "purpose": "learn sustainable per-model speed and heat response; tune deadline, context, batch, threads, and optional final verification",
+      "simultaneous_gguf_models": false,
+      "can_override_thermal_abort": false
+    },
+    {
+      "id": "spec_max_cognitive_scaler",
+      "name": "PocketAI Spec-Max Cognitive Scaler",
+      "kind": "per-model reasoning and resource control model",
+      "file": "Models/PocketAI_Spec_Max_Cognitive_Scaler.json.gz",
+      "module": "Other Files/Modules/model_intelligence.py",
+      "purpose": "model-specific reasoning instructions, evidence budgets, output budgets, sampling, and task verification from 135M through 8B",
+      "languages": [
+        "English",
+        "Greek"
+      ],
+      "size_bytes": 1723,
+      "sha256": "2c042b2bf7aea9683984ebfe036a9d87ca300c185944cc77a8ab6262d49cbfa3",
+      "changes_gguf_weights": false,
+      "claims_literal_gpt35_equivalence": false
     }
   ],
   "runtime_profiles": {
     "ultra_eco": {
       "threads": 1,
-      "context": 256,
-      "batch": 8,
+      "context": "256-384",
+      "batch": "8-16",
       "ubatch": 8
     },
     "eco": {
       "threads": 1,
-      "context": 384,
+      "context": "384-512",
       "batch": 16,
       "ubatch": 8
     },
     "entry": {
       "threads": 2,
-      "context": 512,
+      "context": "512-768",
       "batch": 32,
       "ubatch": 16
     },
     "balanced": {
       "threads": 3,
-      "context": "640-768",
+      "context": "768-1792",
       "batch": 48,
       "ubatch": 32
     },
     "performance": {
       "threads": 4,
-      "context": "768-1024",
+      "context": "1152-3072",
       "batch": 64,
       "ubatch": 48
+    },
+    "flagship": {
+      "threads": "up to 6",
+      "context": "1280-4096",
+      "batch": "96-112",
+      "ubatch": "48-56"
     }
   },
   "language_policy": [
@@ -751,7 +848,8 @@
     "runtime_modules": "Other Files/Modules/",
     "lexical_knowledge": "Models/Lexical Knowledge/",
     "encyclopedia_knowledge": "Models/Encyclopedia Knowledge/",
-    "school_knowledge": "Models/School Knowledge/"
+    "school_knowledge": "Models/School Knowledge/",
+    "cognitive_scaler": "Models/PocketAI_Spec_Max_Cognitive_Scaler.json.gz"
   },
   "persona_system": {
     "persistent_file": "Other Files/Saved Data/persona.json",
@@ -787,7 +885,8 @@
     "adaptive",
     "expert",
     "consensus",
-    "cascade"
+    "cascade",
+    "fusion"
   ],
   "interface": {
     "startup": "Direct chat",
@@ -811,26 +910,13 @@
     ]
   },
   "school_foundation": {
-    "supported_grades": [
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
-      10,
-      11,
-      12
-    ],
+    "supported_grades": "1-12",
     "languages": [
       "English",
       "Greek"
     ],
-    "topic_count": 758,
-    "grade_lesson_count": 3893,
+    "topic_count": 771,
+    "grade_lesson_count": 3994,
     "subjects": [
       "mathematics",
       "language and literature",
@@ -869,10 +955,24 @@
       "rectangle/triangle/circle area"
     ],
     "honest_scope": "Broad cross-curriculum foundation; not a verbatim copy of every national textbook, teacher plan, or examination board.",
-    "database_bytes": 29274112,
-    "database_sha256": "bec7906a8355ecc8d2daf3a6b8bb236e26049dfc0688bf233361cba38d74bcc6",
-    "runtime_index_bytes": 112317,
-    "runtime_index_sha256": "eabedf9dac23401ff3589bb970fe120b5b14f1d8bd40fa6fcd3ff113c2c4247d"
+    "database_bytes": 29999104,
+    "database_sha256": "562380b778a5aef241eb09ade0cb8c9f144081b02cac68e19ca83c988768dc0f",
+    "runtime_index_bytes": 119329,
+    "runtime_index_sha256": "a640b168c18d6f5128163e83a49eaa8c14707b4076a07f6a4d55be9bb4ee41f8",
+    "new_spec_max_topics": [
+      "AI literacy",
+      "LLM strengths and limitations",
+      "AI source verification",
+      "misinformation and deepfakes",
+      "algorithmic bias",
+      "prompt injection",
+      "threat modeling",
+      "secure input validation",
+      "encryption and key management",
+      "MFA",
+      "privacy permissions",
+      "backups"
+    ]
   },
   "web_learning": {
     "api_key_required": false,
@@ -888,15 +988,17 @@
     "shared_across_models": true,
     "database": "Models/PocketAI_Max_Knowledge.sqlite3",
     "fallback": "Models/PocketAI_Universal_Knowledge.json.gz",
-    "entry_count": 12775,
-    "alias_count": 78149,
-    "category_count": 51,
+    "entry_count": 12842,
+    "alias_count": 78509,
+    "category_count": 56,
     "languages": [
       "en",
       "el"
     ],
     "backend": "SQLite FTS5 with exact alias index",
-    "routing": "direct exact answer, indexed retrieval, compact context injection, then selected model"
+    "routing": "direct exact answer, indexed retrieval, compact context injection, then selected model",
+    "fallback_entry_count": 341,
+    "maximum_knowledge_version": "5-spec-max-cognitive"
   },
   "continuous_runtime_matrix": {
     "documentation": "Other Files/Documentation/HARDWARE_COMBINATIONS.md",
@@ -914,8 +1016,8 @@
     "downloads_required": false
   },
   "maximum_knowledge": {
-    "curated_bilingual_records": 12775,
-    "curated_aliases": 78149,
+    "curated_bilingual_records": 12842,
+    "curated_aliases": 78509,
     "wordnet_concepts": 117659,
     "english_lemmas": 206978,
     "greek_linked_concepts": 17891,
@@ -931,7 +1033,117 @@
       "Other Files/Documentation/LEXICAL_KNOWLEDGE_PROVENANCE.md",
       "Other Files/Documentation/ENCYCLOPEDIA_KNOWLEDGE_PROVENANCE.md"
     ],
-    "school_concepts": 758,
-    "grade_adapted_school_lessons": 3893
+    "school_concepts": 771,
+    "grade_adapted_school_lessons": 3994,
+    "school_grade_lessons": 3994,
+    "spec_max_expansion": "67 bilingual reasoning/AI/cybersecurity/software-engineering concepts plus corrected and expanded school digital-literacy curriculum"
+  },
+  "conversation_memory": {
+    "persistent_history": true,
+    "restored_turns": 20,
+    "prompt_turns": 8,
+    "followups": [
+      "simpler",
+      "deeper",
+      "another example",
+      "analogy",
+      "quiz",
+      "why",
+      "how",
+      "clarify"
+    ],
+    "languages": [
+      "English",
+      "Greek"
+    ]
+  },
+  "web_intelligence": {
+    "modes": [
+      "off",
+      "auto",
+      "on"
+    ],
+    "providers": [
+      "DDGS",
+      "Bing RSS",
+      "Wikipedia API"
+    ],
+    "commands": [
+      "/web",
+      "/search",
+      "/sources",
+      "/web-learn"
+    ],
+    "persistent_learning": "SQLite retrieval chunks; no GGUF weight modification"
+  },
+  "optional_model_tiers": {
+    "smart": "Qwen3 0.6B Q8_0",
+    "ultra": "Qwen3 1.7B Q4_K_M",
+    "pro": "Qwen3 4B Q4_K_M",
+    "max": "Qwen3 8B Q4_K_M"
+  },
+  "maxsafe_runtime": {
+    "controller": "Models/PocketAI_MaxSafe_Thermal_Hybrid_Controller.json.gz",
+    "modules": [
+      "Other Files/Modules/thermal_governor.py",
+      "Other Files/Modules/hybrid_orchestrator.py",
+      "Other Files/Modules/adaptive_compute.py"
+    ],
+    "maximum_inference_threads": 6,
+    "leaves_android_core_headroom": true,
+    "simultaneous_gguf_models": false,
+    "monitoring": "battery/skin/SoC temperature, temperature rise, current free RAM, battery and deadline",
+    "automatic_installer": "bash \"Other Files/install_models.sh\" --best",
+    "adaptive_controller": "Models/PocketAI_Adaptive_Compute_Controller.json.gz",
+    "persistent_runtime_telemetry": "Other Files/Saved Data/runtime_telemetry.json",
+    "guarded_final_critic": true,
+    "hard_recheck_after_adaptive_tuning": true
+  },
+  "adaptive_compute": {
+    "learns_per_model": true,
+    "measurements": [
+      "output speed",
+      "elapsed time",
+      "temperature rise",
+      "abort rate",
+      "threads",
+      "context",
+      "batch"
+    ],
+    "local_only": true,
+    "deletable_telemetry": true,
+    "shared_answer_deadline_seconds": 112,
+    "can_disable_android_thermal_protection": false
+  },
+  "spec_max_cognitive_scaling": {
+    "controller": "Models/PocketAI_Spec_Max_Cognitive_Scaler.json.gz",
+    "runtime_module": "Other Files/Modules/model_intelligence.py",
+    "resource_module": "Other Files/Modules/resource_matrix.py",
+    "profiles": [
+      "fast",
+      "quality",
+      "smart",
+      "ultra",
+      "pro",
+      "max"
+    ],
+    "hardware_profiles": [
+      "ultra_eco",
+      "eco",
+      "entry",
+      "balanced",
+      "performance",
+      "flagship"
+    ],
+    "literal_gpt35_equivalence_claimed": false,
+    "method": [
+      "model-specific instructions",
+      "task-aware conservative sampling",
+      "model-targeted evidence compression",
+      "safe expanded context and output budgets",
+      "sequential fusion",
+      "exact tools",
+      "answer audit and repair"
+    ]
   }
 }
