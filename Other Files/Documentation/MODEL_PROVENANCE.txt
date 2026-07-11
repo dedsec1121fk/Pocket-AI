@@ -118,5 +118,17 @@ Pocket AI can optionally download Qwen3-0.6B-GGUF Q8_0 and Qwen3-1.7B-GGUF Q8_0 
 School curriculum database
 - File: Models/School Knowledge/PocketAI_School_Curriculum.sqlite3
 - Content: structured original curriculum mapping and teaching metadata generated for Pocket AI, supplemented by short locally indexed encyclopedia evidence where available.
-- Scope: 758 concepts, 3,893 grade-adapted records, grades 1-12, English/Greek retrieval.
+- Scope: 771 topics, 3,994 grade-adapted records, grades 1-12, English/Greek retrieval.
 - Boundary: not a verbatim copy of every national curriculum or textbook.
+
+MAXSAFE THERMAL HYBRID COMPONENTS
+
+PocketAI_MaxSafe_Thermal_Hybrid_Controller.json.gz, thermal_governor.py, and
+hybrid_orchestrator.py are project-authored deterministic control components.
+They contain no third-party neural weights. They select among separately
+licensed GGUF models, protect live RAM/thermal headroom, and combine model
+outputs sequentially.
+
+Adaptive MaxSafe Compute Controller: locally authored standard-library runtime logic. It contains no model weights and stores only local performance telemetry.
+
+Pocket AI 14.0 adds local retrieval-based shared lessons and trusted public-web evidence caches. It does not alter third-party GGUF weights.
