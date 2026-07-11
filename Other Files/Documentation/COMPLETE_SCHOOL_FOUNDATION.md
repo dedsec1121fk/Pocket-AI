@@ -5,8 +5,8 @@ Version: 9.0 natural-complete-school
 ## Scope
 
 - Grades 1 through 12
-- 758 searchable curriculum concepts
-- 3,893 grade-adapted structured lessons
+- 771 searchable curriculum topics
+- 3,994 grade-adapted structured lessons
 - English and Greek retrieval and response support
 - Nine broad fields: mathematics; language and literature; science; history and humanities; geography; computing; health and life skills; arts and music; economics and civics
 
