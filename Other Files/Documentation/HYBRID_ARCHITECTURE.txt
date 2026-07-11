@@ -1,79 +1,13 @@
-POCKET AI 15 COMPACT HYBRID ARCHITECTURE
-========================================
+POCKET AI 16.0 HYBRID ARCHITECTURE
 
-Pocket AI combines multiple local layers:
+Normal ladder: 0.6B -> 0.8B -> 1.5B -> 1.7B -> 2B -> 3.09B.
+Emergency fallback: 135M Q2_K / Q4_1. Optional high-memory tiers: 4B / 8B.
 
-1. Direct utilities
-   Calculator, unit conversion, dates, time, and structured local commands.
+Adjacent hybrid route:
+1. Smaller model receives compressed evidence and creates a plan/draft.
+2. The process exits and memory is released.
+3. RAM and temperature are checked again.
+4. The next stronger model verifies and synthesizes the answer.
+5. Deterministic tools and evidence audits can repair the result.
 
-2. Persistent retrieval
-   Taught answers, indexed documents, public research snippets, memories, and
-   recent conversation.
-
-3. Bilingual intent classifiers
-   Micro, Lite, Balanced, Standard, and Max pre-trained profiles.
-
-4. Task specialists
-   Coding/Termux, mathematics, school subjects, and public research.
-
-5. Bilingual MicroLM
-   Compact fallback text generation selected from phone resources.
-
-6. GGUF model ladder
-   Emergency: SmolLM2 135M Q2_K / Q4_1.
-   Normal compact ladder: Qwen3 0.6B, Qwen3.5 0.8B,
-   Qwen2.5 1.5B Instruct, and Qwen3 1.7B.
-   Optional high tiers: Qwen3 4B and 8B.
-
-7. Runtime modules
-   Persona, context optimizer, model intelligence, hybrid orchestrator,
-   consensus, confidence calibration, resource matrix, and thermal governor.
-
-HYBRID MODES
-------------
-
-OFF
-  Internal tools, retrieval, specialists, classifier, and MicroLM only.
-
-SPEED
-  The smallest safe installed regular tier. It falls back to 135M only when no
-  0.6B+ model safely fits.
-
-SMART
-  The strongest safe installed single model.
-
-QUALITY
-  Prefers the strongest safe compact tier from 0.6B through 1.7B.
-
-ADAPTIVE / CASCADE / FUSION
-  Uses adjacent installed tiers sequentially: emergency Q4→0.6B, 0.6→0.8B,
-  0.8→1.5B, 1.5→1.7B, 1.7→4B, or 4→8B. The analyst exits before the stronger
-  synthesizer starts. Parameter counts are not added together.
-
-CONSENSUS
-  Runs adjacent models independently and sequentially, then scores evidence,
-  instruction coverage, consistency, code/calculation checks, and language.
-
-AUTO
-  Selects the safest useful route from live RAM, CPU score, architecture,
-  storage, battery, temperature, measured speed/heat, task complexity, and the
-  remaining answer deadline.
-
-MEMORY AND THERMAL SAFETY
--------------------------
-
-- Only one GGUF process runs at a time.
-- RAM and temperature are checked before every pass and before escalation.
-- Context, batch, micro-batch, threads, and output tokens are capped by the
-  selected phone profile.
-- A valid first answer is preserved when a second pass becomes unsafe.
-- Android thermal protection is never disabled or bypassed.
-- The internal bilingual engine remains the universal fallback.
-
-SHARED FOUNDATION
------------------
-
-Every tier shares the same school database, maximum-knowledge database,
-WordNet shards, encyclopedia shards, deterministic tools, learned retrieval,
-and verified shared lessons. The shared foundation improves usefulness without
-pretending to change a model's parameter count.
+Only one GGUF is loaded at a time. Hybrid parameters are never added.
