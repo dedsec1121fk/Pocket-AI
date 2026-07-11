@@ -10,7 +10,7 @@ import re
 import unicodedata
 from typing import Mapping
 
-MODULE_VERSION = 3
+MODULE_VERSION = 4
 
 MODEL_COGNITIVE_PROFILES = {
     "emergency_fast": {
@@ -37,9 +37,17 @@ MODEL_COGNITIVE_PROFILES = {
         "tier": "1.7B strongest compact reasoner", "planning_steps": 6,
         "default_output": 512, "detailed_output": 704, "evidence_ratio": 0.64,
     },
-    "pro": {
-        "tier": "4B advanced local reasoner", "planning_steps": 6,
+    "advanced": {
+        "tier": "2B advanced extended reasoner", "planning_steps": 6,
         "default_output": 544, "detailed_output": 736, "evidence_ratio": 0.62,
+    },
+    "prime": {
+        "tier": "3.09B maximum extended reasoner", "planning_steps": 7,
+        "default_output": 608, "detailed_output": 832, "evidence_ratio": 0.60,
+    },
+    "pro": {
+        "tier": "4B advanced local reasoner", "planning_steps": 7,
+        "default_output": 640, "detailed_output": 896, "evidence_ratio": 0.59,
     },
     "max": {
         "tier": "8B maximum local reasoner", "planning_steps": 7,
@@ -132,6 +140,18 @@ def intelligence_instruction(model: str, language: str, task_profile: Mapping | 
             if greek else
             "Run a complete but efficient analysis of intent, constraints, alternatives, counterexamples, and likely failures. Resolve conflicts and write one coherent final answer."
         )
+    elif model == "advanced":
+        base = (
+            "Χτίσε και έλεγξε δύο εναλλακτικές λύσεις, εντόπισε κρυφές παραδοχές, επανυπολόγισε κρίσιμα σημεία και σύνθεσε την πιο τεκμηριωμένη απάντηση."
+            if greek else
+            "Build and test two plausible solution paths, expose hidden assumptions, recalculate critical steps, and synthesize the best-supported answer."
+        )
+    elif model == "prime":
+        base = (
+            "Χρησιμοποίησε βαθιά αλλά χρονικά περιορισμένη αποσύνθεση, έλεγχο αντιπαραδειγμάτων, συνέπειας και τεκμηρίων και έπειτα γράψε την πιο ακριβή εφαρμόσιμη απάντηση."
+            if greek else
+            "Use deep but time-bounded decomposition, counterexample testing, consistency checks, and evidence auditing, then write the most accurate actionable answer."
+        )
     else:
         base = (
             "Εκτέλεσε πλήρη εσωτερική διαδικασία αποσύνθεσης, ελέγχου τεκμηρίων, επανυπολογισμού, ελέγχου περιορισμών και τελικής σύνθεσης χωρίς να αποκαλύπτεις το εσωτερικό σχέδιο."
@@ -162,6 +182,8 @@ def sampling_settings(model: str, task_profile: Mapping | None = None, runtime: 
         "quality": {"temperature": 0.22, "top_p": 0.87, "top_k": 22, "min_p": 0.01, "presence_penalty": 0.12, "repeat_penalty": 1.09},
         "smart": {"temperature": 0.25, "top_p": 0.89, "top_k": 24, "min_p": 0.02, "presence_penalty": 0.15, "repeat_penalty": 1.08},
         "ultra": {"temperature": 0.28, "top_p": 0.90, "top_k": 26, "min_p": 0.02, "presence_penalty": 0.18, "repeat_penalty": 1.07},
+        "advanced": {"temperature": 0.29, "top_p": 0.90, "top_k": 27, "min_p": 0.02, "presence_penalty": 0.19, "repeat_penalty": 1.07},
+        "prime": {"temperature": 0.30, "top_p": 0.91, "top_k": 28, "min_p": 0.02, "presence_penalty": 0.20, "repeat_penalty": 1.06},
         "pro": {"temperature": 0.30, "top_p": 0.91, "top_k": 28, "min_p": 0.02, "presence_penalty": 0.20, "repeat_penalty": 1.06},
         "max": {"temperature": 0.32, "top_p": 0.92, "top_k": 32, "min_p": 0.02, "presence_penalty": 0.20, "repeat_penalty": 1.06},
     }.get(model, {"temperature": 0.18, "top_p": 0.86, "top_k": 20, "min_p": 0.00, "presence_penalty": 0.00, "repeat_penalty": 1.12})
@@ -170,7 +192,7 @@ def sampling_settings(model: str, task_profile: Mapping | None = None, runtime: 
         values["temperature"] = min(values["temperature"], 0.18 if model not in {"emergency_fast", "emergency_quality"} else 0.06)
         values["top_p"] = min(values["top_p"], 0.86)
     elif creative:
-        values["temperature"] = max(values["temperature"], 0.52 if model in {"quality", "smart", "ultra", "pro", "max"} else 0.30)
+        values["temperature"] = max(values["temperature"], 0.52 if model in {"quality", "smart", "ultra", "advanced", "prime", "pro", "max"} else 0.30)
         values["top_p"] = max(values["top_p"], 0.92)
     if runtime and str(runtime.get("thermal_state", "")).casefold() in {"hot", "critical", "emergency"}:
         values["temperature"] = min(values["temperature"], 0.18)
