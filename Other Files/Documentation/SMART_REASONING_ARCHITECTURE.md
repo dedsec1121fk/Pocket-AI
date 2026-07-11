@@ -1,48 +1,44 @@
-# Pocket AI Smart Reasoning Architecture
+# Pocket AI 15 Smart Reasoning Architecture
 
 ## Objective
 
-Pocket AI cannot make a 135M model intrinsically equivalent to a modern cloud model. It instead maximizes useful answer quality through deterministic tools, broad local retrieval, evidence compression, guarded generation, and post-generation validation.
+Pocket AI does not treat parameter count as the only source of intelligence. It combines real compact models with deterministic tools, broad local retrieval, evidence compression, guarded generation, shared verified lessons, and post-generation validation. It does not claim that a 135M or other small local model literally becomes GPT-3.5.
 
 ## Answer pipeline
 
-1. Classify the task: fact, explanation, comparison, procedure, coding, mathematics, summary, translation, recommendation, or creative writing.
-2. Generate compact query variants and search curated bilingual knowledge, school knowledge, WordNet, offline encyclopedia shards, learned Q&A, user documents, memories, and specialists.
-3. Rerank individual sentences rather than copying whole documents.
-4. Build an evidence packet sized for the active model and phone.
-5. Use exact deterministic tools when they are more reliable than generation.
-6. Ask one local model to synthesize the answer. A second verification pass is used only when there is enough RAM, time, and thermal headroom.
-7. Reject malformed, irrelevant, repetitive, unsupported, wrong-language, or obviously unsafe output and fall back to extractive evidence.
+1. Classify the task and identify entities, constraints, language, freshness, and risk.
+2. Search the shared bilingual knowledge, school knowledge, WordNet, encyclopedia shards, learned Q&A, user documents, memories, and specialists.
+3. Rerank individual evidence passages and compress them for the selected model.
+4. Use deterministic tools when they are more reliable than language generation.
+5. Select the strongest installed model that fits live RAM, CPU, storage, temperature, battery, and deadline constraints.
+6. Run one model. For difficult work, run an immediately smaller adjacent analyst first, unload it, recheck safety, then run the stronger synthesizer.
+7. Audit relevance, evidence support, completeness, language, code, calculations, truncation, and prompt leakage. Repair or fall back to grounded evidence when needed.
 
 ## Model tiers
 
-- `fast`: SmolLM2 135M Q2_K, minimum memory.
-- `quality`: SmolLM2 135M Q4_1, stronger bundled fallback.
-- `smart`: Qwen3 0.6B Q8_0, recommended optional model.
-- `ultra`: Qwen3 1.7B Q4_K_M, strongest optional model.
+- `emergency_fast`: SmolLM2 135M Q2_K; emergency only.
+- `emergency_quality`: SmolLM2 135M Q4_1; emergency only.
+- `fast`: Qwen3 0.6B Q8_0; normal minimum.
+- `quality`: Qwen3.5 0.8B Q4_0.
+- `smart`: Qwen2.5 1.5B Instruct Q4_K_M.
+- `ultra`: Qwen3 1.7B Q4_K_M.
+- `pro`: Qwen3 4B Q4_K_M.
+- `max`: Qwen3 8B Q4_K_M.
 
-Only one GGUF process is loaded at a time. Automatic routing uses live RAM, CPU score, architecture, storage, temperature, battery state, question complexity, and remaining deadline.
+Only one GGUF process is resident at a time. Hybrid parameter counts are not additive.
 
-## Time boundary
+## Time and safety boundary
 
-The generation plan shares a 112-second budget. This is a safety target for the Pocket AI inference process, not an unconditional device-independent promise. First-run downloads, model reconstruction, compilation, Android scheduling, and severe thermal throttling are outside the generation budget.
+The local generation plan shares a 112-second budget. First-run downloads, model reconstruction, compilation, Android scheduling, and severe thermal throttling are outside that generation budget. Pocket AI can shorten context or output, reduce threads, skip a second pass, downgrade the model, or use retrieval-only fallback.
 
-## Bilingual and comparison safeguards
+## Model-family policies
 
-- Greek school, science, computing, and networking concepts are bridged to English encyclopedia terms for retrieval, while answer generation is instructed to remain Greek.
-- Comparison queries are split into their entities and the evidence packet reserves coverage for both sides.
-- High-value stable comparisons and explanations use reviewed deterministic bilingual responses before a tiny model is allowed to improvise.
-- If generation fails, Pocket AI returns the strongest relevant evidence instead of an unrelated fluent answer.
+Qwen3 routine requests use non-thinking mode. Guarded thinking is available only for difficult Qwen3 tasks when live resources and the deadline permit it. Qwen2.5 and Qwen3.5 receive their own instruction formats and verification policies rather than Qwen3-only control tokens.
 
+## Bilingual and exactness safeguards
 
-## Advanced deterministic reasoning
-
-`advanced_reasoning.py` sits between retrieval and generation. It creates a task plan, enforces two-sided evidence for comparisons, solves supported exact tasks without hallucination, generates a grounded fallback, and audits model output for relevance, language, missing entities, unsupported precision, truncation, and prompt leakage. The generated answer is kept only when it passes the audit; otherwise Pocket AI repairs or replaces it with the evidence-grounded candidate.
-
-## Qwen3 thinking policy
-
-Routine and low-resource requests use `/no_think`. Difficult analysis can use `/think` only on safe balanced/performance profiles and while the shared inference deadline has enough time. Hidden reasoning tags are removed before display.
-
-## Final critic gate
-
-A short third pass is available only for difficult Qwen3 tasks when quality, deadline, RAM, and thermal gates all pass. It never runs on hot or critical devices and never loads a second model simultaneously.
+- Greek requests may use English bridge terms for retrieval, while the final answer remains Greek.
+- Comparisons reserve evidence for every entity.
+- Mathematics, conversions, statistics, and supported equations prefer exact tools.
+- Coding answers are checked for syntax, dependencies, paths, and likely runtime errors.
+- Unsupported fluent output is replaced with the strongest grounded candidate.
