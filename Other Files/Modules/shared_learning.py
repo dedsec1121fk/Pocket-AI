@@ -18,7 +18,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Iterable, Mapping, Sequence
 
-MODULE_VERSION = 1
+MODULE_VERSION = 2
 _TOKEN_RE = re.compile(r"[0-9a-zα-ω]+", re.I)
 
 
@@ -53,14 +53,16 @@ class SharedLearningEngine:
     """Persistent lesson bridge shared by every local model tier."""
 
     STRENGTH = {
-        "fast": 1.0,
-        "quality": 1.4,
-        "smart": 2.2,
-        "ultra": 3.0,
-        "pro": 4.0,
+        "emergency_fast": 0.8,
+        "emergency_quality": 1.0,
+        "fast": 1.8,
+        "quality": 2.2,
+        "smart": 3.0,
+        "ultra": 3.4,
+        "pro": 4.2,
         "max": 5.0,
-        "grounded": 2.5,
-        "web": 2.4,
+        "grounded": 2.8,
+        "web": 2.7,
     }
 
     def __init__(self, data_dir: Path) -> None:
