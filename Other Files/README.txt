@@ -34,7 +34,7 @@ Split GGUF edition:
 - Per-part and complete-model SHA-256 verification.
 - Atomic reconstruction prevents incomplete runtime models.
 
-Max knowledge edition: 12,775 English/Greek records, 78,149 aliases, SQLite FTS5 retrieval, compact model context, and safe response caching.
+Max knowledge edition: 12,842 English/Greek records, 78,509 aliases, SQLite FTS5 retrieval, compact model context, and safe response caching.
 
 Maximum-knowledge additions:
 - Models/Lexical Knowledge: 117,659 WordNet concepts with Greek links.
@@ -44,8 +44,24 @@ Maximum-knowledge additions:
 
 
 NATURAL COMPLETE SCHOOL BUILD 9.0
-- 758 searchable grade 1-12 concepts
-- 3,893 grade-adapted detailed lesson records
+- 771 searchable grade 1-12 topics
+- 3,994 grade-adapted detailed lesson records
 - English and Greek grade/depth detection
 - natural contextual follow-ups, examples, analogies, quizzes, and confusion recovery
 - school SQLite FTS5 database: Models/School Knowledge/PocketAI_School_Curriculum.sqlite3
+
+MAXSAFE 11.0
+- Modules/thermal_governor.py: live thermal/RAM governor.
+- Modules/hybrid_orchestrator.py: strongest-safe model selection and sequential fusion.
+- install_models.sh --best: builds llama.cpp and downloads the strongest practical optional model for the current phone.
+- Documentation/MAXSAFE_THERMAL_HYBRID.md: architecture and safety limits.
+
+Pocket AI 12.0 Adaptive MaxSafe: runtime_telemetry.json stores local per-model speed and heat-response measurements. It is safe to delete; Pocket AI will relearn conservative defaults.
+
+
+POCKET AI 14.0 SPEC-MAX COGNITIVE SCALING
+- Parallel cached web search and page reading.
+- `/learn safe` for trusted automatic learning; `/learn fast` for more aggressive parallel page learning.
+- `shared_learning.py` shares verified lessons across all model tiers.
+- `model_intelligence.py` gives each model tier an evidence-first instruction profile.
+- This is retrieval learning, not unsafe GGUF weight mutation.
