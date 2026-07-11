@@ -25,3 +25,7 @@ Pocket AI measures live resources; advertised RAM alone is not sufficient. The r
 - Cancels the second hybrid pass if resources become unsafe.
 - Uses the internal bilingual knowledge engine when 32-bit or critically constrained.
 - Unknown processors are benchmarked instead of rejected by name.
+
+## Pocket AI 14.0 flagship profile
+
+Phones with approximately 9 GB or more usable total RAM, at least 3.8 GB live free RAM, and a high local CPU score can enter `flagship`. This is not a fixed promise: temperature, battery, storage, memory pressure, and remaining deadline can still downgrade the plan. Flagship permits larger model-specific contexts and up to six inference threads while keeping at least one logical core available to Android.
