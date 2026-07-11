@@ -6,7 +6,7 @@ Pocket AI uses retrieval-first intelligence so the smallest 135M model receives 
 
 | Layer | Packaged content | Purpose |
 |---|---:|---|
-| Curated bilingual database | 12,775 records, 78,149 aliases, 51 categories | High-confidence school, computing, science, mathematics, geography, and everyday facts |
+| Curated bilingual database | 12,842 records, 78,509 aliases, 56 categories | High-confidence school, computing, science, mathematics, geography, and everyday facts |
 | WordNet lexical graph | 117,659 concepts; 206,978 English lemmas | Definitions, senses, synonyms, antonyms, semantic relations |
 | Greek lexical links | 17,891 linked concepts; 23,853 Greek lemmas | Greek concept matching and bilingual evidence |
 | Offline encyclopedia | 45,591 articles; 68,342 passages; 51,087,206 characters | Broad people, places, history, science, culture, and general-reference evidence |
