@@ -51,15 +51,15 @@ The high-precision reasoning layer. It performs query decomposition, comparison 
 - `adaptive_compute.py` — persistent per-model speed/heat learning, deadline-aware token budgets, and safe cool-device burst tuning.
 
 
-POCKET AI 14.0 SPEC-MAX COGNITIVE SCALING
+POCKET AI 14.0 SPEC-MAX COGNITIVE SCALING (HISTORICAL FOUNDATION)
 - Parallel cached web search and page reading.
 - `/learn safe` for trusted automatic learning; `/learn fast` for more aggressive parallel page learning.
 - `shared_learning.py` shares verified lessons across all model tiers.
 - `model_intelligence.py` gives each model tier an evidence-first instruction profile.
 - This is retrieval learning, not unsafe GGUF weight mutation.
 
-## Pocket AI 14.0 Spec-Max modules
+## Pocket AI 15.0 compact-hybrid modules
 
-- `model_intelligence.py` version 2 — separate instructions, evidence compression, task-aware sampling, and output budgeting for Fast, Quality, Smart, Ultra, Pro, and Max.
-- `resource_matrix.py` version 7 — expanded realistic combinations plus the new `flagship` runtime profile.
+- `model_intelligence.py` version 3 — separate instructions, evidence compression, task-aware sampling, and output budgeting for emergency 135M plus 0.6B, 0.8B, 1.5B, 1.7B, 4B, and 8B tiers.
+- `resource_matrix.py` version 8 — expanded realistic combinations plus the new `flagship` runtime profile.
 - The main pipeline resolves the target model before building context, so evidence and output budgets are calculated for the model that will actually answer.
