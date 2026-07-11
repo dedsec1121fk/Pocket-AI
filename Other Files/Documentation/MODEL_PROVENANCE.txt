@@ -1,134 +1,15 @@
-Pocket AI bundled-model provenance
-==================================
+POCKET AI 16.0 MODEL PROVENANCE
 
-Overview
---------
-This package contains twelve local model components. All model data is already
-inside Models/. The Termux installer compiles only the native llama.cpp runner;
-it does not download model weights.
+Bundled emergency models:
+- SmolLM2-135M-Instruct Q2_K and Q4_1, Apache-2.0, distributed as verified split GGUF parts.
 
-GGUF language models
---------------------
-Base family: SmolLM2-135M-Instruct
-Creator: HuggingFaceTB
-License: Apache License 2.0
-Approximate parameter count: 134.5 million
+Downloadable normal ladder:
+- Qwen/Qwen3-0.6B-GGUF, Q8_0.
+- ggml-org/Qwen3.5-0.8B-GGUF, Q4_0, converted from official Qwen weights.
+- Qwen/Qwen2.5-1.5B-Instruct-GGUF, Q4_K_M.
+- Qwen/Qwen3-1.7B-GGUF, Q4_K_M.
+- bartowski/Qwen_Qwen3.5-2B-GGUF, Q4_K_M, community GGUF conversion from official Qwen weights.
+- Qwen/Qwen2.5-3B-Instruct-GGUF, Q3_K_M or Q4_K_M.
+- Optional Qwen/Qwen3-4B-GGUF and Qwen/Qwen3-8B-GGUF, Q4_K_M.
 
-1. Fast Q2_K
-   File: Models/SmolLM2-135M-Instruct.Q2_K.gguf
-   Size: 88,201,792 bytes
-   SHA-256: 1e014d3c45f6cf502397a3b85b1d9d282605afb02079fd32665b0422c3f0106c
-   This file was locally requantized from the bundled Q4_1 file with
-   llama.cpp using Q2_K and --allow-requantize.
-
-2. Quality Q4_1
-   File: Models/SmolLM2-135M-Instruct.Q4_1.gguf
-   Size: 98,362,432 bytes
-   SHA-256: b179c9523d0e6a0f98a330c7562b682750a6f8c8c15e5bc70ea373728110db53
-   Distribution source: llm-smollm2 0.1.2 Python wheel.
-
-Pocket AI neural classifiers
------------------------------
-The five classifier models were trained locally from the package's bilingual
-English/Greek 51-intent dataset. They use the same intent set at progressively
-larger hashed-input and hidden-layer capacities. The hardware scanner selects
-one classifier; it never loads every classifier at the same time.
-
-3. Micro:    Models/pretrained_micro/neural_model.pkl.gz
-4. Lite:     Models/pretrained_lite/neural_model.pkl.gz
-5. Balanced: Models/pretrained_balanced/neural_model.pkl.gz
-6. Standard: Models/pretrained_standard/neural_model.pkl.gz
-7. Max:      Models/pretrained_max/neural_model.pkl.gz
-
-Bilingual MicroLM generators
-----------------------------
-These are locally generated compact n-gram models built from English and Greek
-training text. They provide an extremely small fallback generator when GGUF
-inference is unavailable. The scanner uses Lite on constrained phones and
-Quality when RAM permits.
-
-8. Lite:    Models/PocketAI_Bilingual_MicroLM_Lite.pkl.gz
-9. Quality: Models/PocketAI_Bilingual_MicroLM_Quality.pkl.gz
-
-Bilingual specialist models
-----------------------------
-These compact package-specific models contain weighted bilingual routing
-features, specialist prompts, and curated local knowledge. They do not claim to
-be independent transformer language models. They improve the selected model's
-task routing and can directly answer a limited set of verified built-in topics.
-
-10. Code:     Models/PocketAI_Code_Specialist.json.gz
-11. Math:     Models/PocketAI_Math_Specialist.json.gz
-12. Research: Models/PocketAI_Research_Specialist.json.gz
-
-Runtime and language behavior
------------------------------
-Only one GGUF process is started for a response. One neural classifier and one
-MicroLM variant are selected according to detected RAM, available RAM,
-processor capability, userspace bitness, and storage. Specialist models are
-small routing overlays. Pocket AI accepts and produces English and Greek only.
-
-Validation
-----------
-Other Files/CHECKSUMS.sha256 covers all static package files. The installer and
-/llm-status additionally verifies the bundled GGUF files and any installed optional Qwen files, including their GGUF magic headers.
-
-
-HYBRID CONTROLLER COMPONENTS
-----------------------------
-PocketAI_Hybrid_Router, PocketAI_Query_Planner, PocketAI_Response_Verifier, and
-PocketAI_Resource_Guard are transparent compact controller models created for
-this package. They contain bilingual routing cues, scoring weights, and resource
-thresholds. They are not presented as transformer language models.
-
-ADDITIONAL LOCAL CONTROLLERS AND MODULES
-----------------------------------------
-The Adaptive Controller, Consensus Controller, Persona Controller, Context
-Optimizer, Confidence Calibrator, and Python runtime modules were created for
-this Pocket AI package. They are compact local routing, scoring, context, and
-conversation components. They are not represented as full transformer LLMs.
-
-POCKET AI SCHOOL AND WEB-LEARNING COMPONENTS
---------------------------------------------
-The grade 1-12 school knowledge pack, five school specialist files, school hybrid controller,
-and no-key web-learning controller are compact project-authored routing/knowledge components.
-They are not third-party transformer weights. Their purpose is to provide deterministic school
-support and safe source selection before optional GGUF inference.
-
-The no-key learner uses public Bing RSS results, Wikipedia's MediaWiki API, and readable public
-pages. It does not contain credentials and does not bypass Google Gemini authentication.
-
-
-PocketAI_Universal_Knowledge.json.gz is a locally authored bilingual educational and common-knowledge foundation. It does not contain copied model weights or scraped private data.
-PocketAI_Universal_Knowledge_Controller.json.gz, PocketAI_Natural_Dialogue_Controller.json.gz, and PocketAI_Continuous_Runtime_Controller.json.gz are compact local routing/configuration models, not transformer LLM weights.
-
-MAXIMUM-KNOWLEDGE RETRIEVAL LAYERS
-- Princeton WordNet 3.0: 117,659 indexed concepts in seven SQLite shards.
-- Greek WordNet / Open Multilingual Wordnet links: 17,891 concepts with Greek lemmas.
-- Plain-text Simple English Wikipedia-derived corpus: 45,591 detected articles and 68,342 indexed passages in five SQLite shards.
-- Retrieval date for the encyclopedia transformation: 2026-07-09.
-- Detailed source, transformation, license, and limitation notes are in LEXICAL_KNOWLEDGE_PROVENANCE.md and ENCYCLOPEDIA_KNOWLEDGE_PROVENANCE.md.
-
-
-OPTIONAL QWEN2.5 GGUF MODELS
-----------------------------
-Pocket AI can optionally download Qwen3-0.6B-GGUF Q8_0 and Qwen3-1.7B-GGUF Q8_0 from the official Qwen Hugging Face organization. They are not embedded in the core package. The installer retrieves each selected file's official LFS object SHA-256 and size through the Hugging Face model API, downloads from the official HTTPS resolve URL with resume support, validates the complete SHA-256, exact size, and GGUF header, and writes local checksum/provenance sidecars. The official repositories identify the license as Apache-2.0.
-
-
-School curriculum database
-- File: Models/School Knowledge/PocketAI_School_Curriculum.sqlite3
-- Content: structured original curriculum mapping and teaching metadata generated for Pocket AI, supplemented by short locally indexed encyclopedia evidence where available.
-- Scope: 771 topics, 3,994 grade-adapted records, grades 1-12, English/Greek retrieval.
-- Boundary: not a verbatim copy of every national curriculum or textbook.
-
-MAXSAFE THERMAL HYBRID COMPONENTS
-
-PocketAI_MaxSafe_Thermal_Hybrid_Controller.json.gz, thermal_governor.py, and
-hybrid_orchestrator.py are project-authored deterministic control components.
-They contain no third-party neural weights. They select among separately
-licensed GGUF models, protect live RAM/thermal headroom, and combine model
-outputs sequentially.
-
-Adaptive MaxSafe Compute Controller: locally authored standard-library runtime logic. It contains no model weights and stores only local performance telemetry.
-
-Pocket AI 15.0 adds local retrieval-based shared lessons and trusted public-web evidence caches. It does not alter third-party GGUF weights.
+The installer reads Hugging Face model metadata at download time, requires a 64-hex LFS SHA-256 and exact byte size, resumes partial downloads, and validates the GGUF header before installation. The large normal-tier weights are not embedded in the core ZIP.
