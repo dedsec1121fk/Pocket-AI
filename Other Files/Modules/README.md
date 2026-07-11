@@ -35,7 +35,31 @@ The high-precision reasoning layer. It performs query decomposition, comparison 
 
 ## Natural Complete School modules
 
-- `school_tutor.py`: searches the 758-concept / 3,893-lesson curriculum database, detects grade and requested depth, formats detailed bilingual lessons, and handles deterministic school mathematics.
+- `school_tutor.py`: searches the 771-topic / 3,994-lesson curriculum database, detects grade and requested depth, formats detailed bilingual lessons, and handles deterministic school mathematics.
 - `conversation_engine.py`: bilingual social intent, follow-up resolution, confusion recovery, and natural generation guidance.
 - `persona_engine.py`: persistent speaking style plus conservative boilerplate and repetition cleanup.
 - `smart_reasoning.py`: identifies detailed and school requests so retrieval, synthesis, and output budgets are adjusted.
+
+- `web_intelligence.py`: detects current/explicit web requests, cleans queries, controls off/auto/on behavior, and formats source lists.
+
+## MaxSafe runtime modules
+
+● `thermal_governor.py` classifies battery, skin, and SoC sensor readings; estimates model working sets; tunes context/batch/threads; monitors active inference; and protects a live Android RAM reserve.
+
+● `hybrid_orchestrator.py` chooses the strongest safe installed model and builds sequential analyst/synthesizer fusion plans for difficult questions. It never requires two GGUF processes to be resident at once.
+
+- `adaptive_compute.py` — persistent per-model speed/heat learning, deadline-aware token budgets, and safe cool-device burst tuning.
+
+
+POCKET AI 14.0 SPEC-MAX COGNITIVE SCALING
+- Parallel cached web search and page reading.
+- `/learn safe` for trusted automatic learning; `/learn fast` for more aggressive parallel page learning.
+- `shared_learning.py` shares verified lessons across all model tiers.
+- `model_intelligence.py` gives each model tier an evidence-first instruction profile.
+- This is retrieval learning, not unsafe GGUF weight mutation.
+
+## Pocket AI 14.0 Spec-Max modules
+
+- `model_intelligence.py` version 2 — separate instructions, evidence compression, task-aware sampling, and output budgeting for Fast, Quality, Smart, Ultra, Pro, and Max.
+- `resource_matrix.py` version 7 — expanded realistic combinations plus the new `flagship` runtime profile.
+- The main pipeline resolves the target model before building context, so evidence and output budgets are calculated for the model that will actually answer.
