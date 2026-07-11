@@ -1,17 +1,17 @@
 {
-  "version": "9.0-natural-complete-school",
-  "topic_count": 758,
-  "grade_lesson_count": 3893,
+  "version": "10.0-spec-max-cognitive-school",
+  "topic_count": 771,
+  "grade_lesson_count": 3994,
   "subjects": [
-    "math",
-    "language",
-    "science",
-    "humanities",
-    "geography",
-    "computing",
-    "health",
     "arts",
-    "economics"
+    "computing",
+    "economics",
+    "geography",
+    "health",
+    "humanities",
+    "language",
+    "math",
+    "science"
   ],
   "grades": [
     1,
@@ -28,10 +28,10 @@
     12
   ],
   "database": "PocketAI_School_Curriculum.sqlite3",
-  "database_bytes": 29274112,
-  "database_sha256": "bec7906a8355ecc8d2daf3a6b8bb236e26049dfc0688bf233361cba38d74bcc6",
+  "database_bytes": 29999104,
+  "database_sha256": "562380b778a5aef241eb09ade0cb8c9f144081b02cac68e19ca83c988768dc0f",
   "runtime_pack": "PocketAI_School_Knowledge.json.gz",
-  "runtime_pack_bytes": 112317,
-  "runtime_pack_sha256": "eabedf9dac23401ff3589bb970fe120b5b14f1d8bd40fa6fcd3ff113c2c4247d",
-  "design": "detailed grade-adapted structured lessons with local evidence"
+  "runtime_pack_bytes": 119329,
+  "runtime_pack_sha256": "a640b168c18d6f5128163e83a49eaa8c14707b4076a07f6a4d55be9bb4ee41f8",
+  "design": "detailed grade-adapted bilingual lessons with corrected local evidence and spec-max AI/cybersecurity literacy"
 }
