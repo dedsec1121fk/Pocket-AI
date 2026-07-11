@@ -1,3 +1,69 @@
+# Pocket AI Changelog
+
+## 14.0 — Spec-Max Cognitive Scaling
+
+- Added per-model cognitive profiles for Fast, Quality, Smart, Ultra, Pro, and Max instead of one broad instruction for every GGUF.
+- Added task-aware sampling, evidence compression, context allocation, and output-token budgeting matched to each model's real capacity.
+- Added a `flagship` runtime profile and expanded safe context/output ceilings on high-RAM, high-CPU phones while preserving Android headroom.
+- Enabled guarded sequential Fast-to-Quality fusion on entry-class bundled-only devices when live resources permit it.
+- Added 67 bilingual reasoning, AI-literacy, cybersecurity, digital-literacy, and software-engineering concepts to the maximum-knowledge database.
+- Expanded the fallback universal pack to 341 high-value entries.
+- Expanded the school foundation to 771 topics and 3,994 grade-specific lessons.
+- Replaced the incorrect Password Safety/Safety Harbor material and added grade-adapted AI, privacy, source-verification, secure-coding, and cybersecurity lessons.
+- Added `model_intelligence.py` version 2 and `PocketAI_Spec_Max_Cognitive_Scaler.json.gz`.
+- Preserved the honest limitation that 135M weights cannot literally equal GPT-3.5; gains come from orchestration, retrieval, exact tools, verification, and optional Qwen tiers.
+
+# Pocket AI Changelog
+
+## 13.0 — Rapid Web Shared Intelligence
+
+- Added parallel DDGS, Bing RSS, and Wikipedia search with trust/relevance ranking.
+- Added concurrent readable-page fetching, bounded search/page caching, and per-host request pacing.
+- Added batch SQLite web ingestion to remove per-chunk transaction overhead.
+- Added `/learn off|safe|fast` and `/learn-status`.
+- Added `shared_learning.py`, which stores high-confidence compact lessons from stronger models and grounded evidence for retrieval by every model tier.
+- Added per-model instruction packs so 135M models stay close to grounded drafts while Qwen tiers perform deeper checking and synthesis.
+- Prevented current-sensitive answers from becoming timeless shared lessons.
+- Kept public-host validation, robots.txt checks, blocked binary types, bounded downloads, thermal protection, and the shared answer deadline.
+
+# Pocket AI Changelog
+
+## 12.0 — Adaptive MaxSafe Deep Fusion
+
+- Added persistent per-model throughput and thermal-response learning in `adaptive_compute.py`.
+- Added cool-and-stable burst headroom for context, batch, output budget, and up to six inference threads while preserving one Android scheduling core.
+- Added a second hard thermal/RAM envelope check after adaptive tuning.
+- Added deadline-aware token budgeting from measured output speed.
+- Added historical abort-rate and temperature-rise backoff.
+- Expanded automatic sequential fusion to bundled-only and Qwen installations when the live envelope supports it.
+- Added an optional short final critic pass for difficult Qwen3 tasks, guarded by remaining time, free RAM, and live temperature.
+- Improved `--best` model installation matching by checking live `MemAvailable` as well as total RAM and storage.
+- No code disables Android thermal protection, overclocks the device, or keeps multiple GGUF models loaded simultaneously.
+
+# Pocket AI 11.0 — MaxSafe Hybrid Intelligence
+
+- Added live battery/skin/SoC thermal classification and temperature-rise tracking.
+- Added continuous RAM and thermal monitoring during GGUF generation.
+- Added safe early termination with coherent partial-output recovery.
+- Added sequential `fusion`: compact analyst followed by the strongest safe synthesizer, never simultaneous model loading.
+- Added automatic strongest-safe model installation with `--best`/`--auto`.
+- Changed the midrange Ultra tier to Qwen3 1.7B Q4_K_M for a better Android memory/quality balance.
+- Capped sustained local inference at six threads while leaving Android scheduling headroom.
+- Added the MaxSafe controller, thermal governor, hybrid orchestrator, documentation, and bilingual README guidance.
+
+# Pocket AI Changelog
+
+## 10.0 — Conversational Web Intelligence
+
+- Closed every README `<details>` section by default.
+- Added persistent multi-turn context restoration and ChatML history injection.
+- Added natural English/Greek follow-ups, reference resolution, and continuation prompts.
+- Added `/web off|auto|on`, `/search`, `/sources`, and durable `/web-learn`.
+- Added DDGS, Bing RSS, and Wikipedia no-key search fallbacks with source display.
+- Added official optional Qwen3 4B Pro and Qwen3 8B Max tiers alongside 0.6B Smart and 1.7B Ultra.
+- Added hardware guards for automatic model escalation and short automatic web timeouts.
+- Documented that 135M models cannot genuinely equal ChatGPT 3.5 and that web learning is retrieval memory, not weight training.
+
 # Changelog
 
 ## 7.0 — advanced reasoning and Qwen3
