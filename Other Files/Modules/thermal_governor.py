@@ -13,21 +13,25 @@ from typing import Deque, Dict, Iterable, Tuple
 
 MiB = 1024 ** 2
 GiB = 1024 ** 3
-MODULE_VERSION = 1
+MODULE_VERSION = 2
 
 MODEL_CONTEXT_BYTES_PER_TOKEN = {
-    "fast": 24 * 1024,
-    "quality": 28 * 1024,
-    "smart": 96 * 1024,
+    "emergency_fast": 24 * 1024,
+    "emergency_quality": 28 * 1024,
+    "fast": 64 * 1024,
+    "quality": 80 * 1024,
+    "smart": 128 * 1024,
     "ultra": 176 * 1024,
     "pro": 360 * 1024,
     "max": 690 * 1024,
 }
 
 MODEL_FALLBACK_BYTES = {
-    "fast": 90 * MiB,
-    "quality": 100 * MiB,
-    "smart": 720 * MiB,
+    "emergency_fast": 90 * MiB,
+    "emergency_quality": 100 * MiB,
+    "fast": 700 * MiB,
+    "quality": 563 * MiB,
+    "smart": 1_100 * MiB,
     "ultra": 1_150 * MiB,
     "pro": 2_650 * MiB,
     "max": 5_250 * MiB,
@@ -135,13 +139,15 @@ class ThermalGovernor:
     def reserve_bytes(total_ram: int, charging: bool = False) -> int:
         total = max(0, int(total_ram))
         if total < 3 * GiB:
-            reserve = 280 * MiB
-        elif total < 6 * GiB:
-            reserve = 520 * MiB
-        elif total < 10 * GiB:
-            reserve = 850 * MiB
+            reserve = 300 * MiB
+        elif total < 5 * GiB:
+            reserve = 500 * MiB
+        elif total < 8 * GiB:
+            reserve = 700 * MiB
+        elif total < 12 * GiB:
+            reserve = 950 * MiB
         else:
-            reserve = 1_150 * MiB
+            reserve = 1_200 * MiB
         if charging:
             reserve += 64 * MiB
         return reserve
