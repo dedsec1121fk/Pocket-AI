@@ -1,6 +1,6 @@
 # Spec-Max Cognitive Scaling — Historical v14 Foundation
 
-This document describes the v14 reasoning foundation. Pocket AI 15 retains its evidence compression, exact tools, per-model prompting, verification, school knowledge, and resource safeguards, but the model ladder has been superseded by:
+This document describes the v14 reasoning foundation. Pocket AI 16 retains its evidence compression, exact tools, per-model prompting, verification, school knowledge, and resource safeguards, but the model ladder has been superseded by:
 
 - `COMPACT_HYBRID_MODEL_LADDER.md`
 - normal start at Qwen3 0.6B
