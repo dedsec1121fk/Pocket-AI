@@ -29,6 +29,93 @@
 
 **Pocket AI** is a bilingual local assistant for **English and Greek** that runs in **Termux without root**. It combines compact neural classifiers, local GGUF language models, persistent retrieval memory, subject specialists, deterministic school tools, and hardware-aware hybrid routing.
 
+<details>
+<summary><strong>Spec-Max Intelligence Per Model</strong></summary>
+
+Pocket AI 14.0 now scales reasoning separately for every installed model instead of giving a 135M model and an 8B model the same prompt.
+
+| Tier | Model | Maximum useful role |
+|---|---|---|
+| Fast | SmolLM2 135M Q2_K | evidence extractor and emergency grounded generator |
+| Quality | SmolLM2 135M Q4_1 | compact three-step grounded reasoner |
+| Smart | Qwen3 0.6B Q8_0 | four-step general reasoning and constraint checking |
+| Ultra | Qwen3 1.7B Q4_K_M | conflict resolution, failure modes, code and calculation checks |
+| Pro | Qwen3 4B Q4_K_M | deeper decomposition, alternatives, counterexamples, verification |
+| Max | Qwen3 8B Q4_K_M | fullest safe local synthesis within the live device envelope |
+
+Each tier now receives its own context ceiling, evidence compression ratio, output budget, planning depth, sampling parameters, and task checks. A new `flagship` profile expands context and output only on devices with sufficient live RAM, CPU score, storage, temperature headroom, battery state, and remaining answer time.
+
+The shared foundation contains **12,842 bilingual knowledge entries**, **78,509 aliases**, and **771 school topics / 3,994 grade-specific lessons**.
+
+**Honest limit:** the bundled 135M models cannot literally become GPT-3.5. Pocket AI makes them substantially more useful through evidence retrieval, exact tools, safe grounded drafts, verification, and stronger optional Qwen models.
+
+### Ελληνικά
+
+Το Pocket AI 14.0 εφαρμόζει διαφορετικό βάθος συλλογισμού, όριο συμφραζομένων, συμπίεση τεκμηρίων, sampling και έλεγχο σε κάθε μοντέλο. Τα μοντέλα 135M δεν μπορούν κυριολεκτικά να γίνουν GPT-3.5· η βελτίωση προέρχεται από ανάκτηση γνώσης, ακριβή εργαλεία, τεκμηριωμένα προσχέδια, επαλήθευση, διαδοχικό fusion και τα προαιρετικά μοντέλα Qwen.
+
+</details>
+
+<details>
+<summary><strong>MaxSafe Phone-Limit Intelligence</strong></summary>
+
+Pocket AI 14.0 uses the strongest installed model that fits the phone <strong>right now</strong>, not merely the largest model found on disk. It combines live RAM, processor score, CPU-core count, battery state, available storage, temperature sensors, recent temperature rise, task difficulty, and the remaining answer deadline.
+
+● <strong>Cool-device burst:</strong> raises useful threads and batch size for short work while leaving at least one logical core available to Android and Termux.
+
+● <strong>Sustained protection:</strong> reduces threads, context, batch, micro-batch, and output length as the phone becomes warm or memory pressure rises.
+
+● <strong>Emergency stop:</strong> stops a model pass on emergency heat, critical rapid temperature rise, critical free-RAM pressure, or the shared 112-second deadline. A coherent partial answer or retrieval/tool fallback is preserved where possible.
+
+● <strong>Sequential fusion:</strong> for difficult questions on capable phones, a smaller model acts as analyst. It is unloaded before the strongest safe model synthesizes the final answer from the question, evidence, conversation context, and analyst notes. Two GGUF models are never kept loaded together.
+
+● <strong>Adaptive compute learning:</strong> records each model's real output speed, temperature rise, abort rate, context, batch, and thread count on this phone. Future answers use that history to spend more of the 112-second budget when the device stays cool and to back off earlier when the same model heats the device quickly.
+
+● <strong>Guarded final critic:</strong> very difficult mathematics, coding, comparison, and causal questions can receive one short final verification pass on Qwen3 when the phone remains cool, free RAM is sufficient, and at least 16 seconds remain. The verifier is skipped immediately if any safety condition tightens.
+
+● <strong>Automatic best match:</strong> `bash "Other Files/install_models.sh" --best` selects the strongest practical Qwen3 tier from the phone's RAM, architecture, and free storage. Inside Pocket AI, keep `/llm-model auto` and `/hybrid auto` enabled.
+
+| Approximate phone class | Strongest practical optional tier |
+|---|---|
+| Below 3 GB RAM | Bundled SmolLM2 Quality/Fast fallback |
+| 3–5 GB RAM | Qwen3 0.6B Q8_0 Smart |
+| 5–8 GB RAM | Qwen3 1.7B Q4_K_M Ultra |
+| 8–13 GB RAM | Qwen3 4B Q4_K_M Pro |
+| 13 GB+ RAM with sufficient free storage | Qwen3 8B Q4_K_M Max |
+
+These are conservative starting bands. Live free RAM and thermal state can cause Pocket AI to select a smaller tier. Pocket AI never disables Android thermal protection, and no software can guarantee that a phone will never become warm.
+
+### Ελληνικά
+
+Το Pocket AI 14.0 επιλέγει το ισχυρότερο εγκατεστημένο μοντέλο που χωράει με ασφάλεια στην πραγματική κατάσταση του κινητού. Παρακολουθεί RAM, CPU, μπαταρία, αισθητήρες θερμοκρασίας και την άνοδο θερμοκρασίας κατά την απάντηση. Η λειτουργία `fusion` χρησιμοποιεί δύο μοντέλα <strong>διαδοχικά</strong>, ποτέ ταυτόχρονα: πρώτα έναν μικρό αναλυτή και μετά το ισχυρότερο ασφαλές μοντέλο για την τελική σύνθεση.
+ Το Pocket AI αποθηκεύει μόνο τοπικά μετρήσεις απόδοσης ανά μοντέλο και μαθαίνει πόσο γρήγορα και πόσο θερμά λειτουργεί το συγκεκριμένο κινητό. Σε δύσκολες ερωτήσεις μπορεί να εκτελέσει έναν σύντομο τελικό έλεγχο μόνο όταν η θερμοκρασία, η RAM και ο χρόνος παραμένουν ασφαλή.
+
+</details>
+
+<details>
+<summary><strong>Rapid Web Learning and Shared Model Intelligence</strong></summary>
+
+Pocket AI 14.0 makes internet learning faster without pretending to retrain GGUF weights on the phone. Search providers run in parallel, readable public pages are fetched concurrently, repeated searches use a bounded cache, and trusted evidence is inserted into SQLite in one transaction instead of one transaction per paragraph.
+
+● <strong>Safe automatic learning:</strong> `/learn safe` stores trusted evidence that was actually used in an answer.
+
+● <strong>Fast learning:</strong> `/learn fast` reads more trusted pages in parallel while keeping the same public-host, robots.txt, file-type, size, and timeout restrictions.
+
+● <strong>Shared lessons:</strong> high-confidence answers from stronger installed models are compressed into verified local lessons that every model can retrieve later. This lets Qwen teach the 135M emergency models without unsafe on-device fine-tuning.
+
+● <strong>Freshness protection:</strong> time-sensitive answers are searched again and are not treated as permanent timeless lessons.
+
+● <strong>Per-model instruction packs:</strong> tiny models rewrite a grounded draft instead of freely inventing facts; stronger models receive deeper planning, conflict-resolution, calculation, code, and completeness checks.
+
+Use `/learn-status` to see learned sources, chunks, shared lessons, and retrieval uses.
+
+This can make responses substantially more capable and consistent, but a 135M model cannot become genuinely equivalent to a much larger cloud model. The main gains come from retrieval, exact tools, stronger optional Qwen models, sequential fusion, and shared verified lessons.
+
+### Ελληνικά
+
+Το Pocket AI 14.0 εκτελεί παράλληλη αναζήτηση και ανάγνωση δημόσιων σελίδων, αποθηκεύει αξιόπιστα στοιχεία μαζικά στη SQLite και επιτρέπει στα ισχυρότερα εγκατεστημένα μοντέλα να δημιουργούν σύντομα επαληθευμένα μαθήματα για όλα τα μικρότερα μοντέλα. Η διαδικασία δεν αλλάζει ανεξέλεγκτα τα βάρη GGUF και δεν αποθηκεύει επίκαιρες πληροφορίες ως μόνιμες αλήθειες.
+
+</details>
+
 The normal experience is deliberately simple:
 
 ```text
@@ -45,7 +132,7 @@ Type **`help`** at any time to open the easy numbered menu.
 
 ## Maximum-smartness architecture
 
-Pocket AI now uses an evidence-first reasoning stack before any language-model call. The advanced reasoning module decomposes requests, extracts comparison entities and constraints, ranks sources by reliability and coverage, runs exact local tools for arithmetic, equations, statistics, conversions, and exact text counting, constructs a compact reasoning blueprint, audits generated answers, and repairs weak output with grounded synthesis. Qwen3 runs in non-thinking mode for routine questions and guarded thinking mode only for difficult tasks when live RAM, CPU, temperature, and the shared deadline permit it. The 135M models remain emergency generators; retrieval and deterministic tools carry most factual and exact work on low-end phones.
+Pocket AI 14.0 uses a conversation-aware, evidence-first reasoning stack before any language-model call. The advanced reasoning module decomposes requests, extracts comparison entities and constraints, ranks sources by reliability and coverage, runs exact local tools for arithmetic, equations, statistics, conversions, and exact text counting, constructs a compact reasoning blueprint, audits generated answers, and repairs weak output with grounded synthesis. Qwen3 runs in non-thinking mode for routine questions and guarded thinking mode only for difficult tasks when live RAM, CPU, temperature, and the shared deadline permit it. The 135M models remain emergency generators; retrieval and deterministic tools carry most factual and exact work on low-end phones.
 
 ## Table of Contents
 
@@ -60,6 +147,7 @@ Pocket AI now uses an evidence-first reasoning stack before any language-model c
 * [Models And Hybrid Intelligence](#models-and-hybrid-intelligence)
 * [Automatic Phone Scanning](#automatic-phone-scanning)
 * [Learning From Files And The Web](#learning-from-files-and-the-web)
+* [Conversation Memory, Follow-ups, Internet Search And Learning](#conversation-memory-and-web-intelligence)
 * [Google AI And API-Key Limitation](#google-ai-and-api-key-limitation)
 * [Folder Structure And Save Locations](#folder-structure-and-save-locations)
 * [Important Commands](#important-commands)
@@ -70,7 +158,7 @@ Pocket AI now uses an evidence-first reasoning stack before any language-model c
 
 <a id="main-features"></a>
 
-<details open>
+<details>
 <summary><strong>Main Features</strong></summary>
 
 * **Direct chat by default:** no complicated launcher is required.
@@ -83,9 +171,9 @@ Pocket AI now uses an evidence-first reasoning stack before any language-model c
 * **Human-style persona:** give the AI a name and choose Friendly, Calm Expert, Casual, Mentor, or Direct speech.
 * **Persistent local memory:** remembers taught answers, user memories, indexed files, settings, and conversation history.
 * **Hybrid intelligence:** combines deterministic tools, retrieval, specialists, neural routing, and sequential GGUF passes.
-* **Complete school foundation:** 758 searchable concepts and 3,893 grade-adapted lessons across grades 1–12, shared by every model profile.
-* **Maximum retrieval foundation:** 12,775 curated bilingual records, 117,659 WordNet concepts, and 68,342 offline encyclopedia passages are available to every model route.
-* **Continuous runtime matrix:** tunes model, classifier, hybrid mode, context, batch, tokens, and threads from live phone conditions.
+* **Complete school foundation:** 771 searchable topics and 3,994 grade-adapted lessons across grades 1–12, shared by every model profile.
+* **Maximum retrieval foundation:** 12,842 curated bilingual records, 117,659 WordNet concepts, and 68,342 offline encyclopedia passages are available to every model route.
+* **Adaptive runtime learning:** combines live phone conditions with measured per-model speed and heat response to tune model, hybrid mode, context, batch, tokens, and threads.
 * **No-key public research:** can learn from safe public search results, Wikipedia, and readable public pages.
 * **Safe operator research:** supports public `site:`, `filetype:`, `intitle:`, `inurl:`, `before:`, `after:`, exact phrases, and excluded words.
 * **Local file learning:** indexes English and Greek text documents and folders.
@@ -96,12 +184,12 @@ Pocket AI now uses an evidence-first reasoning stack before any language-model c
 
 <a id="universal-knowledge-and-natural-conversation"></a>
 
-<details open>
+<details>
 <summary><strong>Universal Knowledge And Natural Conversation</strong></summary>
 
 Pocket AI now gives **every model path** the same shared bilingual foundation before a transformer is used. This prevents weak phones from losing basic capabilities simply because they cannot run the Quality model.
 
-* **12,775 indexed bilingual knowledge records** covering school subjects, countries and capitals, chemistry, physical constants, programming APIs, arithmetic tables, fractions, number theory, everyday concepts, and specialist guidance.
+* **12,842 indexed bilingual knowledge records** covering school subjects, countries and capitals, chemistry, physical constants, programming APIs, arithmetic tables, fractions, number theory, everyday concepts, and specialist guidance.
 * **117,659 WordNet concepts** with 206,978 English lemma records, plus 17,891 Greek-linked concepts and 23,853 Greek lemma records.
 * **45,591 offline encyclopedia articles** split into 68,342 searchable passages and five low-RAM FTS5 shards.
 * **72 grade-and-subject curriculum summaries** covering grades 1–12 across mathematics, science, language, history, geography, and computing.
@@ -135,7 +223,7 @@ Use `/knowledge` or `/γνώσεις` to show the active shared knowledge founda
 
 <a id="maximum-smartness-under-two-minutes"></a>
 
-<details open>
+<details>
 <summary><strong>Maximum Smartness Under Two Minutes</strong></summary>
 
 The smallest bundled Q2_K model is now used as an **evidence synthesizer**. Pocket AI searches its local databases first, sends only the strongest passages into the active context window, and then asks the model to compose and verify the answer. A 135M-parameter model still cannot equal a cloud frontier model, so this edition also supports stronger Qwen tiers without sacrificing the bundled low-end fallback.
@@ -144,7 +232,7 @@ The smallest bundled Q2_K model is now used as an **evidence synthesizer**. Pock
 * **Cross-language evidence retrieval:** Greek questions are converted into compact English search variants while the final answer remains Greek.
 * **Entity-balanced comparisons:** A-vs-B questions retrieve evidence for both sides instead of letting words such as “compare” dominate the ranking.
 * **Verified expert fallbacks:** common networking, hardware, web-security, cryptography, and science questions have deterministic bilingual answers when generation is unreliable.
-* **Broad offline knowledge:** 45,591 encyclopedia articles, 117,659 lexical concepts, the 12,775-record bilingual foundation, school curricula, user documents, memories, and learned Q&A.
+* **Broad offline knowledge:** 45,591 encyclopedia articles, 117,659 lexical concepts, the 12,842-record bilingual foundation, school curricula, user documents, memories, and learned Q&A.
 * **More context on small phones:** Q2_K receives enlarged but guarded context windows, with automatic reductions when RAM or temperature becomes unsafe.
 * **Deliberate reasoning:** prompts require the model to plan silently, check logic and mathematics, distinguish facts from inference, and avoid fabricated sources, dates, commands, or security claims.
 * **Direct factual path:** exact static topics can be answered from indexed evidence without spending transformer time.
@@ -154,16 +242,21 @@ The smallest bundled Q2_K model is now used as an **evidence synthesizer**. Pock
 
 ### Stronger optional intelligence tiers
 
-* **Qwen3 0.6B Smart:** the recommended reasoning upgrade for capable 4 GB+ 64-bit phones. Pocket AI uses short context, one guarded pass, and non-thinking mode on entry-level hardware.
-* **Qwen3 1.7B Ultra:** the strongest supported local tier, intended mainly for capable 8 GB-class phones. Pocket AI keeps context, thinking, and answer length guarded to protect the time budget.
+* **Qwen3 0.6B Smart:** a compact reasoning upgrade for capable 4 GB+ 64-bit phones. Pocket AI uses short context, one guarded pass, and non-thinking mode on entry-level hardware.
+* **Qwen3 1.7B Ultra:** a stronger local tier intended mainly for capable 6–8 GB phones. Pocket AI keeps context, thinking, and answer length guarded to protect the time budget.
 * **Smallest-model protection:** when only the bundled 135M model is available, the same query planner, evidence reranker, exact-answer tools, bilingual retrieval, answer validator, and safe fallback remain active.
+* **Qwen3 4B Pro:** the first tier intended to approach a modern assistant experience on many ordinary knowledge and reasoning tasks; designed for strong 8 GB-class phones.
+* **Qwen3 8B Max:** the strongest supported tier, intended for high-end 12 GB+ phones with substantial free RAM and storage.
+* **Honest capability boundary:** the bundled 135M models cannot be made genuinely equivalent to ChatGPT 3.5 by prompting or adding facts. Pocket AI improves them with retrieval, exact tools, conversation memory, verification, and web grounding, then automatically selects a larger model when the phone can safely run one.
 
 Install either optional model directly from its official repository with resumable download and SHA-256 verification:
 
 ```bash
 bash "Other Files/install_smart_models.sh" smart
-# Stronger but much larger:
+# Progressively stronger and larger:
 bash "Other Files/install_smart_models.sh" ultra
+bash "Other Files/install_smart_models.sh" pro
+bash "Other Files/install_smart_models.sh" max
 ```
 
 Then use `/llm-model smart`, `/llm-model ultra`, or leave `/hybrid auto` enabled.
@@ -176,7 +269,7 @@ See `Other Files/Documentation/MAX_KNOWLEDGE_ARCHITECTURE.md` for the complete r
 
 <a id="hardware-combination-matrix"></a>
 
-<details open>
+<details>
 <summary><strong>Hardware Combination Matrix</strong></summary>
 
 Pocket AI does not assume that every phone advertised with the same RAM performs equally. It continuously combines:
@@ -336,12 +429,12 @@ The easy menu includes:
 
 <a id="school-tutor-grades-112"></a>
 
-<details open>
+<details>
 <summary><strong>School Tutor: Grades 1–12</strong></summary>
 
 The school foundation is **shared across every model profile**. This means the internal engine, Fast GGUF, Quality GGUF, and hybrid modes all use the same school tools before generic language-model fallback.
 
-The current school database contains **758 core concepts** and **3,893 grade-adapted lesson records**. Each detailed lesson can provide a learning goal, prerequisites, a core explanation, a teaching strategy, vocabulary, a worked or guided example, a common misconception, practice, a mastery check, related topics, and local evidence. Ask for a grade and say **“in detail”** when you want the full lesson.
+The current school database contains **771 core topics** and **3,994 grade-adapted lesson records**. Each detailed lesson can provide a learning goal, prerequisites, a core explanation, a teaching strategy, vocabulary, a worked or guided example, a common misconception, practice, a mastery check, related topics, and local evidence. Ask for a grade and say **“in detail”** when you want the full lesson.
 
 ### Covered school areas
 
@@ -521,6 +614,7 @@ Commands:
 /hybrid expert
 /hybrid consensus
 /hybrid cascade
+/hybrid fusion
 /hybrid off
 ```
 
@@ -622,6 +716,26 @@ Blocked research includes queries aimed at:
 * private or local hosts
 * cameras, routers, or exposed devices
 * executable files, archives, databases, and key containers
+
+</details>
+
+<a id="conversation-memory-and-web-intelligence"></a>
+
+<details>
+<summary><strong>Conversation Memory, Follow-ups, Internet Search And Learning</strong></summary>
+
+Pocket AI now treats chat as a continuing conversation rather than isolated prompts. It restores recent turns at startup, passes prior user/assistant messages into compatible GGUF prompts, resolves short references such as “that,” “why,” “give another example,” and their Greek equivalents, and offers one relevant continuation after substantial explanations.
+
+Web behavior is explicit and controllable:
+
+* `/web auto` searches only when the request is current-sensitive or explicitly asks for online verification.
+* `/web on` grounds every suitable question with public web evidence.
+* `/web off` keeps all answers offline.
+* `/search QUERY` performs a no-key public search and returns readable evidence without saving it.
+* `/sources` displays the sources used in the previous web-grounded response.
+* `/web-learn QUERY` fetches allowed public pages, splits them into searchable chunks, and saves them in the local SQLite retrieval database.
+
+“Learning” here means durable local retrieval memory, not secretly retraining or changing the GGUF model weights. Stored web knowledge can be searched in later conversations and can be removed with the local data tools. Search providers can fail, rate-limit, change format, or require JavaScript; Pocket AI falls back between DDGS, Bing RSS, and Wikipedia and continues offline when none is available.
 
 </details>
 
@@ -736,7 +850,7 @@ Bundled model parts remain under `Models/GGUF Parts/`. Reconstructed runtime mod
 * `/system`
 * `/llm-status`
 * `/llm off|fallback|always`
-* `/llm-model fast|quality|smart|ultra`
+* `/llm-model fast|quality|smart|ultra|pro|max`
 * `/hybrid MODE`
 * `/cpu-profile auto|ultra_eco|eco|entry|balanced|performance`
 
@@ -849,6 +963,7 @@ Pocket AI: Το μήλο είναι ένας βρώσιμος καρπός τη�
 * [Μοντέλα και Υβριδική Νοημοσύνη](#μοντέλα-και-υβριδική-νοημοσύνη)
 * [Αυτόματη Σάρωση Κινητού](#αυτόματη-σάρωση-κινητού)
 * [Μάθηση από Αρχεία και Διαδίκτυο](#μάθηση-από-αρχεία-και-διαδίκτυο)
+* [Μνήμη Συζήτησης, Συνέχεια και Web Νοημοσύνη](#μνήμη-συζήτησης-συνέχεια-και-web-νοημοσύνη)
 * [Google AI και Περιορισμός API Key](#google-ai-και-περιορισμός-api-key)
 * [Δομή Φακέλων και Αποθηκεύσεις](#δομή-φακέλων-και-αποθηκεύσεις)
 * [Σημαντικές Εντολές](#σημαντικές-εντολές)
@@ -859,7 +974,7 @@ Pocket AI: Το μήλο είναι ένας βρώσιμος καρπός τη�
 
 <a id="κύρια-χαρακτηριστικά"></a>
 
-<details open>
+<details>
 <summary><strong>Κύρια Χαρακτηριστικά</strong></summary>
 
 * **Άμεση συνομιλία:** δεν απαιτείται περίπλοκος launcher.
@@ -885,7 +1000,7 @@ Pocket AI: Το μήλο είναι ένας βρώσιμος καρπός τη�
 
 <a id="καθολική-γνώση-και-φυσική-συζήτηση"></a>
 
-<details open>
+<details>
 <summary><strong>Καθολική Γνώση και Φυσική Συζήτηση</strong></summary>
 
 Το Pocket AI δίνει πλέον **σε κάθε διαδρομή μοντέλου** την ίδια κοινή δίγλωσση βάση πριν χρησιμοποιηθεί transformer. Έτσι, ένα αδύναμο κινητό δεν χάνει βασικές δυνατότητες επειδή δεν μπορεί να τρέξει το Quality μοντέλο.
@@ -921,7 +1036,7 @@ Pocket AI: Το μήλο είναι ένας βρώσιμος καρπός τη�
 
 <a id="μέγιστη-ευφυΐα-κάτω-από-δύο-λεπτά"></a>
 
-<details open>
+<details>
 <summary><strong>Μέγιστη Ευφυΐα Κάτω από Δύο Λεπτά</strong></summary>
 
 Το μικρότερο μοντέλο Q2_K λειτουργεί πλέον ως **συνθέτης τεκμηρίων**. Το Pocket AI αναζητά πρώτα στις τοπικές βάσεις, βάζει μόνο τα πιο σχετικά αποσπάσματα στο context και μετά ζητά από το μοντέλο να συνθέσει και να ελέγξει την απάντηση. Ένα μοντέλο 135M παραμέτρων δεν μπορεί να γίνει ισάξιο με cloud frontier μοντέλο, γι’ αυτό υποστηρίζονται και ισχυρότερα προαιρετικά Qwen tiers.
@@ -937,14 +1052,19 @@ Pocket AI: Το μήλο είναι ένας βρώσιμος καρπός τη�
 
 ### Ισχυρότερα προαιρετικά tiers
 
-* **Qwen3 0.6B Smart:** προτεινόμενη αναβάθμιση συλλογισμού για ικανά 64-bit κινητά με 4 GB+ RAM.
-* **Qwen3 1.7B Ultra:** το ισχυρότερο υποστηριζόμενο τοπικό tier, κυρίως για ικανά κινητά κατηγορίας 8 GB RAM.
+* **Qwen3 0.6B Smart:** συμπαγής αναβάθμιση συλλογισμού για ικανά 64-bit κινητά με 4 GB+ RAM.
+* **Qwen3 1.7B Ultra:** ισχυρότερο τοπικό tier για ικανά κινητά περίπου 6–8 GB RAM.
+* **Qwen3 4B Pro:** η πρώτη βαθμίδα που στοχεύει να πλησιάσει εμπειρία σύγχρονου βοηθού σε πολλές συνηθισμένες εργασίες γνώσης και συλλογισμού, για ισχυρά κινητά κατηγορίας 8 GB.
+* **Qwen3 8B Max:** η ισχυρότερη υποστηριζόμενη βαθμίδα, για high-end κινητά 12 GB+ με αρκετή ελεύθερη RAM και αποθήκευση.
 * **Προστασία μικρού μοντέλου:** ακόμη και με μόνο το 135M παραμένουν ενεργά planner, reranking, exact tools, δίγλωσσο retrieval, validation και ασφαλές fallback.
+* **Ειλικρινές όριο δυνατότητας:** τα ενσωματωμένα 135M μοντέλα δεν μπορούν να γίνουν πραγματικά ισάξια με ChatGPT 3.5 μόνο με prompts ή περισσότερα facts. Το Pocket AI τα ενισχύει με retrieval, ακριβή εργαλεία, μνήμη συζήτησης, verification και web grounding και επιλέγει αυτόματα μεγαλύτερο μοντέλο όταν το κινητό μπορεί να το τρέξει με ασφάλεια.
 
 ```bash
 bash "Other Files/install_smart_models.sh" smart
-# Ισχυρότερο αλλά πολύ μεγαλύτερο:
+# Σταδιακά ισχυρότερα και μεγαλύτερα:
 bash "Other Files/install_smart_models.sh" ultra
+bash "Other Files/install_smart_models.sh" pro
+bash "Other Files/install_smart_models.sh" max
 ```
 
 Μετά χρησιμοποίησε `/μοντέλο smart`, `/μοντέλο ultra` ή άφησε ενεργό το `/υβριδικό auto`.
@@ -955,7 +1075,7 @@ bash "Other Files/install_smart_models.sh" ultra
 
 <a id="πίνακας-συνδυασμών-hardware"></a>
 
-<details open>
+<details>
 <summary><strong>Πίνακας Συνδυασμών Hardware</strong></summary>
 
 Το Pocket AI δεν θεωρεί ότι όλα τα κινητά με την ίδια διαφημιζόμενη RAM έχουν ίδιες επιδόσεις. Συνδυάζει συνεχώς:
@@ -1115,12 +1235,12 @@ Pocket AI: Η βαρύτητα είναι η έλξη μεταξύ αντικε�
 
 <a id="σχολικός-βοηθός-τάξεις-112"></a>
 
-<details open>
+<details>
 <summary><strong>Σχολικός Βοηθός: Τάξεις 1–12</strong></summary>
 
 Η σχολική βάση είναι **κοινή για κάθε profile μοντέλου**. Ο εσωτερικός engine, το Fast GGUF, το Quality GGUF και τα hybrid modes χρησιμοποιούν τα ίδια σχολικά εργαλεία πριν από γενικό LLM fallback.
 
-Η τρέχουσα σχολική βάση περιέχει **758 βασικές έννοιες** και **3.893 προσαρμοσμένα μαθήματα τάξης**. Κάθε αναλυτικό μάθημα μπορεί να δώσει μαθησιακό στόχο, προαπαιτούμενα, βασική εξήγηση, στρατηγική διδασκαλίας, λεξιλόγιο, καθοδηγούμενο παράδειγμα, συνηθισμένη παρανόηση, εξάσκηση, έλεγχο κατάκτησης, σχετικά θέματα και τοπικά τεκμήρια. Γράψε τάξη και **«αναλυτικά»** για πλήρες μάθημα.
+Η τρέχουσα σχολική βάση περιέχει **771 βασικά θέματα** και **3.994 προσαρμοσμένα μαθήματα τάξης**. Κάθε αναλυτικό μάθημα μπορεί να δώσει μαθησιακό στόχο, προαπαιτούμενα, βασική εξήγηση, στρατηγική διδασκαλίας, λεξιλόγιο, καθοδηγούμενο παράδειγμα, συνηθισμένη παρανόηση, εξάσκηση, έλεγχο κατάκτησης, σχετικά θέματα και τοπικά τεκμήρια. Γράψε τάξη και **«αναλυτικά»** για πλήρες μάθημα.
 
 ### Καλυπτόμενοι τομείς
 
@@ -1473,7 +1593,7 @@ Other Files/Saved Data/
 * `/system`
 * `/llm-status`
 * `/llm off|fallback|always`
-* `/μοντέλο fast|quality|smart|ultra`
+* `/μοντέλο fast|quality|smart|ultra|pro|max`
 * `/υβριδικό MODE`
 * `/επεξεργαστής auto|ultra_eco|eco|entry|balanced|performance`
 
@@ -1513,7 +1633,7 @@ Other Files/Saved Data/
 * Το Pocket AI δεν είναι ChatGPT, Gemini ή cloud-scale μοντέλο.
 * Τα ενσωματωμένα 135M μοντέλα είναι μικρά για να λειτουργούν σε παλιά κινητά.
 * Μπορεί να παρερμηνεύσουν ερωτήσεις ή να παράγουν λάθος κείμενο.
-* Καμία πεπερασμένη offline βάση δεν περιέχει κάθε πρόταση από κάθε σχολικό βιβλίο. Η παρούσα βάση καλύπτει 758 έννοιες και 3.893 αναλυτικά μαθήματα τάξης, αλλά δεν ισχυρίζεται ότι αντιγράφει κάθε εθνικό πρόγραμμα ή εξεταστικό φορέα.
+* Καμία πεπερασμένη offline βάση δεν περιέχει κάθε πρόταση από κάθε σχολικό βιβλίο. Η παρούσα βάση καλύπτει 771 θέματα και 3.994 αναλυτικά μαθήματα τάξης, αλλά δεν ισχυρίζεται ότι αντιγράφει κάθε εθνικό πρόγραμμα ή εξεταστικό φορέα.
 * Δεν αντικαθιστά δάσκαλο, βιβλίο, γιατρό, δικηγόρο, οικονομικό σύμβουλο ή υπηρεσία έκτακτης ανάγκης.
 * Τα hardware thresholds είναι συντηρητικές εκτιμήσεις.
 * Η δημόσια web learning μπορεί να αποτύχει λόγω σύνδεσης, robots, αλλαγών ιστοσελίδων ή provider limits.
