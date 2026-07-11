@@ -15,11 +15,12 @@ The assistant remains explicitly an AI. The feature changes tone and wording, no
 
 ## New hybrid modes
 
-- **adaptive**: Fast first; Quality is run only when the first answer or question complexity requires it.
-- **expert**: specialist instructions + optimized local context + Quality GGUF.
-- **consensus**: a compact draft and a stronger verification answer are generated sequentially and scored.
+- **adaptive**: selects a safe regular tier and escalates only to its immediately stronger installed neighbor when needed.
+- **expert**: specialist guidance, compressed evidence, and the strongest safe model.
+- **consensus**: adjacent installed tiers generate answers sequentially and are scored.
+- **fusion/cascade**: supported routes are 0.6B→0.8B, 0.8B→1.5B, 1.5B→1.7B, 1.7B→4B, and 4B→8B, with emergency 135M→0.6B when necessary.
 
-All multi-model paths are sequential to limit peak RAM.
+All multi-model paths are sequential to limit peak RAM. Parameter counts are not added together.
 
 ## Universal and continuous runtime modules
 
