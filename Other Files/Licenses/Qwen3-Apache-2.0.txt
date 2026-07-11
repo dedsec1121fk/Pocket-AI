@@ -3,3 +3,5 @@ Official model repositories: Qwen/Qwen3-0.6B-GGUF and Qwen/Qwen3-1.7B-GGUF.
 The optional weights are not embedded in this package. Pocket AI downloads them from the official repositories and verifies their official LFS SHA-256 object identifiers, exact sizes, and GGUF headers before use.
 
 Apache License 2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+Additional downloadable repositories used by Pocket AI 16 include Qwen/Qwen2.5-1.5B-Instruct-GGUF, Qwen/Qwen2.5-3B-Instruct-GGUF, ggml-org/Qwen3.5-0.8B-GGUF, and bartowski/Qwen_Qwen3.5-2B-GGUF. Review each repository license and model card before redistribution.
