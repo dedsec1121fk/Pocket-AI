@@ -14,14 +14,14 @@ Everything is implemented with Python's standard library:
 - Strict English/Greek language routing and bilingual response generation
 - Persistent user memories and conversation history
 - Bundled bilingual MicroLM generator
-- Safe no-key public-web research through Bing RSS, Wikipedia, and constrained search operators
+- Safe no-key public-web research through optional DDGS metasearch, Bing RSS, Wikipedia, and constrained search operators
 - Optional SmolLM2 135M GGUF reasoning through llama.cpp
 - Automatic RAM, storage, temperature, battery, and processor-aware model profiles
-- Sequential hybrid inference with adaptive, expert, consensus, and cascade modes
+- Sequential hybrid inference with adaptive performance learning, analyst-synthesizer fusion, and guarded final verification
 - Persistent custom AI name and human-style bilingual conversation profiles
 - Modular context optimization, confidence calibration, universal knowledge, WordNet lexical retrieval, offline encyclopedia retrieval, natural dialogue, and continuous resource tuning
 
-No root, TensorFlow, PyTorch, NumPy, or cloud API is needed. Core use remains offline; /dork and /web-learn use the public internet only when explicitly requested.
+No root, TensorFlow, PyTorch, NumPy, or cloud API is required. Core use remains offline; web mode can search current public information on request or automatically for time-sensitive questions.
 
 Examples:
     python "Pocket AI.py"
@@ -60,7 +60,9 @@ import statistics
 import subprocess
 import sys
 import tarfile
+import tempfile
 import textwrap
+import threading
 import time
 import traceback
 import unicodedata
@@ -72,6 +74,7 @@ import xml.etree.ElementTree as ET
 import zlib
 from array import array
 from collections import Counter, defaultdict, deque
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from html.parser import HTMLParser
 from pathlib import Path
@@ -168,11 +171,76 @@ except Exception:
         def contextualize(self, text: str, history, language: str, last_topic: str = "") -> Tuple[str, bool]: return text, False
         def instruction(self, text: str, language: str) -> str: return "Speak naturally and follow the user's intent."
 try:
+    from web_intelligence import (
+        clean_web_query, explicit_web_request, format_sources as format_web_sources,
+        should_search as should_search_web,
+    )
+except Exception:
+    def clean_web_query(text: str) -> str: return str(text).strip()
+    def explicit_web_request(text: str) -> bool: return False
+    def should_search_web(text: str, task_profile=None, mode: str = "auto") -> bool:
+        return bool((task_profile or {}).get("current_sensitive")) and mode != "off"
+    def format_web_sources(results, language: str = "en", limit: int = 6) -> str:
+        rows=[]
+        for index,item in enumerate(list(results)[:limit],1):
+            if item.get("url"): rows.append(f"[{index}] {item.get('title','Source')}\n    {item['url']}")
+        return ("Πηγές ιστού:" if language == "el" else "Web sources:") + "\n" + "\n".join(rows)
+try:
     from resource_matrix import optimize_runtime as optimize_phone_runtime, recommend_configuration as recommend_phone_configuration, COMBINATION_TIERS
 except Exception:
     optimize_phone_runtime = None
     recommend_phone_configuration = None
     COMBINATION_TIERS = []
+try:
+    from thermal_governor import ThermalGovernor, thermal_metrics
+except Exception:
+    class ThermalGovernor:
+        def observe(self, snapshot: dict) -> dict:
+            return {"level": str(snapshot.get("state", "normal")), "display_celsius": float(snapshot.get("maximum_celsius", 0.0) or 0.0), "rise_30s": 0.0}
+        def adjust_runtime(self, plan: dict, **kwargs) -> dict: return dict(plan)
+        def check_during_run(self, snapshot: dict, **kwargs):
+            class Decision:
+                abort=False; reason=""; cooldown_seconds=0.0; level="normal"; temperature_rise=0.0
+            return Decision()
+        def cooldown_between_passes(self, before: dict, after: dict) -> float: return 0.0
+    def thermal_metrics(snapshot: dict) -> dict:
+        return {"level": str(snapshot.get("state", "normal")), "display_celsius": float(snapshot.get("maximum_celsius", 0.0) or 0.0), "score": 1}
+try:
+    from adaptive_compute import AdaptiveComputeController
+except Exception:
+    class AdaptiveComputeController:
+        def __init__(self, data_dir: Path) -> None: self.data_dir = Path(data_dir)
+        def tune_plan(self, plan: dict, **kwargs) -> dict: return dict(plan)
+        def record_run(self, **kwargs) -> dict: return {}
+        def summary(self) -> dict: return {}
+try:
+    from hybrid_orchestrator import build_hybrid_plan as build_adaptive_hybrid_plan
+except Exception:
+    build_adaptive_hybrid_plan = None
+try:
+    from shared_learning import SharedLearningEngine
+except Exception:
+    class SharedLearningEngine:
+        def __init__(self, data_dir: Path) -> None: self.data_dir = Path(data_dir)
+        def close(self) -> None: return None
+        def learn(self, *args, **kwargs) -> bool: return False
+        def retrieve(self, *args, **kwargs): return []
+        def context(self, *args, **kwargs) -> str: return ""
+        def stats(self) -> dict: return {"lessons": 0, "uses": 0, "by_model": {}}
+try:
+    from model_intelligence import (
+        compress_evidence as compress_model_evidence,
+        evidence_char_budget as model_evidence_char_budget,
+        intelligence_instruction,
+        output_token_budget as model_output_token_budget,
+        sampling_settings as model_sampling_settings,
+    )
+except Exception:
+    def intelligence_instruction(model: str, language: str, task_profile=None) -> str: return ""
+    def model_sampling_settings(model: str, task_profile=None, runtime=None) -> dict: return {}
+    def model_output_token_budget(model: str, runtime, task_profile=None, role: str = "answer") -> int: return int(runtime.get("max_tokens", 192) or 192)
+    def model_evidence_char_budget(model: str, runtime, task_profile=None) -> int: return max(280, min(7000, int(runtime.get("context", 512) or 512) * 2))
+    def compress_model_evidence(query: str, evidence: str, max_chars: int, model: str = "quality") -> str: return str(evidence or "")[:max_chars]
 try:
     from smart_reasoning import (
         analyze_query as analyze_smart_query,
@@ -216,9 +284,9 @@ except Exception:
         return generated or grounded, {"decision": "fallback"}
 
 
-APP_NAME = "PocketAI Bilingual MAX"
-MODEL_VERSION = 8
-DATASET_VERSION = 6
+APP_NAME = "PocketAI Spec-Max Cognitive Scaling"
+MODEL_VERSION = 14
+DATASET_VERSION = 7
 RANDOM_SEED = 1121
 DEFAULT_CONFIDENCE = 0.42
 MAX_INPUT_CHARS = 4000
@@ -229,58 +297,63 @@ MAX_LLM_CALL_SECONDS = 106.0
 MAX_FILE_BYTES = 6 * 1024 * 1024
 MAX_INGEST_FILES = 300
 MAX_DOCUMENT_CHUNKS_PER_FILE = 1200
-HISTORY_LIMIT = 60
-WEB_USER_AGENT = "PocketAI-WebResearch/1.0 (+local educational research)"
-WEB_SEARCH_TIMEOUT = 14
-WEB_PAGE_TIMEOUT = 12
+HISTORY_LIMIT = 240
+WEB_USER_AGENT = "PocketAI-WebResearch/2.0 (+local educational research)"
+WEB_SEARCH_TIMEOUT = 9
+WEB_PAGE_TIMEOUT = 8
 WEB_MAX_DOWNLOAD_BYTES = 700 * 1024
-WEB_MAX_RESULTS = 8
-WEB_MAX_PAGES_PER_RUN = 4
-WEB_DELAY_SECONDS = 1.0
+WEB_MAX_RESULTS = 10
+WEB_MAX_PAGES_PER_RUN = 6
+WEB_DELAY_SECONDS = 0.35
+WEB_SEARCH_CACHE_SECONDS = 1800
+WEB_PAGE_CACHE_SECONDS = 21600
 EXTERNAL_LLM_MODELS = {
     "fast": {
         "filename": "SmolLM2-135M-Instruct.Q2_K.gguf",
         "sha256": "1e014d3c45f6cf502397a3b85b1d9d282605afb02079fd32665b0422c3f0106c",
-        "label": "SmolLM2 135M Q2_K (fast / minimum RAM)",
-        "context": 1024,
-        "batch": 64,
-        "max_tokens": 224,
-        "family": "smollm2",
+        "label": "SmolLM2 135M Q2_K (minimum-RAM emergency tier)",
+        "context": 1024, "batch": 64, "max_tokens": 224, "family": "smollm2",
+        "estimated_size_bytes": 88201792,
     },
     "quality": {
         "filename": "SmolLM2-135M-Instruct.Q4_1.gguf",
         "sha256": "b179c9523d0e6a0f98a330c7562b682750a6f8c8c15e5bc70ea373728110db53",
-        "label": "SmolLM2 135M Q4_1 (higher quality emergency model)",
-        "context": 1536,
-        "batch": 64,
-        "max_tokens": 320,
-        "family": "smollm2",
+        "label": "SmolLM2 135M Q4_1 (higher-quality emergency tier)",
+        "context": 1536, "batch": 64, "max_tokens": 320, "family": "smollm2",
+        "estimated_size_bytes": 98362432,
     },
     "smart": {
-        "filename": "Qwen3-0.6B-Q8_0.gguf",
-        "sha256": "",
-        "label": "Qwen3 0.6B Q8_0 (recommended reasoning model)",
-        "context": 4096,
-        "batch": 64,
-        "max_tokens": 512,
-        "family": "qwen3",
-        "source_repo": "Qwen/Qwen3-0.6B-GGUF",
-        "quantization": "Q8_0",
-        "verification": "official HTTPS source + local SHA-256 sidecar",
+        "filename": "Qwen3-0.6B-Q8_0.gguf", "sha256": "",
+        "label": "Qwen3 0.6B Q8_0 Smart", "context": 4096, "batch": 64,
+        "max_tokens": 640, "family": "qwen3", "source_repo": "Qwen/Qwen3-0.6B-GGUF",
+        "estimated_size_bytes": 700000000,
+        "quantization": "Q8_0", "verification": "official HTTPS source + official LFS SHA-256 + local sidecar",
         "download_url": "https://huggingface.co/Qwen/Qwen3-0.6B-GGUF/resolve/main/Qwen3-0.6B-Q8_0.gguf?download=true",
     },
     "ultra": {
-        "filename": "Qwen3-1.7B-Q8_0.gguf",
-        "sha256": "",
-        "label": "Qwen3 1.7B Q8_0 (strongest guarded phone tier)",
-        "context": 4096,
-        "batch": 48,
-        "max_tokens": 512,
-        "family": "qwen3",
-        "source_repo": "Qwen/Qwen3-1.7B-GGUF",
-        "quantization": "Q8_0",
-        "verification": "official HTTPS source + local SHA-256 sidecar",
-        "download_url": "https://huggingface.co/Qwen/Qwen3-1.7B-GGUF/resolve/main/Qwen3-1.7B-Q8_0.gguf?download=true",
+        "filename": "Qwen3-1.7B-Q4_K_M.gguf", "sha256": "",
+        "alternate_filenames": ["Qwen3-1.7B-Q8_0.gguf"],
+        "label": "Qwen3 1.7B Q4_K_M Ultra", "context": 4096, "batch": 64,
+        "max_tokens": 704, "family": "qwen3", "source_repo": "Qwen/Qwen3-1.7B-GGUF",
+        "estimated_size_bytes": 1150000000,
+        "quantization": "Q4_K_M", "verification": "official HTTPS source + official LFS SHA-256 + local sidecar",
+        "download_url": "https://huggingface.co/Qwen/Qwen3-1.7B-GGUF/resolve/main/Qwen3-1.7B-Q4_K_M.gguf?download=true",
+    },
+    "pro": {
+        "filename": "Qwen3-4B-Q4_K_M.gguf", "sha256": "",
+        "label": "Qwen3 4B Q4_K_M Pro", "context": 4096, "batch": 32,
+        "max_tokens": 768, "family": "qwen3", "source_repo": "Qwen/Qwen3-4B-GGUF",
+        "estimated_size_bytes": 2650000000,
+        "quantization": "Q4_K_M", "verification": "official HTTPS source + official LFS SHA-256 + local sidecar",
+        "download_url": "https://huggingface.co/Qwen/Qwen3-4B-GGUF/resolve/main/Qwen3-4B-Q4_K_M.gguf?download=true",
+    },
+    "max": {
+        "filename": "Qwen3-8B-Q4_K_M.gguf", "sha256": "",
+        "label": "Qwen3 8B Q4_K_M Max", "context": 4096, "batch": 24,
+        "max_tokens": 768, "family": "qwen3", "source_repo": "Qwen/Qwen3-8B-GGUF",
+        "estimated_size_bytes": 5250000000,
+        "quantization": "Q4_K_M", "verification": "official HTTPS source + official LFS SHA-256 + local sidecar",
+        "download_url": "https://huggingface.co/Qwen/Qwen3-8B-GGUF/resolve/main/Qwen3-8B-Q4_K_M.gguf?download=true",
     },
 }
 DEFAULT_EXTERNAL_LLM_MODEL = "smart"
@@ -292,48 +365,51 @@ MAX_PACKAGED_MODEL_PART_BYTES = 60_000_000
 LLM_CPU_PROFILES = {
     "ultra_eco": {
         "threads": 1,
-        "context": {"fast": 384, "quality": 384, "smart": 384, "ultra": 256},
-        "batch": 8,
-        "ubatch": 8,
-        "max_tokens": {"fast": 72, "quality": 80, "smart": 72, "ultra": 48},
+        "context": {"fast": 384, "quality": 384, "smart": 384, "ultra": 256, "pro": 192, "max": 128},
+        "batch": 8, "ubatch": 8,
+        "max_tokens": {"fast": 72, "quality": 80, "smart": 72, "ultra": 48, "pro": 40, "max": 32},
         "timeout": 106,
-        "description": "Emergency profile for very low free RAM, 32-bit userspace, or extremely slow processors.",
+        "description": "Emergency profile for critically constrained devices.",
     },
     "eco": {
         "threads": 1,
-        "context": {"fast": 512, "quality": 512, "smart": 512, "ultra": 384},
-        "batch": 16,
-        "ubatch": 8,
-        "max_tokens": {"fast": 96, "quality": 112, "smart": 104, "ultra": 72},
+        "context": {"fast": 512, "quality": 512, "smart": 512, "ultra": 384, "pro": 256, "max": 192},
+        "batch": 16, "ubatch": 8,
+        "max_tokens": {"fast": 96, "quality": 112, "smart": 104, "ultra": 72, "pro": 56, "max": 40},
         "timeout": 106,
-        "description": "Minimum-memory profile for roughly 1.5-2 GB devices and heavily throttled processors.",
+        "description": "Minimum-memory profile for slow or heavily throttled phones.",
     },
     "entry": {
         "threads": 2,
-        "context": {"fast": 768, "quality": 768, "smart": 768, "ultra": 640},
-        "batch": 32,
-        "ubatch": 16,
-        "max_tokens": {"fast": 144, "quality": 168, "smart": 160, "ultra": 112},
+        "context": {"fast": 768, "quality": 768, "smart": 768, "ultra": 640, "pro": 384, "max": 256},
+        "batch": 32, "ubatch": 16,
+        "max_tokens": {"fast": 144, "quality": 168, "smart": 160, "ultra": 112, "pro": 80, "max": 56},
         "timeout": 104,
-        "description": "Entry-level profile for Cortex-A53/A55 phones such as Galaxy A12-class devices.",
+        "description": "Entry-level profile for Cortex-A53/A55 and Galaxy A12-class devices.",
     },
     "balanced": {
         "threads": 3,
-        "context": {"fast": 1024, "quality": 1280, "smart": 1280, "ultra": 1024},
-        "batch": 48,
-        "ubatch": 32,
-        "max_tokens": {"fast": 208, "quality": 256, "smart": 256, "ultra": 192},
+        "context": {"fast": 1024, "quality": 1280, "smart": 1536, "ultra": 1280, "pro": 768, "max": 512},
+        "batch": 48, "ubatch": 24,
+        "max_tokens": {"fast": 208, "quality": 256, "smart": 320, "ultra": 240, "pro": 144, "max": 96},
         "timeout": 102,
-        "description": "Balanced profile for mainstream 3-4 GB phones and efficient mid-range processors.",
+        "description": "Balanced profile for mainstream phones.",
     },
     "performance": {
         "threads": 4,
-        "context": {"fast": 1024, "quality": 1536, "smart": 2048, "ultra": 2048},
-        "batch": 64,
-        "ubatch": 48,
-        "max_tokens": {"fast": 224, "quality": 320, "smart": 384, "ultra": 320},
+        "context": {"fast": 1280, "quality": 1792, "smart": 3072, "ultra": 2560, "pro": 1792, "max": 1280},
+        "batch": 64, "ubatch": 32,
+        "max_tokens": {"fast": 256, "quality": 352, "smart": 512, "ultra": 448, "pro": 320, "max": 224},
         "timeout": 100,
-        "description": "Quality-first profile for modern mid-range and flagship processors with comfortable free RAM.",
+        "description": "Quality-first profile for modern mid-range and upper-tier processors.",
+    },
+    "flagship": {
+        "threads": 6,
+        "context": {"fast": 1536, "quality": 2048, "smart": 4096, "ultra": 3584, "pro": 2560, "max": 1536},
+        "batch": 96, "ubatch": 48,
+        "max_tokens": {"fast": 288, "quality": 384, "smart": 640, "ultra": 640, "pro": 448, "max": 320},
+        "timeout": 98,
+        "description": "Maximum safe profile for high-end 8-16 GB phones while preserving Android headroom.",
     },
 }
 DEFAULT_LLM_CPU_PROFILE = "auto"
@@ -347,7 +423,8 @@ HYBRID_MODES = {
     "expert": "Use specialist guidance, optimized evidence, and the strongest safe Qwen model for technical questions.",
     "consensus": "Generate two sequential answers with different model tiers and select the stronger result.",
     "cascade": "Generate a compact draft, unload it, then verify and rewrite with a stronger model.",
-    "auto": "Select speed, smart, quality, adaptive, or cascade from the live phone state.",
+    "fusion": "Use a compact analyst model and a stronger synthesizer sequentially, combining their strengths without loading both at once.",
+    "auto": "Select speed, smart, expert, or safe sequential fusion from live RAM, CPU, task complexity, and thermal state.",
 }
 HYBRID_MODES_EL = {
     "off": "Μόνο εσωτερικός classifier, ανάκτηση, εργαλεία και specialists.",
@@ -358,7 +435,8 @@ HYBRID_MODES_EL = {
     "expert": "Χρήση specialist, βελτιστοποιημένων συμφραζομένων και ποιοτικού μοντέλου για τεχνικές ερωτήσεις.",
     "consensus": "Δημιουργία ανεξάρτητων απαντήσεων Fast και Quality διαδοχικά και επιλογή της ισχυρότερης.",
     "cascade": "Γρήγορο πρόχειρο και μετά ξεχωριστός ποιοτικός έλεγχος και επανεγγραφή.",
-    "auto": "Επιλογή speed, smart, quality, adaptive ή cascade από τη ζωντανή κατάσταση του κινητού.",
+    "fusion": "Διαδοχική χρήση μικρού μοντέλου ανάλυσης και ισχυρότερου μοντέλου σύνθεσης χωρίς ταυτόχρονη φόρτωση.",
+    "auto": "Επιλογή speed, smart, expert ή ασφαλούς fusion από RAM, CPU, δυσκολία και θερμοκρασία.",
 }
 DEFAULT_HYBRID_MODE = "auto"
 
@@ -382,6 +460,10 @@ HYBRID_COMPONENT_FILES = {
     "knowledge_bridge": "PocketAI_CrossModel_Knowledge_Bridge.json.gz",
     "response_cache": "PocketAI_Response_Cache_Controller.json.gz",
     "prompt_compressor": "PocketAI_Prompt_Compressor.json.gz",
+    "maxsafe_thermal_hybrid": "PocketAI_MaxSafe_Thermal_Hybrid_Controller.json.gz",
+    "adaptive_compute": "PocketAI_Adaptive_Compute_Controller.json.gz",
+    "rapid_web_shared_learning": "PocketAI_Rapid_Web_Shared_Learning_Controller.json.gz",
+    "spec_max_cognitive_scaler": "PocketAI_Spec_Max_Cognitive_Scaler.json.gz",
 }
 
 # Rules identify major Android-phone SoC families and many common model-number
@@ -466,49 +548,46 @@ PROCESSOR_FAMILY_RULES = [
 
 AI_MODEL_COMPATIBILITY = {
     "internal": {
-        "label": "PocketAI internal bilingual engine",
-        "minimum_total_ram": 512 * 1024 ** 2,
-        "minimum_available_ram": 90 * 1024 ** 2,
-        "minimum_free_storage": 35 * 1024 ** 2,
-        "minimum_cpu_score": 0,
-        "requires_64_bit": False,
-        "processor_combos": "Any Android processor able to run modern Termux/Python; used as the universal fallback.",
+        "label": "Internal retrieval and tool engine", "minimum_total_ram": 512 * 1024 ** 2,
+        "minimum_available_ram": 90 * 1024 ** 2, "minimum_free_storage": 35 * 1024 ** 2,
+        "minimum_cpu_score": 0, "requires_64_bit": False,
+        "processor_combos": "Universal fallback on modern Termux/Python.",
     },
     "fast": {
-        "label": "SmolLM2-135M Q2_K Fast",
-        "minimum_total_ram": 1450 * 1024 ** 2,
-        "minimum_available_ram": 300 * 1024 ** 2,
-        "minimum_free_storage": 170 * 1024 ** 2,
-        "minimum_cpu_score": 14,
-        "requires_64_bit": True,
-        "processor_combos": "Entry-level or better 64-bit ARM/x86: Cortex-A53/A55, Snapdragon 2/4+, Helio A/P/G, Exynos 7/850+, Unisoc T/SC9863+, Kirin 6+, and newer.",
+        "label": "SmolLM2-135M Q2_K Fast", "minimum_total_ram": 1450 * 1024 ** 2,
+        "minimum_available_ram": 300 * 1024 ** 2, "minimum_free_storage": 170 * 1024 ** 2,
+        "minimum_cpu_score": 14, "requires_64_bit": True,
+        "processor_combos": "Entry-level or better 64-bit phones.",
     },
     "quality": {
-        "label": "SmolLM2-135M Q4_1 Quality",
-        "minimum_total_ram": 2050 * 1024 ** 2,
-        "minimum_available_ram": 560 * 1024 ** 2,
-        "minimum_free_storage": 220 * 1024 ** 2,
-        "minimum_cpu_score": 35,
-        "requires_64_bit": True,
-        "processor_combos": "Efficient entry/mid-range or better: Snapdragon 6/7/8, Dimensity, Helio G8x/G9x, Exynos 9/1xxx/2xxx, Tensor, Kirin 8/9, Unisoc T7/T8/T9, or similarly scoring processors.",
+        "label": "SmolLM2-135M Q4_1 Quality", "minimum_total_ram": 2050 * 1024 ** 2,
+        "minimum_available_ram": 560 * 1024 ** 2, "minimum_free_storage": 220 * 1024 ** 2,
+        "minimum_cpu_score": 25, "requires_64_bit": True,
+        "processor_combos": "Efficient entry-level or better phones.",
     },
     "smart": {
-        "label": "Qwen3 0.6B Q8_0 Smart",
-        "minimum_total_ram": 3400 * 1024 ** 2,
-        "minimum_available_ram": 900 * 1024 ** 2,
-        "minimum_free_storage": 1100 * 1024 ** 2,
-        "minimum_cpu_score": 22,
-        "requires_64_bit": True,
-        "processor_combos": "Recommended for capable 4 GB+ 64-bit phones. Entry-level devices use short context, non-thinking mode, and one guarded pass to protect the two-minute target.",
+        "label": "Qwen3 0.6B Q8_0 Smart", "minimum_total_ram": 3400 * 1024 ** 2,
+        "minimum_available_ram": 900 * 1024 ** 2, "minimum_free_storage": 1100 * 1024 ** 2,
+        "minimum_cpu_score": 22, "requires_64_bit": True,
+        "processor_combos": "Capable 4 GB+ 64-bit phones with short guarded context.",
     },
     "ultra": {
-        "label": "Qwen3 1.7B Q8_0 Ultra",
-        "minimum_total_ram": 7000 * 1024 ** 2,
-        "minimum_available_ram": 2500 * 1024 ** 2,
-        "minimum_free_storage": 2800 * 1024 ** 2,
-        "minimum_cpu_score": 48,
-        "requires_64_bit": True,
-        "processor_combos": "Strongest optional tier for capable 8 GB-class phones. It uses evidence-dense prompts, adaptive thinking, and strict output/deadline guards.",
+        "label": "Qwen3 1.7B Q4_K_M Ultra", "minimum_total_ram": 5000 * 1024 ** 2,
+        "minimum_available_ram": 1550 * 1024 ** 2, "minimum_free_storage": 1650 * 1024 ** 2,
+        "minimum_cpu_score": 48, "requires_64_bit": True,
+        "processor_combos": "Capable 5-8 GB phones; Q4_K_M preserves more live RAM for Android, context, and answer synthesis.",
+    },
+    "pro": {
+        "label": "Qwen3 4B Q4_K_M Pro", "minimum_total_ram": 7600 * 1024 ** 2,
+        "minimum_available_ram": 3000 * 1024 ** 2, "minimum_free_storage": 3600 * 1024 ** 2,
+        "minimum_cpu_score": 66, "requires_64_bit": True,
+        "processor_combos": "Strong 8 GB-class phones; this is the first tier intended to approach a modern assistant experience on many tasks.",
+    },
+    "max": {
+        "label": "Qwen3 8B Q4_K_M Max", "minimum_total_ram": 11800 * 1024 ** 2,
+        "minimum_available_ram": 5700 * 1024 ** 2, "minimum_free_storage": 6500 * 1024 ** 2,
+        "minimum_cpu_score": 82, "requires_64_bit": True,
+        "processor_combos": "High-end 12 GB+ phones only; still subject to the two-minute deadline.",
     },
 }
 
@@ -1588,15 +1667,26 @@ def _thermal_snapshot() -> dict:
         readings.append({"zone": "battery", "type": "battery", "celsius": round(battery_temp, 1)})
     plausible = [item["celsius"] for item in readings if 10.0 <= float(item["celsius"]) <= 105.0]
     maximum = max(plausible) if plausible else 0.0
-    if maximum >= 52.0:
-        state = "critical"
-    elif maximum >= 46.0:
-        state = "hot"
-    elif maximum >= 41.0:
-        state = "warm"
-    else:
-        state = "normal"
-    return {"maximum_celsius": round(maximum, 1), "state": state, "readings": readings[:24]}
+    snapshot = {"maximum_celsius": round(maximum, 1), "state": "unknown", "readings": readings[:24]}
+    try:
+        metrics = thermal_metrics(snapshot)
+        snapshot.update({
+            "state": str(metrics.get("level", "unknown")),
+            "battery_celsius": float(metrics.get("battery_celsius", 0.0) or 0.0),
+            "skin_celsius": float(metrics.get("skin_celsius", 0.0) or 0.0),
+            "silicon_celsius": float(metrics.get("silicon_celsius", 0.0) or 0.0),
+            "thermal_reason": str(metrics.get("reason", "")),
+        })
+    except Exception:
+        if maximum >= 82.0:
+            snapshot["state"] = "critical"
+        elif maximum >= 72.0:
+            snapshot["state"] = "hot"
+        elif maximum >= 62.0:
+            snapshot["state"] = "warm"
+        else:
+            snapshot["state"] = "normal"
+    return snapshot
 
 
 def _battery_snapshot() -> dict:
@@ -1957,7 +2047,7 @@ def _recommend_ai_configuration(scan: dict) -> dict:
     if recommend_phone_configuration is not None:
         selected = recommend_phone_configuration(scan, compatibility)
     else:
-        fallback_model = next((name for name in ("ultra", "smart", "quality", "fast") if compatibility.get(name, {}).get("compatible")), "internal")
+        fallback_model = next((name for name in ("max", "pro", "ultra", "smart", "quality", "fast") if compatibility.get(name, {}).get("compatible")), "internal")
         selected = {
             "gguf_model": fallback_model,
             "classifier_profile": "balanced",
@@ -2717,6 +2807,17 @@ class KnowledgeStore:
                 );
                 CREATE INDEX IF NOT EXISTS idx_response_cache_updated
                     ON response_cache(updated_at);
+
+                CREATE TABLE IF NOT EXISTS learned_sources (
+                    source TEXT PRIMARY KEY,
+                    title TEXT NOT NULL DEFAULT '',
+                    provider TEXT NOT NULL DEFAULT '',
+                    trust REAL NOT NULL DEFAULT 0.0,
+                    chunks INTEGER NOT NULL DEFAULT 0,
+                    learned_at TEXT NOT NULL
+                );
+                CREATE INDEX IF NOT EXISTS idx_learned_sources_time
+                    ON learned_sources(learned_at);
                 """
             )
 
@@ -2747,6 +2848,61 @@ class KnowledgeStore:
     def add_document_chunk(self, chunk: str, source: str) -> int:
         title = f"Information from {Path(source).name}"
         return self.add_item("document", chunk, chunk, source or title)
+
+    def add_document_chunks_bulk(
+        self, chunks: Sequence[str], source: str, *, title: str = "",
+        provider: str = "", trust: float = 0.0, replace_existing: bool = True
+    ) -> int:
+        """Insert a whole learned page in one SQLite transaction."""
+        clean_chunks = []
+        seen = set()
+        for chunk in chunks:
+            clean = SPACE_RE.sub(" ", str(chunk)).strip()
+            if len(clean) < 40:
+                continue
+            fingerprint = hashlib.sha256(normalize_text(clean).encode("utf-8")).hexdigest()
+            if fingerprint in seen:
+                continue
+            seen.add(fingerprint)
+            clean_chunks.append(clean[:5000])
+        if not clean_chunks:
+            return 0
+        if replace_existing:
+            self.remove_source(source)
+        created = now_iso()
+        with self.connection:
+            for clean in clean_chunks:
+                cursor = self.connection.execute(
+                    "INSERT INTO items(kind,prompt,response,source,created_at) VALUES(?,?,?,?,?)",
+                    ("document", clean, clean, source, created),
+                )
+                item_id = int(cursor.lastrowid)
+                counts = Counter(retrieval_terms(clean))
+                self.connection.executemany(
+                    "INSERT OR REPLACE INTO terms(term,item_id,frequency) VALUES(?,?,?)",
+                    [(term, item_id, float(count)) for term, count in counts.items()],
+                )
+            self.connection.execute(
+                """
+                INSERT INTO learned_sources(source,title,provider,trust,chunks,learned_at)
+                VALUES(?,?,?,?,?,?)
+                ON CONFLICT(source) DO UPDATE SET
+                    title=excluded.title,provider=excluded.provider,trust=excluded.trust,
+                    chunks=excluded.chunks,learned_at=excluded.learned_at
+                """,
+                (source, title[:300], provider[:80], float(trust), len(clean_chunks), created),
+            )
+        return len(clean_chunks)
+
+    def learned_source_stats(self) -> dict:
+        row = self.connection.execute(
+            "SELECT COUNT(*) AS sources,COALESCE(SUM(chunks),0) AS chunks,MAX(learned_at) AS latest FROM learned_sources"
+        ).fetchone()
+        return {
+            "sources": int(row["sources"] or 0),
+            "chunks": int(row["chunks"] or 0),
+            "latest": str(row["latest"] or ""),
+        }
 
     def retrieve_many(
         self,
@@ -3609,26 +3765,104 @@ def validate_public_url(url: str) -> str:
 
 
 class SafeWebResearch:
-    """Search and index public English/Greek pages with conservative limits."""
+    """Fast, cached and trust-ranked public web research for English/Greek."""
+
+    TRUSTED_DOMAINS = {
+        "wikipedia.org": 0.88,
+        "python.org": 0.96,
+        "docs.python.org": 0.98,
+        "developer.android.com": 0.97,
+        "github.com": 0.76,
+        "huggingface.co": 0.84,
+        "who.int": 0.97,
+        "europa.eu": 0.96,
+        "nasa.gov": 0.97,
+        "nist.gov": 0.98,
+        "owasp.org": 0.94,
+        "w3.org": 0.96,
+    }
 
     def __init__(self, store: KnowledgeStore) -> None:
         self.store = store
-        self.last_request_time = 0.0
+        self._request_lock = threading.Lock()
+        self._cache_lock = threading.Lock()
+        self._host_last_request: Dict[str, float] = {}
+        self.cache_path = store.path.parent / "web_learning_cache.json.gz"
+        self.cache: dict = {"search": {}, "pages": {}}
+        self._load_cache()
+
+    def _load_cache(self) -> None:
+        try:
+            with gzip.open(self.cache_path, "rt", encoding="utf-8") as handle:
+                payload = json.load(handle)
+            if isinstance(payload, dict):
+                self.cache["search"] = dict(payload.get("search", {}))
+                self.cache["pages"] = dict(payload.get("pages", {}))
+        except (OSError, ValueError, TypeError, json.JSONDecodeError):
+            self.cache = {"search": {}, "pages": {}}
+
+    def _save_cache(self) -> None:
+        try:
+            with self._cache_lock:
+                # Keep cache bounded; learned SQLite knowledge is the durable layer.
+                for section, limit in (("search", 120), ("pages", 80)):
+                    rows = list(self.cache.get(section, {}).items())
+                    rows.sort(key=lambda item: float(item[1].get("time", 0.0) or 0.0), reverse=True)
+                    self.cache[section] = dict(rows[:limit])
+                temporary = self.cache_path.with_suffix(self.cache_path.suffix + ".tmp")
+                with gzip.open(temporary, "wt", encoding="utf-8", compresslevel=6) as handle:
+                    json.dump(self.cache, handle, ensure_ascii=False)
+                os.replace(temporary, self.cache_path)
+        except OSError:
+            pass
+
+    @staticmethod
+    def _cache_key(value: str) -> str:
+        return hashlib.sha256(normalize_text(value).encode("utf-8")).hexdigest()
+
+    @classmethod
+    def source_trust(cls, url: str, provider: str = "") -> float:
+        try:
+            host = (urllib.parse.urlsplit(url).hostname or "").casefold()
+        except ValueError:
+            host = ""
+        if str(provider).startswith("Wikipedia-"):
+            return 0.88
+        best = 0.58
+        if host.endswith(".gov") or ".gov." in host:
+            best = 0.95
+        elif host.endswith(".edu") or ".edu." in host:
+            best = 0.91
+        for domain, score in cls.TRUSTED_DOMAINS.items():
+            if host == domain or host.endswith("." + domain):
+                best = max(best, score)
+        return best
+
+    @staticmethod
+    def _query_overlap(query: str, title: str, snippet: str) -> float:
+        q = set(retrieval_terms(query))
+        d = set(retrieval_terms(title + " " + snippet))
+        if not q:
+            return 0.0
+        return len(q & d) / max(1, len(q))
 
     def _request(self, url: str, timeout: int, accept: str) -> Tuple[bytes, str, str]:
-        delay = WEB_DELAY_SECONDS - (time.monotonic() - self.last_request_time)
-        if delay > 0:
-            time.sleep(delay)
+        host = (urllib.parse.urlsplit(url).hostname or "").casefold()
+        with self._request_lock:
+            previous = self._host_last_request.get(host, 0.0)
+            delay = WEB_DELAY_SECONDS - (time.monotonic() - previous)
+            if delay > 0:
+                time.sleep(delay)
+            self._host_last_request[host] = time.monotonic()
         request = urllib.request.Request(
             url,
             headers={
                 "User-Agent": WEB_USER_AGENT,
                 "Accept": accept,
                 "Accept-Language": "en,el;q=0.9",
-                "Cache-Control": "no-cache"
-            }
+                "Cache-Control": "max-age=0",
+            },
         )
-        self.last_request_time = time.monotonic()
         with urllib.request.urlopen(request, timeout=timeout) as response:
             final_url = response.geturl()
             if url.startswith(("http://", "https://")):
@@ -3645,15 +3879,37 @@ class SafeWebResearch:
 
     @staticmethod
     def _clean_wikipedia_query(query: str) -> str:
-        # Wikipedia search does not understand web-search operators. Keep the
-        # human topic while removing site:/filetype:/date filters.
         cleaned = re.sub(
             r'(?i)\b(?:site|filetype|intitle|inurl|before|after)\s*:\s*(?:"[^"]+"|\S+)',
-            ' ', query
+            ' ', query,
         )
         cleaned = re.sub(r'(?<!\w)-[a-zA-Zα-ωΑ-Ω0-9_]+', ' ', cleaned)
         cleaned = cleaned.replace('"', ' ')
         return SPACE_RE.sub(' ', cleaned).strip()[:220]
+
+    def _ddgs_search(self, query: str, limit: int) -> List[dict]:
+        try:
+            from ddgs import DDGS
+        except Exception:
+            return []
+        try:
+            client = DDGS(timeout=min(12, WEB_SEARCH_TIMEOUT))
+            rows = client.text(query, region="wt-wt", safesearch="moderate", max_results=max(1, min(limit, 10)))
+        except Exception:
+            return []
+        results: List[dict] = []
+        for item in rows or []:
+            title = SPACE_RE.sub(" ", str(item.get("title") or "")).strip()
+            url = str(item.get("href") or item.get("url") or "").strip()
+            snippet = SPACE_RE.sub(" ", str(item.get("body") or item.get("snippet") or "")).strip()
+            if not title or not url:
+                continue
+            try:
+                url = validate_public_url(url)
+            except ValueError:
+                continue
+            results.append({"title": title[:300], "url": url, "snippet": snippet[:1600], "provider": "DDGS"})
+        return results
 
     def _wikipedia_search(self, query: str, limit: int) -> List[dict]:
         clean_query = self._clean_wikipedia_query(query)
@@ -3663,18 +3919,15 @@ class SafeWebResearch:
         params = urllib.parse.urlencode({
             'action': 'query', 'list': 'search', 'srsearch': clean_query,
             'srlimit': str(max(1, min(limit, 8))), 'format': 'json',
-            'utf8': '1', 'origin': '*'
+            'utf8': '1', 'origin': '*',
         })
         api_url = f'https://{language}.wikipedia.org/w/api.php?' + params
         data, content_type, charset = self._request(
-            api_url, WEB_SEARCH_TIMEOUT, 'application/json, text/json;q=0.9'
+            api_url, WEB_SEARCH_TIMEOUT, 'application/json, text/json;q=0.9',
         )
         if content_type not in {'application/json', 'text/json', 'text/plain'}:
             return []
-        try:
-            payload = json.loads(data.decode(charset or 'utf-8', errors='replace'))
-        except (ValueError, UnicodeError, json.JSONDecodeError):
-            return []
+        payload = json.loads(data.decode(charset or 'utf-8', errors='replace'))
         results: List[dict] = []
         for item in payload.get('query', {}).get('search', []):
             title = str(item.get('title', '')).strip()
@@ -3688,8 +3941,8 @@ class SafeWebResearch:
             except ValueError:
                 continue
             results.append({
-                'title': title[:300], 'url': article,
-                'snippet': snippet[:1200], 'provider': f'Wikipedia-{language}'
+                'title': title[:300], 'url': article, 'snippet': snippet[:1400],
+                'provider': f'Wikipedia-{language}',
             })
         return results
 
@@ -3697,14 +3950,11 @@ class SafeWebResearch:
         params = urllib.parse.urlencode({'q': query, 'format': 'rss', 'count': str(limit)})
         url = 'https://www.bing.com/search?' + params
         data, content_type, _ = self._request(
-            url, WEB_SEARCH_TIMEOUT, 'application/rss+xml, application/xml, text/xml;q=0.9'
+            url, WEB_SEARCH_TIMEOUT, 'application/rss+xml, application/xml, text/xml;q=0.9',
         )
         if content_type not in {'application/rss+xml', 'application/xml', 'text/xml', 'text/plain'}:
             return []
-        try:
-            root = ET.fromstring(data)
-        except ET.ParseError:
-            return []
+        root = ET.fromstring(data)
         results: List[dict] = []
         for item in root.findall('.//item'):
             title = html.unescape((item.findtext('title') or '').strip())
@@ -3718,44 +3968,50 @@ class SafeWebResearch:
             except ValueError:
                 continue
             results.append({
-                'title': title[:300], 'url': safe_link,
-                'snippet': description[:1200], 'provider': 'Bing RSS'
+                'title': title[:300], 'url': safe_link, 'snippet': description[:1400],
+                'provider': 'Bing RSS',
             })
         return results
 
     def search(self, query: str, limit: int = 6) -> List[dict]:
         query = validate_research_query(query)
         limit = max(1, min(WEB_MAX_RESULTS, int(limit)))
+        cache_key = self._cache_key(query + f"|{limit}")
+        cached = self.cache.get("search", {}).get(cache_key, {})
+        if cached and time.time() - float(cached.get("time", 0.0) or 0.0) <= WEB_SEARCH_CACHE_SECONDS:
+            return list(cached.get("results", []))[:limit]
+
+        providers = (self._ddgs_search, self._bing_rss_search, self._wikipedia_search)
         combined: List[dict] = []
         errors: List[str] = []
-        for provider in (self._bing_rss_search, self._wikipedia_search):
-            try:
-                combined.extend(provider(query, limit))
-            except (OSError, ValueError, TimeoutError, urllib.error.URLError) as error:
-                errors.append(str(error))
-        # Interleave providers so Wikipedia remains available even when Bing
-        # returns a full page of results. This gives school/reference queries a
-        # stable no-key source while retaining operator-aware web results.
-        bing_items = [item for item in combined if item.get('provider') == 'Bing RSS']
-        wiki_items = [item for item in combined if str(item.get('provider', '')).startswith('Wikipedia-')]
-        ordered: List[dict] = []
-        while bing_items or wiki_items:
-            if bing_items:
-                ordered.append(bing_items.pop(0))
-            if wiki_items:
-                ordered.append(wiki_items.pop(0))
-        seen: set = set()
-        results: List[dict] = []
-        for item in ordered:
-            url = str(item.get('url', ''))
-            if not url or url in seen:
+        with ThreadPoolExecutor(max_workers=3, thread_name_prefix="pocketai-search") as executor:
+            futures = {executor.submit(provider, query, limit): provider.__name__ for provider in providers}
+            for future in as_completed(futures):
+                try:
+                    combined.extend(future.result() or [])
+                except (OSError, ValueError, TimeoutError, urllib.error.URLError, ET.ParseError, json.JSONDecodeError) as error:
+                    errors.append(str(error))
+
+        seen_urls: set[str] = set()
+        ranked: List[dict] = []
+        for item in combined:
+            url = str(item.get("url", ""))
+            canonical = urllib.parse.urlunsplit(urllib.parse.urlsplit(url)._replace(fragment="")) if url else ""
+            if not canonical or canonical in seen_urls:
                 continue
-            seen.add(url)
-            results.append(item)
-            if len(results) >= limit:
-                break
+            seen_urls.add(canonical)
+            item = dict(item)
+            item["url"] = canonical
+            item["trust"] = self.source_trust(canonical, str(item.get("provider", "")))
+            item["relevance"] = self._query_overlap(query, str(item.get("title", "")), str(item.get("snippet", "")))
+            item["rank_score"] = 0.58 * item["relevance"] + 0.42 * item["trust"]
+            ranked.append(item)
+        ranked.sort(key=lambda item: (float(item.get("rank_score", 0.0)), float(item.get("trust", 0.0))), reverse=True)
+        results = ranked[:limit]
         if not results and errors:
             raise ValueError('No-key search providers were unavailable: ' + '; '.join(errors[:2]))
+        self.cache.setdefault("search", {})[cache_key] = {"time": time.time(), "results": results}
+        self._save_cache()
         return results
 
     @staticmethod
@@ -3766,7 +4022,7 @@ class SafeWebResearch:
         parser.set_url(robots_url)
         request = urllib.request.Request(robots_url, headers={"User-Agent": WEB_USER_AGENT})
         try:
-            with urllib.request.urlopen(request, timeout=6) as response:
+            with urllib.request.urlopen(request, timeout=5) as response:
                 if response.status >= 400:
                     return True
                 lines = decode_text_bytes(response.read(160 * 1024)).splitlines()
@@ -3775,15 +4031,18 @@ class SafeWebResearch:
         except urllib.error.HTTPError as error:
             return error.code in {404, 410}
         except (urllib.error.URLError, TimeoutError, OSError, ValueError):
-            # A network failure is not treated as an explicit robots disallow.
             return True
 
     def fetch_text(self, url: str) -> Tuple[str, str]:
         url = validate_public_url(url)
+        cache_key = self._cache_key(url)
+        cached = self.cache.get("pages", {}).get(cache_key, {})
+        if cached and time.time() - float(cached.get("time", 0.0) or 0.0) <= WEB_PAGE_CACHE_SECONDS:
+            return str(cached.get("text", "")), str(cached.get("url", url))
         if not self._robots_allowed(url):
             raise PermissionError("The site's robots.txt disallows this page.")
         data, content_type, charset = self._request(
-            url, WEB_PAGE_TIMEOUT, "text/html, text/plain;q=0.9, application/xhtml+xml;q=0.8"
+            url, WEB_PAGE_TIMEOUT, "text/html, text/plain;q=0.9, application/xhtml+xml;q=0.8",
         )
         if content_type not in {"text/html", "application/xhtml+xml", "text/plain"}:
             raise ValueError(f"Skipped unsupported page type: {content_type}")
@@ -3797,57 +4056,93 @@ class SafeWebResearch:
             parser = _ReadableHTMLParser()
             parser.feed(decoded)
             text = parser.text()
-        text = clean_document_text(text, ".txt")
+        text = clean_document_text(text, ".txt")[:350000]
         if len(text) < 160:
             raise ValueError("The page did not contain enough readable text.")
-        return text[:350000], url
+        self.cache.setdefault("pages", {})[cache_key] = {"time": time.time(), "url": url, "text": text}
+        self._save_cache()
+        return text, url
+
+    def evidence(self, query: str, max_pages: int = 2) -> dict:
+        query = validate_research_query(query)
+        results = self.search(query, limit=8)
+        evidence_rows: List[dict] = []
+        errors: List[str] = []
+        for item in results:
+            snippet = SPACE_RE.sub(" ", f"{item.get('title','')}. {item.get('snippet','')}").strip()
+            if snippet:
+                evidence_rows.append({
+                    "kind": "web", "source": str(item.get("url", "")),
+                    "response": snippet[:1800],
+                    "score": min(0.93, 0.56 + 0.25 * float(item.get("trust", 0.58)) + 0.18 * float(item.get("relevance", 0.0))),
+                    "title": str(item.get("title", "Web result")),
+                    "provider": str(item.get("provider", "web")),
+                    "trust": float(item.get("trust", 0.58)),
+                })
+
+        fetch_targets = results[:max(0, min(3, int(max_pages)))]
+        pages = 0
+        if fetch_targets:
+            with ThreadPoolExecutor(max_workers=min(3, len(fetch_targets)), thread_name_prefix="pocketai-pages") as executor:
+                futures = {executor.submit(self.fetch_text, str(item["url"])): item for item in fetch_targets}
+                for future in as_completed(futures):
+                    item = futures[future]
+                    try:
+                        text, final_url = future.result()
+                        summary = extractive_summary(text, "el" if GREEK_CHAR_RE.search(query) else "en", max_sentences=9)
+                        if summary:
+                            trust = self.source_trust(final_url, str(item.get("provider", "web")))
+                            evidence_rows.append({
+                                "kind": "web", "source": final_url, "response": summary[:3400],
+                                "score": min(0.96, 0.70 + 0.25 * trust),
+                                "title": str(item.get("title", "Web page")),
+                                "provider": str(item.get("provider", "web")),
+                                "trust": trust,
+                            })
+                            pages += 1
+                    except (OSError, ValueError, PermissionError, TimeoutError, urllib.error.URLError) as error:
+                        errors.append(f"{item.get('url','')}: {error}")
+        return {"query": query, "results": results, "evidence": evidence_rows, "pages": pages, "errors": errors[:8]}
+
+    def learn_bundle(self, bundle: Mapping, mode: str = "safe") -> dict:
+        selected_mode = str(mode or "safe").casefold()
+        minimum_trust = 0.55 if selected_mode == "safe" else 0.40
+        grouped: Dict[str, dict] = {}
+        for item in list(bundle.get("evidence", [])):
+            source = str(item.get("source", "")).strip()
+            trust = float(item.get("trust", self.source_trust(source, str(item.get("provider", "")))) or 0.0)
+            if not source or trust < minimum_trust:
+                continue
+            row = grouped.setdefault(source, {
+                "chunks": [], "title": str(item.get("title", "Web evidence")),
+                "provider": str(item.get("provider", "web")), "trust": trust,
+            })
+            row["trust"] = max(float(row["trust"]), trust)
+            response = str(item.get("response", "")).strip()
+            row["chunks"].extend(chunk_document(response, target_chars=760, overlap_chars=80)[:12])
+        chunks_added = 0
+        sources_added = 0
+        for source, row in grouped.items():
+            count = self.store.add_document_chunks_bulk(
+                row["chunks"], "web:" + source, title=row["title"],
+                provider=row["provider"], trust=row["trust"], replace_existing=True,
+            )
+            if count:
+                chunks_added += count
+                sources_added += 1
+        return {"sources": sources_added, "chunks": chunks_added, "mode": selected_mode}
 
     def learn(self, query: str, max_pages: int = 3) -> dict:
         query = validate_research_query(query)
-        max_pages = max(0, min(WEB_MAX_PAGES_PER_RUN, int(max_pages)))
-        results = self.search(query, limit=max(5, max_pages + 2))
-        if not results:
-            return {"query": query, "results": [], "pages": 0, "chunks": 0, "errors": []}
-
-        chunks_added = 0
-        pages = 0
-        errors: List[str] = []
-        for result in results:
-            snippet = f"{result['title']}. {result['snippet']}".strip()
-            if result["snippet"] and detect_language(snippet) in {"en", "el", "neutral"}:
-                source = "web-search:" + result["url"]
-                self.store.remove_source(source)
-                for chunk in chunk_document(snippet, target_chars=650, overlap_chars=80):
-                    if detect_language(chunk) in {"en", "el", "neutral"}:
-                        self.store.add_document_chunk(chunk, source)
-                        chunks_added += 1
-
-        for result in results:
-            if pages >= max_pages:
-                break
-            try:
-                text, final_url = self.fetch_text(result["url"])
-                page_chunks = [
-                    chunk for chunk in chunk_document(text, target_chars=760, overlap_chars=110)
-                    if detect_language(chunk) in {"en", "el", "neutral"}
-                ][:160]
-                if not page_chunks:
-                    continue
-                source = "web:" + final_url
-                self.store.remove_source(source)
-                for chunk in page_chunks:
-                    self.store.add_document_chunk(chunk, source)
-                chunks_added += len(page_chunks)
-                pages += 1
-            except (OSError, ValueError, PermissionError, TimeoutError, urllib.error.URLError) as error:
-                errors.append(f"{result['url']}: {error}")
-
+        bundle = self.evidence(query, max_pages=max(1, min(WEB_MAX_PAGES_PER_RUN, int(max_pages))))
+        learned = self.learn_bundle(bundle, mode="fast")
         return {
             "query": query,
-            "results": results,
-            "pages": pages,
-            "chunks": chunks_added,
-            "errors": errors[:8]
+            "results": list(bundle.get("results", [])),
+            "pages": int(bundle.get("pages", 0) or 0),
+            "chunks": int(learned.get("chunks", 0) or 0),
+            "sources": int(learned.get("sources", 0) or 0),
+            "errors": list(bundle.get("errors", []))[:8],
         }
 
 
@@ -4021,6 +4316,9 @@ class LocalGGUFModel:
         self.model_paths: Dict[str, Path] = {}
         self.active_model = self._normalize_model_name(preferred_model)
         self.requested_cpu_profile = self._normalize_cpu_profile(cpu_profile)
+        self.thermal_governor = ThermalGovernor()
+        self.performance_controller = AdaptiveComputeController(self.data_dir)
+        self.last_inference_metrics: Dict[str, Any] = {}
         self.device_info = self._detect_device_info()
         self.resolved_cpu_profile = self._resolve_cpu_profile()
         self.refresh()
@@ -4032,8 +4330,9 @@ class LocalGGUFModel:
             "ram": "fast", "speed": "fast", "1": "fast",
             "q4": "quality", "q4_1": "quality", "small": "quality", "2": "quality",
             "qwen": "smart", "qwen0.5b": "smart", "qwen-0.5b": "smart", "recommended": "smart", "3": "smart",
-            "qwen1.5b": "ultra", "qwen-1.5b": "ultra", "ultra-smart": "ultra",
-            "best": "ultra", "smartest": "ultra", "strongest": "ultra", "4": "ultra",
+            "qwen1.5b": "ultra", "qwen-1.5b": "ultra", "qwen1.7b": "ultra", "ultra-smart": "ultra",
+            "qwen4b": "pro", "qwen-4b": "pro", "professional": "pro", "4": "pro",
+            "qwen8b": "max", "qwen-8b": "max", "best": "max", "smartest": "max", "strongest": "max", "5": "max",
         }
         normalized = aliases.get(name.casefold().strip(), name.casefold().strip())
         return normalized if normalized in EXTERNAL_LLM_MODELS else DEFAULT_EXTERNAL_LLM_MODEL
@@ -4048,11 +4347,12 @@ class LocalGGUFModel:
             "galaxy-a12": "entry", "galaxya12": "entry", "p35": "entry", "exynos850": "entry",
             "normal": "balanced", "standard": "balanced", "2": "entry", "3": "balanced",
             "fast": "performance", "strong": "performance", "4": "performance",
+            "flagship": "flagship", "maximum": "flagship", "extreme": "flagship", "5": "flagship",
         }
         normalized = aliases.get(name.casefold().strip(), name.casefold().strip())
         if normalized == "auto" or normalized in LLM_CPU_PROFILES:
             return normalized
-        raise ValueError("CPU profile must be auto, ultra_eco, eco, entry, balanced, or performance.")
+        raise ValueError("CPU profile must be auto, ultra_eco, eco, entry, balanced, performance, or flagship.")
 
     @staticmethod
     def _get_android_property(name: str) -> str:
@@ -4116,6 +4416,8 @@ class LocalGGUFModel:
             return "entry"
         if (total and total < 5_200_000_000) or score < 68:
             return "balanced"
+        if (total and total >= 9_000_000_000) and (not available or available >= 3_800_000_000) and score >= 78:
+            return "flagship"
         return "performance"
 
     def runtime_settings(self, model_name: Optional[str] = None) -> dict:
@@ -4131,15 +4433,42 @@ class LocalGGUFModel:
         battery_percent = int(battery.get("capacity_percent", 100) or 100)
         storage_free = int(_storage_snapshot(self.data_dir).get("free", 0) or 0)
         if optimize_phone_runtime is not None:
+            cpu_score = int(self.device_info.get("processor_score", 30) or 30)
+            core_count = max(1, int(self.device_info.get("cpu_count", os.cpu_count() or 1) or 1))
             plan = optimize_phone_runtime(
                 model=selected_model, total_ram=total, available_ram=available,
-                cpu_score=int(self.device_info.get("processor_score", 30) or 30),
-                cores=max(1, int(self.device_info.get("cpu_count", os.cpu_count() or 1) or 1)),
+                cpu_score=cpu_score, cores=core_count,
                 is_64_bit=bool(self.device_info.get("is_64_bit", sys.maxsize > 2 ** 32)),
                 temperature=temperature, storage_free=storage_free,
                 battery_percent=battery_percent, charging=charging, requested=self.requested_cpu_profile,
             )
-            # Respect the hard per-model ceilings bundled with this package.
+            model_path = self.model_paths.get(selected_model)
+            try:
+                model_bytes = int(model_path.stat().st_size) if model_path and model_path.is_file() else int(EXTERNAL_LLM_MODELS[selected_model].get("estimated_size_bytes", 0) or 0)
+            except OSError:
+                model_bytes = int(EXTERNAL_LLM_MODELS[selected_model].get("estimated_size_bytes", 0) or 0)
+            plan = self.thermal_governor.adjust_runtime(
+                plan, model=selected_model, model_bytes=model_bytes, total_ram=total,
+                available_ram=available, cores=core_count, cpu_score=cpu_score,
+                thermal_snapshot=thermal, charging=charging, battery_percent=battery_percent,
+            )
+            plan = self.performance_controller.tune_plan(
+                plan, model=selected_model,
+                max_context=int(EXTERNAL_LLM_MODELS[selected_model]["context"]),
+                max_tokens=int(EXTERNAL_LLM_MODELS[selected_model]["max_tokens"]),
+                available_ram=available, cores=core_count, cpu_score=cpu_score,
+                thermal_metrics=dict(plan.get("thermal_metrics", {})),
+                charging=charging, battery_percent=battery_percent,
+                deadline_seconds=float(plan.get("timeout", MAX_LLM_CALL_SECONDS) or MAX_LLM_CALL_SECONDS),
+            )
+            # Re-run the hard RAM/thermal envelope after any learned burst. This
+            # prevents adaptive tuning from spending the Android reserve.
+            plan = self.thermal_governor.adjust_runtime(
+                plan, model=selected_model, model_bytes=model_bytes, total_ram=total,
+                available_ram=available, cores=core_count, cpu_score=cpu_score,
+                thermal_snapshot=thermal, charging=charging, battery_percent=battery_percent,
+            )
+            # Respect hard per-model ceilings after thermal, memory, and learned tuning.
             plan["context"] = min(int(plan["context"]), int(EXTERNAL_LLM_MODELS[selected_model]["context"]))
             plan["max_tokens"] = min(int(plan["max_tokens"]), int(EXTERNAL_LLM_MODELS[selected_model]["max_tokens"]))
             plan.update({"available_ram": available, "total_ram": total, "temperature_celsius": temperature, "thermal_state": thermal.get("state", "unknown"), "storage_free": storage_free})
@@ -4181,13 +4510,17 @@ class LocalGGUFModel:
         found: Dict[str, Path] = {}
         for key, config in EXTERNAL_LLM_MODELS.items():
             filename = str(config["filename"])
-            for candidate in self._candidate_paths(filename):
-                try:
-                    if candidate.is_file() and candidate.stat().st_size > 50 * 1024 * 1024 and _gguf_header_valid(candidate):
-                        found[key] = candidate
-                        break
-                except OSError:
-                    continue
+            candidates = [filename] + [str(item) for item in config.get("alternate_filenames", [])]
+            for candidate_name in candidates:
+                for candidate in self._candidate_paths(candidate_name):
+                    try:
+                        if candidate.is_file() and candidate.stat().st_size > 50 * 1024 * 1024 and _gguf_header_valid(candidate):
+                            found[key] = candidate
+                            break
+                    except OSError:
+                        continue
+                if key in found:
+                    break
             if key not in found and self._split_source_available(filename, str(config["sha256"])):
                 found[key] = self.cache_model_dir / filename
         return found
@@ -4238,7 +4571,7 @@ class LocalGGUFModel:
         self.model_paths = self._find_models()
         self.binary_path = self._find_binary()
         if self.active_model not in self.model_paths and self.model_paths:
-            for preferred in ("ultra", "smart", "quality", "fast"):
+            for preferred in ("max", "pro", "ultra", "smart", "quality", "fast"):
                 if preferred in self.model_paths:
                     self.active_model = preferred
                     break
@@ -4309,6 +4642,8 @@ class LocalGGUFModel:
             "runtime": runtime,
             "device": self.device_info,
             "low_ram_defaults": True,
+            "adaptive_compute": self.performance_controller.summary(),
+            "last_inference_metrics": dict(self.last_inference_metrics),
         }
 
     @staticmethod
@@ -4349,12 +4684,14 @@ class LocalGGUFModel:
         model_name: Optional[str] = None,
         time_budget_seconds: Optional[float] = None,
         task_profile: Optional[dict] = None,
+        history: Sequence[Tuple[str, str]] = (),
     ) -> str:
         """Run one bounded llama.cpp pass and preserve useful partial output.
 
         The deadline covers all compatibility attempts together, preventing an
         unsupported command-line flag from accidentally doubling wait time.
         """
+        inference_started = time.monotonic()
         self.refresh()
         model_key = self._normalize_model_name(model_name) if model_name else self.active_model
         if model_key not in self.model_paths or self.binary_path is None:
@@ -4365,11 +4702,14 @@ class LocalGGUFModel:
             raise RuntimeError(f"Unable to reconstruct the {model_key} GGUF model: {error}") from error
 
         runtime = self.runtime_settings(model_key)
+        if runtime.get("abort_before_start"):
+            guards = "; ".join(str(item) for item in runtime.get("guards", []))
+            raise RuntimeError("Local inference was paused to protect the phone: " + (guards or "unsafe heat or RAM pressure"))
         language_instruction = "Write only in natural Greek." if language == "el" else "Write only in natural English."
-        context_limit = max(700, min(7600, int(runtime["context"]) * 4))
-        input_limit = max(500, min(3200, int(runtime["context"]) * 2))
-        context = context.strip()[:context_limit]
+        context_limit = max(700, min(12000, int(runtime["context"]) * 4))
+        input_limit = max(500, min(4200, int(runtime["context"]) * 2))
         profile = task_profile or analyze_smart_query(user_text, language)
+        context = compress_model_evidence(user_text, context, context_limit, model_key)
         task_name = str(profile.get("task", "general_question"))
         style_rule = str(profile.get("style_instruction", "Answer directly and carefully."))[:500]
         current_warning = (
@@ -4385,7 +4725,8 @@ class LocalGGUFModel:
                   "Privately plan and verify facts, arithmetic, code, and commands before writing. "
                   "Never invent facts, sources, dates, links, commands, or capabilities. "
                   "When evidence is missing or conflicting, say exactly what is uncertain. "
-                  "Treat the SAFE GROUNDED DRAFT as a factual floor: improve it only when the evidence supports the change."
+                  "Treat the SAFE GROUNDED DRAFT as a factual floor: improve it only when the evidence supports the change. "
+                  "Use recent conversation to resolve follow-ups and pronouns. Cover every explicit constraint, and ask one concise clarifying question only when a missing detail makes a reliable answer impossible."
                 + current_warning
             )
         else:
@@ -4397,13 +4738,16 @@ class LocalGGUFModel:
                 + current_warning
             )
         system += f"\nTask type: {task_name}. Response rule: {style_rule}"
+        cognitive_rule = intelligence_instruction(model_key, language, profile)
+        if cognitive_rule:
+            system += "\nModel-specific cognitive rule: " + cognitive_rule[:1800]
         if specialist_instruction.strip():
-            system += "\nSpecialist rules: " + specialist_instruction.strip()[:1200]
+            system += "\nSpecialist rules: " + specialist_instruction.strip()[:1600]
         user = user_text.strip()[:input_limit]
         if family == "qwen3":
             complexity = float(profile.get("complexity", 0.5) or 0.5)
             difficult_task = task_name in {"math", "coding", "comparison", "causal_explanation", "recommendation"}
-            thinking_allowed = runtime.get("resolved") in {"balanced", "performance"} and difficult_task and complexity >= 0.62
+            thinking_allowed = runtime.get("resolved") in {"balanced", "performance", "flagship"} and difficult_task and complexity >= 0.62
             user = user + (" /think" if thinking_allowed else " /no_think")
         if context:
             user = (
@@ -4411,14 +4755,29 @@ class LocalGGUFModel:
                 + context
                 + "\n\nUSER QUESTION:\n" + user
             )
+        history_rows: List[str] = []
+        history_budget = max(0, min(3600, context_limit // 2))
+        used_history = 0
+        for role, message in list(history)[-8:]:
+            role_name = "assistant" if role == "assistant" else "user"
+            clean_message = str(message).strip()[:900]
+            if not clean_message:
+                continue
+            row = f"<|im_start|>{role_name}\n{clean_message}<|im_end|>\n"
+            if used_history + len(row) > history_budget:
+                continue
+            history_rows.append(row)
+            used_history += len(row)
         prompt = (
             "<|im_start|>system\n" + system + "<|im_end|>\n"
-            "<|im_start|>user\n" + user + "<|im_end|>\n"
-            "<|im_start|>assistant\n"
+            + "".join(history_rows)
+            + "<|im_start|>user\n" + user + "<|im_end|>\n"
+            + "<|im_start|>assistant\n"
         )
 
-        token_ceiling = 640 if model_key in {"smart", "ultra"} else 384
+        token_ceiling = 768 if model_key in {"smart", "ultra", "pro", "max"} else 384
         token_limit = min(int(runtime["max_tokens"]), max(24, min(token_ceiling, max_tokens)))
+        sampling = model_sampling_settings(model_key, profile, runtime)
         base_common = [
             str(self.binary_path), "-m", str(model_path),
             "-c", str(runtime["context"]),
@@ -4427,21 +4786,35 @@ class LocalGGUFModel:
             "-n", str(token_limit),
             "-t", str(runtime["threads"]),
             "--mmap", "--no-warmup", "--simple-io", "--no-conversation",
-            "--temp", f"{float(runtime.get('temperature', 0.16)):.2f}",
-            "--top-p", f"{float(runtime.get('top_p', 0.86)):.2f}",
-            "--repeat-penalty", f"{float(runtime.get('repeat_penalty', 1.13)):.2f}",
+            "--temp", f"{float(sampling.get('temperature', runtime.get('temperature', 0.16))):.2f}",
+            "--top-p", f"{float(sampling.get('top_p', runtime.get('top_p', 0.86))):.2f}",
+            "--repeat-penalty", f"{float(sampling.get('repeat_penalty', runtime.get('repeat_penalty', 1.13))):.2f}",
         ]
-        qwen3_sampling = ["--top-k", "20", "--min-p", "0.0", "--presence-penalty", "1.5"] if family == "qwen3" else []
-        full_common = base_common + qwen3_sampling + ["-p", prompt]
-        compatible_common = base_common + ["-p", prompt]
+        qwen3_sampling = (
+            ["--top-k", str(int(sampling.get("top_k", 20))),
+             "--min-p", f"{float(sampling.get('min_p', 0.0)):.2f}",
+             "--presence-penalty", f"{float(sampling.get('presence_penalty', 0.15)):.2f}"]
+            if family == "qwen3" else []
+        )
+        # Quantized KV cache reduces RAM pressure and can preserve a larger useful
+        # context. Flash attention is attempted only on capable profiles; every
+        # optional flag has a compatibility fallback for older llama.cpp builds.
+        memory_flags = ["-ctk", "q8_0", "-ctv", "q8_0"] if family == "qwen3" else []
+        performance_flags = ["-fa", "on"] if family == "qwen3" and runtime.get("resolved") in {"balanced", "performance", "flagship"} else []
+        batch_thread_flags = ["-tb", str(min(max(1, int(runtime["threads"]) + 1), max(1, (os.cpu_count() or 1) - 1)))]
+        full_common = base_common + memory_flags + performance_flags + batch_thread_flags + qwen3_sampling + ["-p", prompt]
+        compatible_common = base_common + memory_flags + qwen3_sampling + ["-p", prompt]
+        minimal_common = base_common + ["-p", prompt]
         attempts = [
             full_common[:1] + ["--no-display-prompt"] + full_common[1:],
             full_common,
+            compatible_common[:1] + ["--no-display-prompt"] + compatible_common[1:],
+            compatible_common,
         ]
-        if qwen3_sampling:
+        if memory_flags or qwen3_sampling:
             attempts.extend([
-                compatible_common[:1] + ["--no-display-prompt"] + compatible_common[1:],
-                compatible_common,
+                minimal_common[:1] + ["--no-display-prompt"] + minimal_common[1:],
+                minimal_common,
             ])
         requested_budget = float(time_budget_seconds if time_budget_seconds is not None else runtime["timeout"])
         total_budget = max(5.0, min(MAX_LLM_CALL_SECONDS, float(runtime["timeout"]), requested_budget))
@@ -4452,49 +4825,120 @@ class LocalGGUFModel:
         environment["OPENBLAS_NUM_THREADS"] = "1"
         environment["MKL_NUM_THREADS"] = "1"
 
-        def timeout_text(error: subprocess.TimeoutExpired) -> str:
-            chunks: List[str] = []
-            seen_chunks: set[str] = set()
-            for value in (getattr(error, "stdout", None), getattr(error, "output", None), getattr(error, "stderr", None)):
-                if not value:
-                    continue
-                decoded = value.decode("utf-8", errors="replace") if isinstance(value, bytes) else str(value)
-                if decoded and decoded not in seen_chunks:
-                    seen_chunks.add(decoded)
-                    chunks.append(decoded)
-            return "\n".join(chunks)
+        baseline_snapshot = _thermal_snapshot()
+        baseline_metrics = self.thermal_governor.observe(baseline_snapshot)
+        baseline_temperature = float(baseline_metrics.get("display_celsius", 0.0) or 0.0)
+        minimum_free_ram = max(120 * 1024 ** 2, int(runtime.get("reserved_system_ram_bytes", 0) or 0) // 3)
+        telemetry_recorded = False
+
+        def record_inference(output_text: str = "", aborted: bool = False, reason: str = "") -> None:
+            nonlocal telemetry_recorded
+            if telemetry_recorded:
+                return
+            telemetry_recorded = True
+            end_metrics = self.thermal_governor.observe(_thermal_snapshot())
+            end_temperature = float(end_metrics.get("display_celsius", 0.0) or 0.0)
+            rise = max(0.0, end_temperature - baseline_temperature) if baseline_temperature and end_temperature else 0.0
+            elapsed = max(0.001, time.monotonic() - inference_started)
+            learned = self.performance_controller.record_run(
+                model=model_key, elapsed_seconds=elapsed,
+                output_characters=len(output_text), temperature_rise=rise,
+                thermal_level=str(end_metrics.get("level", "unknown")),
+                aborted=bool(aborted), threads=int(runtime.get("threads", 1)),
+                context=int(runtime.get("context", 0)), batch=int(runtime.get("batch", 0)),
+            )
+            self.last_inference_metrics = {
+                "model": model_key, "elapsed_seconds": round(elapsed, 3),
+                "output_characters": len(output_text), "temperature_rise_celsius": round(rise, 2),
+                "thermal_level": str(end_metrics.get("level", "unknown")),
+                "aborted": bool(aborted), "reason": str(reason),
+                "learned": learned,
+            }
+
+        def read_capture(stream) -> str:
+            try:
+                stream.flush()
+                stream.seek(0)
+                payload = stream.read()
+                return payload.decode("utf-8", errors="replace") if isinstance(payload, bytes) else str(payload)
+            except (OSError, ValueError):
+                return ""
 
         for command in attempts:
             remaining = deadline - time.monotonic()
             if remaining < 2.0:
                 break
-            try:
-                completed = subprocess.run(
-                    command,
-                    stdin=subprocess.DEVNULL,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    text=True,
-                    errors="replace",
-                    timeout=remaining,
-                    check=False,
-                    env=environment,
-                )
-            except subprocess.TimeoutExpired as error:
-                partial = self._clean_output(timeout_text(error), prompt)
-                if len(partial) >= 20 and detect_language(partial) != "unsupported":
-                    return partial
-                last_error = f"Local inference reached its {total_budget:.0f}-second safety deadline."
-                break
-            except (OSError, subprocess.SubprocessError) as error:
-                last_error = str(error)
-                continue
-            output = self._clean_output(completed.stdout, prompt)
-            if completed.returncode == 0 and output:
-                if detect_language(output) == "unsupported":
-                    raise RuntimeError("The local model produced text outside English and Greek.")
-                return output
-            last_error = output or self._clean_output(completed.stderr, prompt) or f"llama.cpp returned code {completed.returncode}"
+            process = None
+            stopped_for_safety = False
+            stop_reason = ""
+            with tempfile.TemporaryFile(mode="w+b") as stdout_file, tempfile.TemporaryFile(mode="w+b") as stderr_file:
+                try:
+                    process = subprocess.Popen(
+                        command,
+                        stdin=subprocess.DEVNULL,
+                        stdout=stdout_file,
+                        stderr=stderr_file,
+                        env=environment,
+                    )
+                    next_monitor = time.monotonic()
+                    while process.poll() is None:
+                        now = time.monotonic()
+                        if now >= deadline:
+                            stop_reason = f"Local inference reached its {total_budget:.0f}-second safety deadline."
+                            break
+                        if now >= next_monitor:
+                            decision = self.thermal_governor.check_during_run(
+                                _thermal_snapshot(),
+                                baseline_temperature=baseline_temperature,
+                                available_ram=available_memory_bytes(),
+                                minimum_free_ram=minimum_free_ram,
+                            )
+                            if decision.abort:
+                                stopped_for_safety = True
+                                stop_reason = "Inference stopped safely: " + decision.reason
+                                break
+                            next_monitor = now + float(runtime.get("monitor_interval_seconds", 2.0) or 2.0)
+                        time.sleep(0.20)
+
+                    if process.poll() is None:
+                        process.terminate()
+                        try:
+                            process.wait(timeout=2.0)
+                        except subprocess.TimeoutExpired:
+                            process.kill()
+                            process.wait(timeout=2.0)
+                    return_code = int(process.returncode or 0)
+                except (OSError, subprocess.SubprocessError) as error:
+                    if process is not None and process.poll() is None:
+                        try:
+                            process.kill()
+                        except OSError:
+                            pass
+                    last_error = str(error)
+                    continue
+
+                stdout_text = read_capture(stdout_file)
+                stderr_text = read_capture(stderr_file)
+                output = self._clean_output(stdout_text, prompt)
+                if output and len(output) >= 20 and detect_language(output) != "unsupported":
+                    # Preserve useful partial output when the thermal governor or
+                    # deadline ended generation after a coherent answer began.
+                    if stopped_for_safety or stop_reason or return_code == 0:
+                        record_inference(output, aborted=bool(stopped_for_safety), reason=stop_reason)
+                        return output
+                if stopped_for_safety:
+                    record_inference(output, aborted=True, reason=stop_reason or "thermal governor")
+                    raise RuntimeError(stop_reason or "Inference stopped by the thermal governor.")
+                if stop_reason:
+                    last_error = stop_reason
+                    break
+                if return_code == 0 and output:
+                    if detect_language(output) == "unsupported":
+                        raise RuntimeError("The local model produced text outside English and Greek.")
+                    record_inference(output, aborted=False)
+                    return output
+                last_error = output or self._clean_output(stderr_text, prompt) or f"llama.cpp returned code {return_code}"
+        record_inference("", aborted=True, reason=last_error or "inference failed")
         raise RuntimeError(last_error or "Local model inference failed within the answer deadline.")
 
 
@@ -4769,7 +5213,7 @@ class PocketAssistant:
         self.store = KnowledgeStore(database_path)
         self.calculator = SafeCalculator()
         self.debug = False
-        self.session_history: Deque[Tuple[str, str]] = deque(maxlen=18)
+        self.session_history: Deque[Tuple[str, str]] = deque(maxlen=48)
         self.intent_lookup = {item["tag"]: item for item in dataset["intents"]}
         self.pattern_index = self._build_pattern_index(dataset)
         self.intent_profiles, self.intent_idf = self._build_intent_profiles(dataset)
@@ -4810,12 +5254,25 @@ class PocketAssistant:
             except (OSError, ValueError, KeyError, TypeError, pickle.PickleError):
                 self.language_model = None
         self.web_research = SafeWebResearch(self.store)
+        stored_web_mode = self.store.get_setting("web_mode", "auto") or "auto"
+        self.web_mode = stored_web_mode if stored_web_mode in {"off", "auto", "on"} else "auto"
+        stored_learn_mode = self.store.get_setting("learn_mode", "safe") or "safe"
+        self.learn_mode = stored_learn_mode if stored_learn_mode in {"off", "safe", "fast"} else "safe"
+        self.shared_learning = SharedLearningEngine(self.data_dir)
+        self.last_web_sources: List[dict] = []
+        for role, message in self.store.recent_history(20):
+            if role in {"user", "assistant"} and message.strip():
+                self.session_history.append((role, message))
         self.specialists = SpecialistModelRouter(Path(__file__).resolve().parent / "Models")
         self.school_tutor = SchoolTutor(models_dir / "PocketAI_School_Knowledge.json.gz")
         self.universal_knowledge = UniversalKnowledge(models_dir / "PocketAI_Universal_Knowledge.json.gz")
         self.lexical_knowledge = LexicalKnowledge(models_dir / "Lexical Knowledge")
         self.encyclopedia_knowledge = EncyclopediaKnowledge(models_dir / "Encyclopedia Knowledge")
         self.conversation_engine = ConversationEngine()
+        try:
+            self.conversation_engine.restore(self.session_history)
+        except Exception:
+            pass
         self.hybrid_components: Dict[str, dict] = {}
         for component_id, filename in HYBRID_COMPONENT_FILES.items():
             component_path = models_dir / filename
@@ -4839,7 +5296,7 @@ class PocketAssistant:
         self.hybrid_mode = stored_hybrid_mode if stored_hybrid_mode in HYBRID_MODES else DEFAULT_HYBRID_MODE
         # Old cached/template answers can make an upgraded build appear unchanged.
         # Invalidate them once when the smartness pipeline changes.
-        smartness_version = "9-natural-complete-school"
+        smartness_version = "14-spec-max-cognitive-scaling"
         if self.store.get_setting("smartness_version", "") != smartness_version:
             try:
                 with self.store.connection:
@@ -5029,6 +5486,10 @@ class PocketAssistant:
             self.universal_knowledge.close()
         except Exception:
             pass
+        try:
+            self.shared_learning.close()
+        except Exception:
+            pass
         self.store.close()
 
     def t(self, english: str, greek: str, language: Optional[str] = None) -> str:
@@ -5067,6 +5528,26 @@ class PocketAssistant:
         if mode in SUPPORTED_LANGUAGES:
             self.last_language = mode
             self.store.set_setting("last_language", mode)
+
+    def set_web_mode(self, mode: str) -> str:
+        selected = str(mode).casefold().strip()
+        aliases = {"always": "on", "enabled": "on", "yes": "on", "disabled": "off", "no": "off", "automatic": "auto"}
+        selected = aliases.get(selected, selected)
+        if selected not in {"off", "auto", "on"}:
+            raise ValueError("web mode must be off, auto, or on")
+        self.web_mode = selected
+        self.store.set_setting("web_mode", selected)
+        return selected
+
+    def set_learn_mode(self, mode: str) -> str:
+        selected = str(mode).casefold().strip()
+        aliases = {"on": "safe", "auto": "safe", "normal": "safe", "maximum": "fast", "max": "fast", "disabled": "off"}
+        selected = aliases.get(selected, selected)
+        if selected not in {"off", "safe", "fast"}:
+            raise ValueError("learn mode must be off, safe, or fast")
+        self.learn_mode = selected
+        self.store.set_setting("learn_mode", selected)
+        return selected
 
     def contextualize_query(self, text: str, language: str) -> Tuple[str, bool]:
         try:
@@ -5287,6 +5768,17 @@ class PocketAssistant:
         if specialist_knowledge:
             add_source("specialist", str(specialist_knowledge.get("specialist") or "Task specialist"), specialist_knowledge.get("response", ""), float(specialist_knowledge.get("match_score", 0.78) or 0.78))
 
+        try:
+            for lesson in self.shared_learning.retrieve(query, language, limit=4):
+                add_source(
+                    "shared_lesson",
+                    "Shared lesson from " + str(lesson.get("teacher_model", "verified pipeline")),
+                    str(lesson.get("answer", "")),
+                    min(0.96, 0.58 + 0.36 * float(lesson.get("score", 0.0) or 0.0)),
+                )
+        except Exception:
+            pass
+
         # Pull multiple passages instead of trusting one top hit.  The smart
         # reranker then selects sentences that answer the requested task type.
         try:
@@ -5313,7 +5805,7 @@ class PocketAssistant:
             pass
 
         for candidate in candidates[:10]:
-            source_type = "taught_qa" if candidate.get("kind") == "qa" else "local_document"
+            source_type = "taught_qa" if candidate.get("kind") == "qa" else ("web" if candidate.get("kind") == "web" else "local_document")
             title = str(candidate.get("source") or candidate.get("prompt") or source_type)
             add_source(source_type, title, str(candidate.get("response") or ""), float(candidate.get("score", 0.50) or 0.50))
 
@@ -5323,7 +5815,7 @@ class PocketAssistant:
             context_tokens = int(runtime.get("context", 768) or 768)
         except Exception:
             active, context_tokens = "quality", 768
-        evidence_ceiling = 7600 if active == "ultra" else (6200 if active == "smart" else 3400)
+        evidence_ceiling = 11000 if active in {"pro", "max"} else (8200 if active == "ultra" else (6600 if active == "smart" else 3600))
         max_chars = min(evidence_ceiling, max(1100, int(context_tokens * 3.15)))
         packet, ranked = build_evidence_packet(
             query, sources, language=language, task_profile=task_profile, max_chars=max_chars
@@ -5449,11 +5941,11 @@ class PocketAssistant:
             response = "I can communicate only in English and Greek. / Μπορώ να επικοινωνώ μόνο στα Αγγλικά και στα Ελληνικά."
             return response, {"route": "language_reject", "language": "unsupported"}
 
-        task_profile = analyze_smart_query(original_text, language)
         contextual_text, context_used = self.contextualize_query(original_text, language)
+        task_profile = analyze_smart_query(contextual_text, language)
         specialist = self.specialists.select(contextual_text)
         user_name = str(self.persona.get("user_name", "") or self.store.get_memory("name") or "")
-        social = self.conversation_engine.social_reply(original_text, language, self.assistant_name, user_name)
+        social = None if context_used else self.conversation_engine.social_reply(original_text, language, self.assistant_name, user_name)
         utility = None if social is not None else self.direct_utility_response(original_text, language)
 
         if social is not None:
@@ -5476,15 +5968,15 @@ class PocketAssistant:
                 response = str(cached_answer["response"])
                 details.update(cached_answer)
             else:
-                school_answer = self.school_tutor.answer(original_text, language)
-                universal_answer = self.universal_knowledge.answer(original_text, language)
-                common_answer = common_definition_response(original_text, language)
+                school_answer = self.school_tutor.answer(contextual_text, language)
+                universal_answer = self.universal_knowledge.answer(contextual_text, language)
+                common_answer = common_definition_response(contextual_text, language)
                 try:
-                    lexical_answer = self.lexical_knowledge.answer(original_text, language)
+                    lexical_answer = self.lexical_knowledge.answer(contextual_text, language)
                 except Exception:
                     lexical_answer = None
                 try:
-                    encyclopedia_answer = self.encyclopedia_knowledge.answer(original_text, language)
+                    encyclopedia_answer = self.encyclopedia_knowledge.answer(contextual_text, language)
                 except Exception:
                     encyclopedia_answer = None
 
@@ -5501,6 +5993,31 @@ class PocketAssistant:
                         universal_answer = None
 
                 candidates = self.store.retrieve_many(contextual_text, limit=8, candidate_limit=80, language=language)
+                self.last_web_sources = []
+                web_used = False
+                if should_search_web(original_text, task_profile, self.web_mode):
+                    try:
+                        web_query = clean_web_query(contextual_text if not explicit_web_request(original_text) else original_text)
+                        page_budget = 3 if self.learn_mode == "fast" else (2 if self.learn_mode == "safe" else 1)
+                        web_bundle = self.web_research.evidence(web_query, max_pages=page_budget)
+                        web_candidates = list(web_bundle.get("evidence", []))
+                        candidates = web_candidates + candidates
+                        self.last_web_sources = list(web_bundle.get("results", []))
+                        web_used = bool(web_candidates)
+                        learn_report = {}
+                        if web_used and self.learn_mode != "off":
+                            learn_report = self.web_research.learn_bundle(web_bundle, mode=self.learn_mode)
+                        details["web_search"] = {
+                            "query": web_query, "results": len(self.last_web_sources),
+                            "pages": int(web_bundle.get("pages", 0) or 0),
+                            "errors": list(web_bundle.get("errors", [])),
+                            "learned_sources": int(learn_report.get("sources", 0) or 0),
+                            "learned_chunks": int(learn_report.get("chunks", 0) or 0),
+                            "learn_mode": self.learn_mode,
+                        }
+                    except Exception as error:
+                        details["web_error"] = str(error)
+                details["web_used"] = web_used
                 specialist_knowledge = self.specialists.knowledge_answer(
                     contextual_text, language, selected=specialist
                 )
@@ -5674,6 +6191,17 @@ class PocketAssistant:
         route_name = str(details.get("route", ""))
         response = smart_clean_answer(response)
         response = self.apply_persona(response, language, route_name, original_text)
+        core_response = response
+        if details.get("web_used") and self.last_web_sources:
+            response = response.rstrip() + "\n\n" + format_web_sources(self.last_web_sources, language, limit=6)
+        try:
+            continuation = self.conversation_engine.followup_prompt(
+                original_text, response, language, task_profile=task_profile, context_used=context_used
+            )
+        except Exception:
+            continuation = ""
+        if continuation:
+            response = response.rstrip() + "\n\n" + continuation
         details["calibrated_confidence"] = calibrate_confidence(details, response)
         details["assistant_name"] = self.assistant_name
         details["persona_style"] = self.persona.get("style", "friendly")
@@ -5698,6 +6226,22 @@ class PocketAssistant:
                 self.store.cache_response(original_text, language, response, route_for_cache, confidence_for_cache)
             except sqlite3.Error:
                 pass
+
+        # Share high-confidence lessons across all model tiers. This is safe RAG
+        # memory, not uncontrolled weight modification. Current web answers are
+        # stored only with their sources and are re-searched when freshness matters.
+        try:
+            teacher_model = str(details.get("model_profile") or ("web" if details.get("web_used") else "grounded"))
+            learned = False
+            if not task_profile.get("current_sensitive"):
+                learned = self.shared_learning.learn(
+                    original_text, core_response, language, confidence_for_cache,
+                    teacher_model=teacher_model, evidence=evidence_packet if 'evidence_packet' in locals() else "",
+                    sources=self.last_web_sources if details.get("web_used") else (),
+                )
+            details["shared_lesson_saved"] = bool(learned)
+        except Exception:
+            details["shared_lesson_saved"] = False
 
         self.session_history.append(("user", original_text))
         self.session_history.append(("assistant", response))
@@ -5783,24 +6327,24 @@ class PocketAssistant:
         query: str = "",
         language: str = "en",
         extra_context: str = "",
+        model_name: Optional[str] = None,
+        task_profile: Optional[dict] = None,
     ) -> str:
         """Build a compact, retrieval-first evidence packet for tiny models."""
         memories = self.store.list_memories(12)
         pieces: List[str] = []
         try:
-            runtime = self.local_llm.runtime_settings()
+            selected_model = self.local_llm._normalize_model_name(model_name) if model_name else self.local_llm.active_model
+            runtime = self.local_llm.runtime_settings(selected_model)
             context_tokens = int(runtime.get("context", 512) or 512)
-            output_tokens = int(runtime.get("max_tokens", 128) or 128)
+            output_tokens = model_output_token_budget(selected_model, runtime, task_profile)
+            char_budget = model_evidence_char_budget(selected_model, runtime, task_profile)
         except Exception:
-            context_tokens, output_tokens = 512, 128
-        # Reserve room for ChatML, system rules, the question, and output.
-        query_tokens = max(8, len(query) // 4)
-        evidence_tokens = max(55, context_tokens - output_tokens - query_tokens - 125)
-        char_budget = max(280, min(7000, int(evidence_tokens * 3.35)))
+            selected_model, context_tokens, output_tokens, char_budget = "quality", 512, 128, 900
         extra_context = str(extra_context).strip()
         if extra_context:
-            primary_budget = max(240, int(char_budget * 0.80))
-            pieces.append(extra_context[:primary_budget])
+            primary_budget = max(240, int(char_budget * 0.82))
+            pieces.append(compress_model_evidence(query, extra_context, primary_budget, selected_model))
         normalized_query = normalize_text(query)
         lexical_cues = {
             "define", "definition", "meaning", "means", "mean", "synonym", "antonym", "opposite",
@@ -5893,7 +6437,7 @@ class PocketAssistant:
         }
         selected = aliases.get(mode.casefold().strip(), mode.casefold().strip())
         if selected not in HYBRID_MODES:
-            raise ValueError("Hybrid mode must be auto, off, speed, smart, quality, adaptive, expert, consensus, or cascade.")
+            raise ValueError("Hybrid mode must be auto, off, speed, smart, quality, adaptive, expert, consensus, cascade, or fusion.")
         self.hybrid_mode = selected
         self.store.set_setting("hybrid_mode", selected)
         return selected
@@ -5921,10 +6465,10 @@ class PocketAssistant:
         return max(0.0, min(1.0, score))
 
     def resolve_hybrid_plan(self, text: str, specialist: Optional[dict] = None) -> dict:
+        """Choose the strongest sustainable model or sequential fusion plan."""
         self.local_llm.refresh()
         available_models = set(self.local_llm.model_paths)
         complexity = self.query_complexity(text, specialist)
-        mode = self.hybrid_mode
         try:
             scan = scan_phone_hardware(self.data_dir, save=False, run_benchmark=False)
             saved_scan = load_device_profile(self.data_dir)
@@ -5943,65 +6487,55 @@ class PocketAssistant:
                 "thermal": _thermal_snapshot(), "battery": _battery_snapshot(),
                 "storage": {"runtime": _storage_snapshot(self.data_dir)},
             }
+
+        if not available_models or self.local_llm.binary_path is None or self.hybrid_mode == "off":
+            return {
+                "mode": "off", "steps": [], "roles": [], "complexity": complexity,
+                "reason": "GGUF runtime unavailable or hybrid mode disabled", "scan": scan,
+            }
+
         total = int(scan.get("ram", {}).get("total", 0) or 0)
         available = int(scan.get("ram", {}).get("available", 0) or 0)
         cpu_score = int(scan.get("processor", {}).get("score", 30) or 30)
-        temperature = float(scan.get("thermal", {}).get("maximum_celsius", 0.0) or 0.0)
+        thermal_info = self.local_llm.thermal_governor.observe(scan.get("thermal", {}))
         pressure = _resource_pressure(scan)
+        language = detect_language(text)
+        if language not in {"en", "el"}:
+            language = "en"
+        task_profile = analyze_smart_query(text, language)
+        task_profile["complexity"] = max(float(task_profile.get("complexity", 0.0) or 0.0), complexity)
 
-        if not available_models or self.local_llm.binary_path is None or mode == "off":
-            return {"mode": "off", "steps": [], "complexity": complexity, "reason": "GGUF runtime unavailable or hybrid mode disabled", "scan": scan}
+        model_sizes: Dict[str, int] = {}
+        for key in available_models:
+            path = self.local_llm.model_paths.get(key)
+            try:
+                model_sizes[key] = int(path.stat().st_size) if path and path.is_file() else int(EXTERNAL_LLM_MODELS[key].get("estimated_size_bytes", 0) or 0)
+            except OSError:
+                model_sizes[key] = int(EXTERNAL_LLM_MODELS[key].get("estimated_size_bytes", 0) or 0)
 
-        strongest = next((name for name in ("ultra", "smart", "quality", "fast") if name in available_models), None)
-        compact = next((name for name in ("smart", "quality", "fast") if name in available_models and name != strongest), None)
-        fastest = next((name for name in ("fast", "quality", "smart", "ultra") if name in available_models), strongest)
-
-        resolved = mode
-        if mode == "auto":
-            if pressure["score"] >= 5 or temperature >= 52 or available < 300 * 1024 ** 2:
-                resolved = "speed"
-            elif "ultra" in available_models and total >= 5_200 * 1024 ** 2 and available >= 1_650 * 1024 ** 2 and cpu_score >= 48 and temperature < 46:
-                resolved = "quality"
-            elif "smart" in available_models and total >= 2_700 * 1024 ** 2 and available >= 760 * 1024 ** 2 and cpu_score >= 22 and temperature < 48:
-                resolved = "quality"
-            elif specialist is not None and ({"smart", "quality"} & available_models) and available >= 620 * 1024 ** 2 and temperature < 48:
-                resolved = "expert"
-            elif "quality" in available_models and available >= 520 * 1024 ** 2:
-                resolved = "smart"
-            else:
-                resolved = "speed"
-
-        if resolved in {"cascade", "adaptive", "consensus"}:
-            minimum_available = {"adaptive": 1200, "cascade": 1300, "consensus": 1750}[resolved] * 1024 ** 2
-            maximum_temperature = {"adaptive": 45, "cascade": 44, "consensus": 42}[resolved]
-            if not compact or not strongest or compact == strongest or available < minimum_available or temperature >= maximum_temperature:
-                resolved = "quality" if strongest else "speed"
-
-        if resolved == "speed":
-            steps = [fastest] if fastest else []
-        elif resolved == "smart":
-            model = "smart" if "smart" in available_models and available >= 700 * 1024 ** 2 else strongest
-            steps = [model] if model else []
-        elif resolved in {"quality", "expert"}:
-            steps = [strongest] if strongest else []
-        elif resolved in {"cascade", "adaptive", "consensus"}:
-            steps = [compact, strongest] if compact and strongest and compact != strongest else ([strongest] if strongest else [])
+        if build_adaptive_hybrid_plan is not None:
+            plan = build_adaptive_hybrid_plan(
+                requested_mode=self.hybrid_mode, available_models=available_models,
+                total_ram=total, available_ram=available, cpu_score=cpu_score,
+                thermal_level=str(thermal_info.get("level", "normal")),
+                complexity=complexity, task_profile=task_profile,
+                specialist_present=specialist is not None, model_sizes=model_sizes,
+                pressure_score=int(pressure.get("score", 0) or 0),
+            )
         else:
-            steps = []
+            strongest = next((name for name in ("max", "pro", "ultra", "smart", "quality", "fast") if name in available_models), None)
+            plan = {"mode": "smart", "steps": [strongest] if strongest else [], "roles": ["answer"] if strongest else [], "reason": "legacy strongest-model fallback"}
 
-        return {
-            "mode": resolved,
-            "requested_mode": mode,
-            "steps": steps,
+        plan.update({
             "complexity": complexity,
-            "available_ram": available,
-            "total_ram": total,
-            "cpu_score": cpu_score,
-            "temperature_celsius": temperature,
-            "pressure": pressure,
-            "reason": f"complexity={complexity:.2f}, CPU={cpu_score}, free RAM={human_size(available)}, temperature={temperature:.1f}°C",
+            "temperature_celsius": float(thermal_info.get("display_celsius", 0.0) or 0.0),
+            "thermal_level": str(thermal_info.get("level", "unknown")),
+            "thermal_reason": str(thermal_info.get("reason", "")),
+            "resource_pressure": pressure,
+            "task": str(task_profile.get("task", "general_question")),
             "scan": scan,
-        }
+        })
+        return plan
 
     @staticmethod
     def response_quality_score(response: str, language: str, question: str) -> dict:
@@ -6048,11 +6582,10 @@ class PocketAssistant:
         extra_context: str = "",
         task_profile: Optional[dict] = None,
     ) -> Tuple[str, dict]:
-        """Run the strongest safe plan inside one global answer deadline."""
+        """Run the strongest sustainable single-model or sequential-fusion plan."""
         started = time.monotonic()
         deadline = started + MAX_ANSWER_SECONDS
         task_profile = task_profile or analyze_smart_query(text, language)
-        context = self.llm_context(candidates, text, language, extra_context=extra_context)
         specialist_instruction = self.specialists.instruction(specialist, language)
         if specialist and str(specialist.get("id", "")).startswith("school_"):
             specialist_instruction = (self.school_tutor.instruction(language) + "\n" + specialist_instruction).strip()
@@ -6062,8 +6595,10 @@ class PocketAssistant:
         except Exception:
             conversation_text = ""
         specialist_instruction = (persona_text + "\n" + conversation_text + "\n" + specialist_instruction).strip()
+
         plan = self.resolve_hybrid_plan(text, specialist)
-        steps = list(plan.get("steps", []))
+        steps = [str(item) for item in plan.get("steps", []) if item]
+        roles = [str(item) for item in plan.get("roles", [])]
         mode = str(plan.get("mode", "smart"))
         if not steps:
             raise RuntimeError(str(plan.get("reason", "No compatible local GGUF model is available.")))
@@ -6075,86 +6610,192 @@ class PocketAssistant:
             )
 
         first_model = steps[0]
+        final_context_model = steps[-1]
+        context = self.llm_context(
+            candidates, text, language, extra_context=extra_context,
+            model_name=final_context_model, task_profile=task_profile,
+        )
         first_runtime = self.local_llm.runtime_settings(first_model)
         profile = str(first_runtime.get("resolved", "entry"))
-        # Very slow profiles benefit more from one complete pass than two short,
-        # truncated passes. Multi-pass verification remains available on stronger phones.
-        if len(steps) > 1 and profile not in {"balanced", "performance"}:
+        tiny_sequential = set(steps).issubset({"fast", "quality"}) and profile == "entry"
+        if len(steps) > 1 and profile not in {"balanced", "performance", "flagship"} and not tiny_sequential:
             steps = [first_model]
-            mode = "smart" if mode in {"adaptive", "cascade", "consensus"} else mode
+            roles = [roles[0] if roles else "answer"]
+            mode = "smart"
 
+        before_first = _thermal_snapshot()
         remaining = max(5.0, deadline - time.monotonic() - 2.0)
         first_budget = remaining
         if len(steps) > 1:
-            first_budget = min(62.0, max(28.0, remaining - 25.0))
+            if mode == "fusion":
+                first_budget = min(30.0, max(16.0, remaining * 0.25))
+            elif mode == "consensus":
+                first_budget = min(48.0, max(26.0, remaining * 0.44))
+            else:
+                first_budget = min(44.0, max(24.0, remaining * 0.40))
+
+        first_role = roles[0] if roles else "draft"
+        first_instruction = specialist_instruction
+        if mode == "fusion":
+            first_instruction += self.t(
+                "\nYou are the analyst in a sequential team. Produce a compact internal brief with: user intent, constraints, relevant evidence, calculations or command checks, likely mistakes, and a final-answer plan. Separate known facts from assumptions. Do not write conversational padding.",
+                "\nΕίσαι ο αναλυτής μιας διαδοχικής ομάδας. Δώσε ένα σύντομο εσωτερικό σημείωμα με: πρόθεση χρήστη, περιορισμούς, σχετικά στοιχεία, υπολογισμούς ή ελέγχους εντολών, πιθανά λάθη και σχέδιο τελικής απάντησης. Ξεχώρισε τα γνωστά γεγονότα από τις παραδοχές. Χωρίς περιττό κείμενο.",
+                language,
+            )
+
+        requested_first_tokens = model_output_token_budget(first_model, first_runtime, task_profile, first_role)
+        if mode == "fusion":
+            requested_first_tokens = min(requested_first_tokens, 176 if first_model in {"fast", "quality"} else 256)
+
         draft = self.local_llm.generate(
             text, language, context=context,
-            max_tokens=max(int(first_runtime.get("max_tokens", 192) or 192), 300 if str(task_profile.get("requested_depth")) == "detailed" else (240 if task_profile.get("school_query") else 192)),
-            specialist_instruction=specialist_instruction,
+            max_tokens=requested_first_tokens,
+            specialist_instruction=first_instruction,
             model_name=first_model,
             time_budget_seconds=first_budget,
             task_profile=task_profile,
+            history=list(self.session_history)[-8:],
         )
         draft_quality = self.response_quality_score(draft, language, text)
         final = draft
         final_model = first_model
-        passes = [{"model": first_model, "quality": draft_quality, "role": "draft", "budget_seconds": round(first_budget, 1)}]
+        passes = [{"model": first_model, "quality": draft_quality, "role": first_role, "budget_seconds": round(first_budget, 1)}]
         degraded = False
         second_pass_skipped = False
         consensus_details: dict = {}
+        cooldown_used = 0.0
+        verification_pass_used = False
 
         if len(steps) > 1:
             adaptive_threshold = float(self.hybrid_components.get("adaptive", {}).get("draft_accept_score", 0.80) or 0.80)
             if mode == "adaptive" and draft_quality["score"] >= adaptive_threshold and float(plan.get("complexity", 0.0)) < 0.72:
                 second_pass_skipped = True
+
+            after_first = _thermal_snapshot()
+            after_metrics = self.local_llm.thermal_governor.observe(after_first)
             available_after = available_memory_bytes()
-            temperature_after = float(_thermal_snapshot().get("maximum_celsius", 0.0) or 0.0)
-            minimum_ram = 760 * 1024 ** 2 if mode == "adaptive" else 900 * 1024 ** 2
-            if mode == "consensus":
-                minimum_ram = 1_100 * 1024 ** 2
+            minimum_ram = {
+                "adaptive": 760, "cascade": 900, "consensus": 1100, "fusion": 1200
+            }.get(mode, 900) * 1024 ** 2
             remaining = deadline - time.monotonic() - 2.0
-            if remaining < 10.0:
+            if remaining < 12.0:
                 second_pass_skipped = True
                 degraded = True
-            if not second_pass_skipped and ((available_after and available_after < minimum_ram) or temperature_after >= (44.0 if mode == "consensus" else 46.0)):
+            if available_after and available_after < minimum_ram:
+                second_pass_skipped = True
                 degraded = True
-            elif not second_pass_skipped:
+            if str(after_metrics.get("level")) in {"hot", "critical", "emergency"}:
+                second_pass_skipped = True
+                degraded = True
+
+            if not second_pass_skipped:
+                cooldown = self.local_llm.thermal_governor.cooldown_between_passes(before_first, after_first)
+                remaining = deadline - time.monotonic() - 2.0
+                if cooldown > 0 and remaining > cooldown + 12.0:
+                    cooldown_used = min(cooldown, 8.0)
+                    time.sleep(cooldown_used)
+                    latest_metrics = self.local_llm.thermal_governor.observe(_thermal_snapshot())
+                    if str(latest_metrics.get("level")) in {"critical", "emergency"}:
+                        second_pass_skipped = True
+                        degraded = True
+
+            if not second_pass_skipped:
                 if mode == "consensus":
                     second_prompt = self.t(
-                        "Answer the original question independently. Use the retrieved evidence, verify facts and logic, and return only the best final answer.",
-                        "Απάντησε ανεξάρτητα στην αρχική ερώτηση. Χρησιμοποίησε τα ανακτημένα στοιχεία, έλεγξε τα γεγονότα και τη λογική και επέστρεψε μόνο την καλύτερη τελική απάντηση.",
+                        "Answer the original question independently. Use the evidence, verify facts and logic, and return only your best final answer.",
+                        "Απάντησε ανεξάρτητα στην αρχική ερώτηση. Χρησιμοποίησε τα στοιχεία, έλεγξε γεγονότα και λογική και επέστρεψε μόνο την καλύτερη τελική απάντηση.",
                         language,
                     ) + "\n\n" + text[:1500]
+                elif mode == "fusion":
+                    second_prompt = self.t(
+                        "You are the final synthesizer in a sequential team. Answer the original question using the retrieved evidence, conversation context, and analyst brief below. Treat evidence and exact tools as higher priority than the analyst. Resolve conflicts, redo doubtful calculations, verify commands, cover every user constraint, and produce one natural, complete answer. Do not mention the team, internal plan, or draft.\n\nOriginal question:\n{question}\n\nAnalyst brief:\n{draft}",
+                        "Είσαι το τελικό μοντέλο σύνθεσης σε διαδοχική ομάδα. Απάντησε στην αρχική ερώτηση χρησιμοποιώντας τα ανακτημένα στοιχεία, το ιστορικό συνομιλίας και το σημείωμα του αναλυτή. Δώσε μεγαλύτερη προτεραιότητα στα στοιχεία και στα ακριβή εργαλεία παρά στον αναλυτή. Επίλυσε αντιφάσεις, ξανακάνε αμφίβολους υπολογισμούς, έλεγξε εντολές, κάλυψε κάθε περιορισμό του χρήστη και δώσε μία φυσική, ολοκληρωμένη απάντηση. Μην αναφέρεις την ομάδα, το εσωτερικό σχέδιο ή το πρόχειρο.\n\nΑρχική ερώτηση:\n{question}\n\nΣημείωμα αναλυτή:\n{draft}",
+                        language,
+                    ).format(question=text[:1400], draft=draft[:2200])
                 else:
                     second_prompt = self.t(
                         "Check the draft against the original question and retrieved evidence. Correct factual, logical, mathematical, command, and language errors. Remove repetition. Return only the improved answer.\n\nQuestion:\n{question}\n\nDraft:\n{draft}",
                         "Έλεγξε το πρόχειρο με βάση την αρχική ερώτηση και τα ανακτημένα στοιχεία. Διόρθωσε πραγματολογικά, λογικά, μαθηματικά, τεχνικά και γλωσσικά λάθη. Αφαίρεσε επαναλήψεις. Επίστρεψε μόνο τη βελτιωμένη απάντηση.\n\nΕρώτηση:\n{question}\n\nΠρόχειρο:\n{draft}",
                         language,
                     ).format(question=text[:1200], draft=draft[:1800])
+
                 try:
-                    second_budget = max(8.0, deadline - time.monotonic() - 2.0)
+                    second_budget = max(10.0, deadline - time.monotonic() - 2.0)
+                    second_model = steps[1]
+                    second_runtime = self.local_llm.runtime_settings(second_model)
+                    second_tokens = model_output_token_budget(
+                        second_model, second_runtime, task_profile,
+                        "answer" if mode in {"fusion", "cascade"} else "independent",
+                    )
                     refined = self.local_llm.generate(
                         second_prompt, language, context=context,
-                        max_tokens=240,
-                        specialist_instruction=specialist_instruction + " Verify carefully and do not preserve an error just because it appears in the draft.",
-                        model_name=steps[1],
+                        max_tokens=second_tokens,
+                        specialist_instruction=specialist_instruction + " Verify carefully and do not preserve an error just because it appears in the first analysis.",
+                        model_name=second_model,
                         time_budget_seconds=second_budget,
                         task_profile=task_profile,
+                        history=list(self.session_history)[-8:],
                     )
                     refined_quality = self.response_quality_score(refined, language, text)
-                    passes.append({"model": steps[1], "quality": refined_quality, "role": "independent" if mode == "consensus" else "verification", "budget_seconds": round(second_budget, 1)})
+                    second_role = roles[1] if len(roles) > 1 else ("independent" if mode == "consensus" else "verification")
+                    passes.append({"model": second_model, "quality": refined_quality, "role": second_role, "budget_seconds": round(second_budget, 1)})
                     if mode == "consensus" and choose_consensus is not None:
                         final, consensus_details = choose_consensus(text, draft, refined, draft_quality, refined_quality)
-                        final_model = steps[1] if final == refined else first_model
+                        final_model = second_model if final == refined else first_model
+                    elif mode == "fusion":
+                        # The strongest safe model is the designated synthesizer.
+                        # Keep the draft only if the final output clearly regressed.
+                        if refined_quality["score"] + 0.08 >= draft_quality["score"]:
+                            final = refined
+                            final_model = second_model
+                        else:
+                            degraded = True
                     elif refined_quality["score"] + 0.04 >= draft_quality["score"]:
                         final = refined
-                        final_model = steps[1]
+                        final_model = second_model
                     else:
                         degraded = True
                 except RuntimeError:
                     degraded = True
 
+        # On a cool, capable phone, difficult tasks can use one final short critic
+        # pass. It reuses the strongest safe model sequentially, never keeps two
+        # models in RAM, and is skipped immediately if heat, RAM, or time tighten.
         final_quality = self.response_quality_score(final, language, text)
+        verification_requested = bool(plan.get("verification_pass"))
+        remaining_for_verify = deadline - time.monotonic() - 2.0
+        if verification_requested and remaining_for_verify >= 16.0 and final_model in {"smart", "ultra", "pro", "max"}:
+            verify_metrics = self.local_llm.thermal_governor.observe(_thermal_snapshot())
+            verify_free = available_memory_bytes()
+            verify_minimum = {"smart": 900, "ultra": 1450, "pro": 3000, "max": 5900}.get(final_model, 900) * 1024 ** 2
+            task_name = str(task_profile.get("task", "general_question"))
+            needs_critic = final_quality["score"] < 0.90 or task_name in {"math", "coding", "comparison", "causal_explanation"}
+            if needs_critic and str(verify_metrics.get("level")) in {"cool", "normal"} and (not verify_free or verify_free >= verify_minimum):
+                verify_prompt = self.t(
+                    "Perform one final silent audit of the answer below. Check whether it fully answers the original question, whether every number, command, comparison, and causal claim is correct, and whether the wording is natural. Rewrite only when that improves correctness or completeness. Return only the final answer.\n\nQuestion:\n{question}\n\nCandidate answer:\n{answer}",
+                    "Κάνε έναν τελικό σιωπηλό έλεγχο της παρακάτω απάντησης. Έλεγξε αν απαντά πλήρως στην αρχική ερώτηση, αν κάθε αριθμός, εντολή, σύγκριση και αιτιώδης ισχυρισμός είναι σωστός και αν η διατύπωση είναι φυσική. Ξαναγράψε μόνο όταν αυτό βελτιώνει την ορθότητα ή την πληρότητα. Επίστρεψε μόνο την τελική απάντηση.\n\nΕρώτηση:\n{question}\n\nΥποψήφια απάντηση:\n{answer}",
+                    language,
+                ).format(question=text[:1200], answer=final[:2400])
+                try:
+                    verify_budget = min(22.0, max(12.0, remaining_for_verify))
+                    verified = self.local_llm.generate(
+                        verify_prompt, language, context=context,
+                        max_tokens=model_output_token_budget(
+                            final_model, self.local_llm.runtime_settings(final_model), task_profile, "final_critic"
+                        ),
+                        specialist_instruction=specialist_instruction + " Be a strict final verifier; preserve correct details and fix only real problems.",
+                        model_name=final_model, time_budget_seconds=verify_budget,
+                        task_profile=task_profile, history=list(self.session_history)[-6:],
+                    )
+                    verified_quality = self.response_quality_score(verified, language, text)
+                    passes.append({"model": final_model, "quality": verified_quality, "role": "final_critic", "budget_seconds": round(verify_budget, 1)})
+                    verification_pass_used = True
+                    if verified_quality["score"] + 0.03 >= final_quality["score"]:
+                        final = verified
+                        final_quality = verified_quality
+                except RuntimeError:
+                    degraded = True
+
         elapsed = time.monotonic() - started
         return final, {
             "route": "hybrid_" + mode,
@@ -6164,7 +6805,9 @@ class PocketAssistant:
             "hybrid_plan": {key: value for key, value in plan.items() if key != "scan"},
             "passes": passes,
             "second_pass_skipped": second_pass_skipped,
+            "verification_pass_used": verification_pass_used,
             "degraded_to_safe_result": degraded,
+            "cooldown_seconds": round(cooldown_used, 1),
             "consensus": consensus_details,
             "final_quality": final_quality,
             "model": str(self.local_llm.model_paths.get(final_model) or self.local_llm.model_paths.get(first_model) or "missing"),
@@ -6200,7 +6843,11 @@ class PocketAssistant:
             f"  Hybrid mode:         {self.hybrid_mode}",
             f"  AI name/persona:     {self.assistant_name} / {self.persona.get('style', 'friendly')}",
             f"  Human conversation: {'enabled' if self.persona.get('human_style', True) else 'disabled'}",
-            f"  Runtime modules:     {sum(1 for name in ('persona_engine', 'context_optimizer', 'consensus_engine', 'confidence_engine', 'resource_advisor', 'universal_knowledge', 'lexical_knowledge', 'encyclopedia_knowledge', 'conversation_engine', 'resource_matrix', 'advanced_reasoning') if name in sys.modules)}/11 loaded",
+            f"  Web mode:            {self.web_mode} (parallel current evidence)",
+            f"  Learn mode:          {self.learn_mode} (trusted web + shared model lessons)",
+            f"  Shared lessons:      {self.shared_learning.stats().get('lessons', 0):,} / {self.shared_learning.stats().get('uses', 0):,} retrieval uses",
+            f"  Learned web:         {self.store.learned_source_stats().get('sources', 0):,} sources / {self.store.learned_source_stats().get('chunks', 0):,} chunks",
+            f"  Runtime modules:     {sum(1 for name in ('persona_engine', 'context_optimizer', 'consensus_engine', 'confidence_engine', 'resource_advisor', 'universal_knowledge', 'lexical_knowledge', 'encyclopedia_knowledge', 'conversation_engine', 'resource_matrix', 'advanced_reasoning', 'web_intelligence', 'shared_learning', 'model_intelligence') if name in sys.modules)}/14 loaded",
             f"  Universal knowledge: {getattr(self.universal_knowledge, 'entry_count', len(getattr(self.universal_knowledge, 'entries', []))):,} indexed bilingual entries",
             f"  Lexical concepts:    {getattr(self.lexical_knowledge, 'entry_count', 0):,} WordNet concepts / {getattr(self.lexical_knowledge, 'greek_count', 0):,} Greek-linked",
             f"  Encyclopedia:        {getattr(self.encyclopedia_knowledge, 'article_count', 0):,} articles / {getattr(self.encyclopedia_knowledge, 'chunk_count', 0):,} passages",
@@ -6247,8 +6894,13 @@ Learning and knowledge
   /school [GRADE] [SUBJECT]     Show grade 1-12 school help or a subject overview
   /knowledge                    Show the shared bilingual knowledge foundation
   /matrix                       Show the live hardware/model tuning plan
-  /dork QUERY                   Safely search public web pages and learn them
-  /web-learn QUERY              No-key Bing RSS + Wikipedia learning; supports safe operators
+  /web off|auto|on              Disable, auto-use, or always use current web evidence
+  /learn off|safe|fast          Control trusted automatic web/shared-model learning
+  /learn-status                 Show learned web sources and shared model lessons
+  /search QUERY                 Search public web sources without saving pages
+  /sources                      Show sources used by the previous web-grounded answer
+  /web-learn QUERY              Search, read, and save public pages into local retrieval memory
+  /dork QUERY                   Alias for /search with safe public search operators
   /google-ai                    Explain why Gemini requires credentials
   /summarize PATH               Create an extractive summary of a text file
   /remember KEY = VALUE         Store a persistent local memory
@@ -6258,10 +6910,10 @@ Learning and knowledge
   /build-lm [PATH]              Build the experimental local generator
   /generate [PROMPT]            Generate with the bundled bilingual MicroLM
   /llm off|fallback|always      Control when transformer inference is allowed
-  /hybrid auto|off|speed|smart|quality|adaptive|expert|consensus|cascade
+  /hybrid auto|off|speed|smart|quality|adaptive|expert|consensus|cascade|fusion
                                 Select resource-aware hybrid orchestration
-  /llm-model fast|quality|smart|ultra
-                                Select 135M, Qwen3 0.6B, or Qwen3 1.7B
+  /llm-model fast|quality|smart|ultra|pro|max
+                                Select 135M, Qwen3 0.6B, 1.7B, 4B, or 8B
   /cpu-profile auto|ultra_eco|eco|entry|balanced|performance
                                 Override automatic hardware tuning
   /ask-llm PROMPT               Ask the selected GGUF model directly
@@ -6306,8 +6958,13 @@ HELP_TEXT_EL = """
   /school [ΤΑΞΗ] [ΜΑΘΗΜΑ]       Βοήθεια σχολείου για τάξεις 1-12
   /knowledge                    Εμφάνιση της κοινής δίγλωσσης βάσης γνώσης
   /matrix                       Εμφάνιση του ζωντανού πλάνου hardware/μοντέλου
-  /dork ΕΡΩΤΗΜΑ                  Ασφαλής έρευνα δημόσιου ιστού και μάθηση
-  /web-learn ΕΡΩΤΗΜΑ             Μάθηση χωρίς API key από Bing RSS + Wikipedia
+  /web off|auto|on              Απενεργοποίηση, αυτόματη ή μόνιμη χρήση web στοιχείων
+  /learn off|safe|fast          Έλεγχος ασφαλούς αυτόματης μάθησης από web/μοντέλα
+  /learn-status                 Στατιστικά μαθημένων πηγών και κοινών μαθημάτων
+  /search ΕΡΩΤΗΜΑ               Αναζήτηση δημόσιων πηγών χωρίς αποθήκευση σελίδων
+  /sources                      Προβολή πηγών της προηγούμενης web απάντησης
+  /web-learn ΕΡΩΤΗΜΑ             Αναζήτηση, ανάγνωση και αποθήκευση δημόσιων σελίδων
+  /dork ΕΡΩΤΗΜΑ                  Alias της /search με ασφαλείς τελεστές αναζήτησης
   /google-ai                    Επεξήγηση γιατί το Gemini απαιτεί διαπιστευτήρια
   /σύνοψη ΔΙΑΔΡΟΜΗ              Εξαγωγική σύνοψη αρχείου κειμένου
   /remember ΚΛΕΙΔΙ = ΤΙΜΗ       Αποθήκευση μόνιμης μνήμης
@@ -6317,10 +6974,10 @@ HELP_TEXT_EL = """
   /build-lm [ΔΙΑΔΡΟΜΗ]          Δημιουργία πειραματικού generator
   /generate [PROMPT]            Παραγωγή με το ενσωματωμένο MicroLM
   /llm off|fallback|always      Έλεγχος χρήσης του τοπικού transformer
-  /υβριδικό auto|off|speed|smart|quality|adaptive|expert|consensus|cascade
+  /υβριδικό auto|off|speed|smart|quality|adaptive|expert|consensus|cascade|fusion
                                 Επιλογή υβριδικής δρομολόγησης
-  /μοντέλο fast|quality|smart|ultra
-                                Επιλογή 135M, Qwen3 0.6B ή Qwen3 1.7B
+  /μοντέλο fast|quality|smart|ultra|pro|max
+                                Επιλογή 135M, Qwen3 0.6B, 1.7B, 4B ή 8B
   /επεξεργαστής auto|ultra_eco|eco|entry|balanced|performance
                                 Παράκαμψη αυτόματης ρύθμισης hardware
   /ask-llm PROMPT               Άμεση ερώτηση στο επιλεγμένο GGUF μοντέλο
@@ -6397,7 +7054,10 @@ def handle_command(assistant: PocketAssistant, command_line: str) -> Tuple[bool,
     normalized_command = normalize_text(raw_command)
     aliases = {
         "/βοηθεια": "/help", "/βοήθεια": "/help",
-        "/έρευνα": "/dork", "/ερευνα": "/dork", "/ιστομαθηση": "/web-learn",
+        "/έρευνα": "/search", "/ερευνα": "/search", "/ιστομαθηση": "/web-learn",
+        "/αναζητηση": "/search", "/αναζήτηση": "/search", "/ιστοσ": "/web", "/ιστός": "/web",
+        "/μαθηση": "/learn", "/μάθηση": "/learn", "/κατασταση-μαθησησ": "/learn-status",
+        "/πηγεσ": "/sources", "/πηγές": "/sources",
         "/σχολείο": "/school", "/σχολειο": "/school", "/τάξη": "/school", "/ταξη": "/school",
         "/γνώσεις": "/knowledge", "/γνωσεις": "/knowledge",
         "/πίνακας": "/matrix", "/πινακας": "/matrix", "/hardware": "/matrix",
@@ -6444,6 +7104,52 @@ def handle_command(assistant: PocketAssistant, command_line: str) -> Tuple[bool,
             return True, assistant.t(f"Language mode set to {display}.", f"Η λειτουργία γλώσσας ορίστηκε σε {display}.", assistant.last_language)
         except ValueError as error:
             return True, assistant.t(str(error), "Η γλώσσα πρέπει να είναι auto, en ή el.", language)
+    if command == "/web":
+        if not argument:
+            return True, assistant.t(
+                f"Web mode: {assistant.web_mode}. Use /web off, /web auto, or /web on.",
+                f"Λειτουργία web: {assistant.web_mode}. Χρησιμοποίησε /web off, /web auto ή /web on.", language
+            )
+        try:
+            selected = assistant.set_web_mode(argument)
+            return True, assistant.t(f"Web mode set to {selected}.", f"Η λειτουργία web ορίστηκε σε {selected}.", language)
+        except ValueError as error:
+            return True, assistant.t(str(error), "Η λειτουργία web πρέπει να είναι off, auto ή on.", language)
+    if command == "/learn":
+        if not argument:
+            return True, assistant.t(
+                f"Learn mode: {assistant.learn_mode}. Use /learn off, /learn safe, or /learn fast.",
+                f"Λειτουργία μάθησης: {assistant.learn_mode}. Χρησιμοποίησε /learn off, /learn safe ή /learn fast.", language
+            )
+        try:
+            selected = assistant.set_learn_mode(argument)
+            return True, assistant.t(
+                f"Learning mode set to {selected}. Safe learns trusted evidence already used; fast reads more pages in parallel.",
+                f"Η λειτουργία μάθησης ορίστηκε σε {selected}. Το safe αποθηκεύει αξιόπιστα στοιχεία που χρησιμοποιήθηκαν· το fast διαβάζει περισσότερες σελίδες παράλληλα.", language
+            )
+        except ValueError as error:
+            return True, assistant.t(str(error), "Η λειτουργία μάθησης πρέπει να είναι off, safe ή fast.", language)
+    if command == "/learn-status":
+        shared = assistant.shared_learning.stats()
+        web = assistant.store.learned_source_stats()
+        return True, assistant.t(
+            f"Learning mode: {assistant.learn_mode}\nShared verified lessons: {shared.get('lessons', 0)}\nLesson retrieval uses: {shared.get('uses', 0)}\nLearned web sources: {web.get('sources', 0)}\nLearned web chunks: {web.get('chunks', 0)}\nLatest web learning: {web.get('latest') or 'none'}",
+            f"Λειτουργία μάθησης: {assistant.learn_mode}\nΚοινά επαληθευμένα μαθήματα: {shared.get('lessons', 0)}\nΧρήσεις ανάκτησης μαθημάτων: {shared.get('uses', 0)}\nΜαθημένες πηγές web: {web.get('sources', 0)}\nΜαθημένα τμήματα web: {web.get('chunks', 0)}\nΤελευταία μάθηση web: {web.get('latest') or 'καμία'}", language
+        )
+    if command == "/sources":
+        return True, format_web_sources(assistant.last_web_sources, language, limit=10)
+    if command in {"/search", "/dork"}:
+        if not argument:
+            return True, assistant.t("Usage: /search QUERY", "Χρήση: /search ΕΡΩΤΗΜΑ", language)
+        try:
+            bundle = assistant.web_research.evidence(argument, max_pages=2)
+            assistant.last_web_sources = list(bundle.get("results", []))
+            rows = [format_web_sources(assistant.last_web_sources, language, limit=8)]
+            for item in list(bundle.get("evidence", []))[:4]:
+                rows.append(str(item.get("response", ""))[:900])
+            return True, "\n\n".join(row for row in rows if row.strip())
+        except Exception as error:
+            return True, assistant.t(f"Web search failed: {error}", f"Η αναζήτηση απέτυχε: {error}", language)
     if command == "/persona":
         return True, describe_persona(assistant.persona, language)
     if command == "/name":
@@ -6627,6 +7333,7 @@ def handle_command(assistant: PocketAssistant, command_line: str) -> Tuple[bool,
             f"CPU score: {device.get('processor_score', '?')} / cores: {device.get('cpu_count', '?')}\n"
             f"RAM: {human_size(runtime.get('available_ram', 0))} available of {human_size(runtime.get('total_ram', 0))}\n"
             f"Threads/context/batch/ubatch/tokens: {runtime.get('threads')}/{runtime.get('context')}/{runtime.get('batch')}/{runtime.get('ubatch')}/{runtime.get('max_tokens')}\n"
+            f"Adaptive burst: {bool(runtime.get('adaptive_burst'))} / learned runs: {runtime.get('adaptive_controller', {}).get('runs', 0)}\n"
             f"Thermal guards: {guards}",
             "Ζωντανό πλάνο hardware/μοντέλου:\n"
             f"Συνδυασμός: {runtime.get('combination_id', 'unknown')}\n"
@@ -6634,6 +7341,7 @@ def handle_command(assistant: PocketAssistant, command_line: str) -> Tuple[bool,
             f"CPU score: {device.get('processor_score', '?')} / πυρήνες: {device.get('cpu_count', '?')}\n"
             f"RAM: {human_size(runtime.get('available_ram', 0))} διαθέσιμη από {human_size(runtime.get('total_ram', 0))}\n"
             f"Threads/context/batch/ubatch/tokens: {runtime.get('threads')}/{runtime.get('context')}/{runtime.get('batch')}/{runtime.get('ubatch')}/{runtime.get('max_tokens')}\n"
+            f"Adaptive burst: {bool(runtime.get('adaptive_burst'))} / μετρημένες εκτελέσεις: {runtime.get('adaptive_controller', {}).get('runs', 0)}\n"
             f"Δικλείδες: {guards}", language
         )
 
@@ -6665,11 +7373,11 @@ def handle_command(assistant: PocketAssistant, command_line: str) -> Tuple[bool,
             "Το Google Gemini δεν μπορεί να κληθεί ανώνυμα: το επίσημο API του απαιτεί διαπιστευτήρια. Το Pocket AI μαθαίνει χωρίς API key από δημόσια αποτελέσματα Bing RSS, Wikipedia και αναγνώσιμες δημόσιες σελίδες μέσω /web-learn.",
             language
         )
-    if command in {"/dork", "/web-learn"}:
+    if command == "/web-learn":
         if not argument:
             return True, assistant.t(
-                "Usage: /dork public research query. Example: /dork site:python.org filetype:html sqlite tutorial",
-                "Χρήση: /dork δημόσιο ερώτημα έρευνας. Παράδειγμα: /dork site:python.org sqlite tutorial",
+                "Usage: /web-learn public research query. Example: /web-learn site:python.org sqlite tutorial",
+                "Χρήση: /web-learn δημόσιο ερώτημα έρευνας. Παράδειγμα: /web-learn site:python.org sqlite tutorial",
                 language
             )
         try:
@@ -6706,8 +7414,8 @@ def handle_command(assistant: PocketAssistant, command_line: str) -> Tuple[bool,
     if command == "/hybrid":
         if not argument:
             return True, assistant.t(
-                f"Hybrid mode: {assistant.hybrid_mode}. Use auto, off, speed, smart, quality, adaptive, expert, consensus, or cascade.",
-                f"Υβριδική λειτουργία: {assistant.hybrid_mode}. Χρησιμοποίησε auto, off, speed, smart, quality, adaptive, expert, consensus ή cascade.",
+                f"Hybrid mode: {assistant.hybrid_mode}. Use auto, off, speed, smart, quality, adaptive, expert, consensus, cascade, or fusion.",
+                f"Υβριδική λειτουργία: {assistant.hybrid_mode}. Χρησιμοποίησε auto, off, speed, smart, quality, adaptive, expert, consensus, cascade ή fusion.",
                 language,
             )
         try:
@@ -6718,12 +7426,12 @@ def handle_command(assistant: PocketAssistant, command_line: str) -> Tuple[bool,
                 language,
             )
         except ValueError as error:
-            return True, assistant.t(str(error), "Η λειτουργία πρέπει να είναι auto, off, speed, smart, quality, adaptive, expert, consensus ή cascade.", language)
+            return True, assistant.t(str(error), "Η λειτουργία πρέπει να είναι auto, off, speed, smart, quality, adaptive, expert, consensus, cascade ή fusion.", language)
     if command == "/llm-model":
         if not argument:
             return True, assistant.t(
-                f"Active model: {assistant.local_llm.active_model}. Use /llm-model fast, quality, smart, or ultra.",
-                f"Ενεργό μοντέλο: {assistant.local_llm.active_model}. Χρησιμοποίησε /llm-model fast, quality, smart ή ultra.",
+                f"Active model: {assistant.local_llm.active_model}. Use /llm-model fast, quality, smart, ultra, pro, or max.",
+                f"Ενεργό μοντέλο: {assistant.local_llm.active_model}. Χρησιμοποίησε /llm-model fast, quality, smart, ultra, pro ή max.",
                 language,
             )
         try:
@@ -7225,7 +7933,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--hybrid", dest="hybrid_mode", choices=tuple(HYBRID_MODES), default=DEFAULT_HYBRID_MODE,
-        help="Hybrid inference mode including adaptive, expert, consensus, and cascade.",
+        help="Hybrid inference mode including adaptive, expert, consensus, cascade, and MaxSafe fusion.",
     )
     parser.add_argument(
         "--confidence", type=float, default=DEFAULT_CONFIDENCE,
