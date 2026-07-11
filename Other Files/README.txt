@@ -1,67 +1,53 @@
-Pocket AI
-=========
+Pocket AI 15 — Compact Hybrid Intelligence
+===========================================
 
 Run from the repository root:
   python "Pocket AI.py"
 
 Normal startup enters chat directly. Type help or βοήθεια for the easy menu.
 
-Folders:
-- Models/ contains bundled classifiers, specialists, school packs, controllers, and split GGUF packages.
-- Models/GGUF Parts/ contains the Q2_K and Q4_1 models as verified parts; every part is below 60 MB.
-- Other Files/Modules/ contains standard-library runtime modules.
-- Other Files/Saved Data/ contains generated settings, memory, learned knowledge, scans, history, exports, and runtime files.
-- Other Files/Saved Data/GGUF Models/ is the automatic reconstruction cache used by llama.cpp.
+NORMAL MODEL LADDER
+-------------------
+- fast: Qwen3 0.6B Q8_0 (normal minimum)
+- quality: Qwen3.5 0.8B Q4_0
+- smart: Qwen2.5 1.5B Instruct Q4_K_M
+- ultra: Qwen3 1.7B Q4_K_M
+- pro/max: optional Qwen3 4B / 8B
 
-Model preparation:
-- Pocket AI reconstructs the selected GGUF automatically on first use.
-- Run `bash "Other Files/install_models.sh"` to reconstruct both models, verify them, and build llama.cpp in advance.
-- Runtime GGUF files can be deleted safely; the verified package parts remain in Models/GGUF Parts/.
+EMERGENCY FALLBACKS
+-------------------
+- emergency_fast: SmolLM2 135M Q2_K
+- emergency_quality: SmolLM2 135M Q4_1
+The bundled 135M files are retained for critical memory, offline, or unsupported
+conditions; they are no longer the normal starting tier.
 
-School support:
-- Shared grades 1-12 foundation in English and Greek.
-- Use /school, /school 5 math, or /school 9 science.
+INSTALLATION
+------------
+- `bash "Other Files/install_models.sh"` reconstructs emergency models, selects
+  the strongest conservative regular model for this phone, and builds llama.cpp.
+- `bash "Other Files/install_models.sh" --compact` installs all four compact
+  regular tiers from 0.6B through 1.7B.
+- Downloads resume and are checked against repository metadata, exact byte size,
+  SHA-256, and the GGUF header.
 
-Web learning:
-- /web-learn and /dork use safe public Bing RSS, Wikipedia, and readable pages without an API key.
-- Official Google Gemini access is not bypassed and requires credentials.
+HYBRID EXECUTION
+----------------
+Adjacent installed tiers can run sequentially. The first model is unloaded before
+the stronger model starts. Parameter counts are never added together, and only one
+GGUF process remains resident at a time.
 
-See the root README.md for complete English and Greek documentation.
+FOLDERS
+-------
+- Models/: classifiers, specialists, controllers, knowledge shards, and optional GGUFs.
+- Models/GGUF Parts/: verified parts for the two emergency 135M models.
+- Other Files/Modules/: standard-library runtime modules.
+- Other Files/Saved Data/: settings, memories, indexed knowledge, history, and runtime cache.
 
-Split GGUF edition:
-- Q2_K and Q4_1 weights are included without downloading AI weights.
-- Maximum packaged part size: 48 MiB.
-- Per-part and complete-model SHA-256 verification.
-- Atomic reconstruction prevents incomplete runtime models.
+SHARED KNOWLEDGE
+----------------
+- 12,842 English/Greek maximum-knowledge records and 78,509 aliases.
+- 771 school topics and 3,994 grade-adapted lessons for grades 1–12.
+- 117,659 WordNet concepts and 68,342 offline encyclopedia passages.
+- Retrieval learning does not mutate GGUF weights.
 
-Max knowledge edition: 12,842 English/Greek records, 78,509 aliases, SQLite FTS5 retrieval, compact model context, and safe response caching.
-
-Maximum-knowledge additions:
-- Models/Lexical Knowledge: 117,659 WordNet concepts with Greek links.
-- Models/Encyclopedia Knowledge: 45,591 offline articles / 68,342 FTS passages.
-- Modules/lexical_knowledge.py and encyclopedia_knowledge.py perform low-RAM retrieval.
-- All local inference passes share a 112-second plan; actual full wall time can vary by device and first-run setup.
-
-
-NATURAL COMPLETE SCHOOL BUILD 9.0
-- 771 searchable grade 1-12 topics
-- 3,994 grade-adapted detailed lesson records
-- English and Greek grade/depth detection
-- natural contextual follow-ups, examples, analogies, quizzes, and confusion recovery
-- school SQLite FTS5 database: Models/School Knowledge/PocketAI_School_Curriculum.sqlite3
-
-MAXSAFE 11.0
-- Modules/thermal_governor.py: live thermal/RAM governor.
-- Modules/hybrid_orchestrator.py: strongest-safe model selection and sequential fusion.
-- install_models.sh --best: builds llama.cpp and downloads the strongest practical optional model for the current phone.
-- Documentation/MAXSAFE_THERMAL_HYBRID.md: architecture and safety limits.
-
-Pocket AI 12.0 Adaptive MaxSafe: runtime_telemetry.json stores local per-model speed and heat-response measurements. It is safe to delete; Pocket AI will relearn conservative defaults.
-
-
-POCKET AI 14.0 SPEC-MAX COGNITIVE SCALING
-- Parallel cached web search and page reading.
-- `/learn safe` for trusted automatic learning; `/learn fast` for more aggressive parallel page learning.
-- `shared_learning.py` shares verified lessons across all model tiers.
-- `model_intelligence.py` gives each model tier an evidence-first instruction profile.
-- This is retrieval learning, not unsafe GGUF weight mutation.
+See README.md and Documentation/COMPACT_HYBRID_MODEL_LADDER.md for details.
