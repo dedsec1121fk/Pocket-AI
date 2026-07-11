@@ -1,31 +1,29 @@
-# Pocket AI Hardware Combination Matrix
+# Pocket AI 15.0 Hardware Combination Matrix
 
-Pocket AI measures live resources; advertised RAM alone is not sufficient. The rows below are representative safe starting points, not device guarantees.
+Pocket AI measures live resources; advertised RAM alone is not enough. These rows are conservative starting points, not device guarantees.
 
-| Total RAM | Free RAM | CPU score | Bitness | Recommended stack | Runtime | Hybrid |
-|---:|---:|---:|:---:|---|---|---|
-| 0.5-1 GB | 90-180 MB | 0-15 | 32/64 | Internal + Micro | ultra_eco | off |
-| 1-1.5 GB | 150-280 MB | 5-20 | 32/64 | Internal + Lite | ultra_eco | off |
-| 1.5-2 GB | 280-380 MB | 14-24 | 64 | Q2_K + Balanced | eco | speed |
-| 2 GB | 380-520 MB | 24-35 | 64 | Q2_K + Balanced | entry | speed |
-| 3 GB | 520-650 MB | 25-38 | 64 | Q2_K + Standard | entry | smart |
-| 3 GB | 650-850 MB | 38-50 | 64 | Q4_1 + Standard | entry | smart |
-| 4 GB | 820 MB-1.05 GB | 42-55 | 64 | Q4_1 + Max | balanced | adaptive |
-| 4 GB | 1.05-1.3 GB | 55-70 | 64 | Q4_1 + Max | balanced | adaptive |
-| 6 GB | 1.35-1.55 GB | 60-70 | 64 | Q4_1 + Max | performance | adaptive |
-| 6 GB | 1.55-2 GB | 70-82 | 64 | Q2 draft → Q4 verify | performance | cascade |
-| 8 GB+ | 2 GB+ | 82-100 | 64 | Q2/Q4 independent answers | performance | consensus |
+| Total RAM / live state | Free RAM | CPU score | Bitness | Recommended language tier | Runtime profile | Hybrid policy |
+|---|---:|---:|:---:|---|---|---|
+| 0.5–1.5 GB | 90–280 MB | 0–20 | 32/64 | internal classifiers and retrieval only | `ultra_eco` | off |
+| 1.5–3 GB or critical pressure | 280–700 MB | 14–40 | 64 | 135M emergency Q2/Q4 | `eco` / `entry` | speed |
+| Capable 3–4 GB | 800 MB+ | 24–55 | 64 | Qwen3 0.6B Q8_0 | `entry` / `balanced` | smart |
+| Strong 4 GB / typical 6 GB | 950 MB+ | 30–68 | 64 | Qwen3.5 0.8B Q4_0 | `balanced` | adaptive |
+| Capable 5–6 GB | 1.35 GB+ | 39–76 | 64 | Qwen2.5 1.5B Q4_K_M | `balanced` / `performance` | adaptive or cascade |
+| Capable 6–8 GB | 1.55 GB+ | 45–86 | 64 | Qwen3 1.7B Q4_K_M | `performance` | adjacent fusion |
+| Strong 8–12 GB | 3.0 GB+ | 66–95 | 64 | Qwen3 4B Q4_K_M | `performance` / `flagship` | guarded fusion |
+| 12 GB+ | 5.7 GB+ | 82–100 | 64 | Qwen3 8B Q4_K_M | `flagship` | guarded fusion |
 
 ## Dynamic safeguards
 
-- Rechecks available RAM before every GGUF call.
-- Reduces context, batch, tokens, and threads under memory pressure.
-- Reduces threads and output length when the phone is hot.
-- Uses one GGUF process at a time.
-- Cancels the second hybrid pass if resources become unsafe.
-- Uses the internal bilingual knowledge engine when 32-bit or critically constrained.
-- Unknown processors are benchmarked instead of rejected by name.
+- Normal model selection starts at 0.6B; 135M is an emergency fallback.
+- Available RAM and thermal state are rechecked before every GGUF call.
+- Context, batch, output tokens, and threads shrink under pressure.
+- At least one logical CPU core is left available to Android and Termux.
+- Hybrid passes use adjacent tiers sequentially; two GGUF processes are never resident together.
+- Parameter counts are not added together.
+- A valid first answer is preserved when a second pass becomes unsafe.
+- Unknown processors are benchmarked rather than rejected by name.
 
-## Pocket AI 14.0 flagship profile
+## Flagship profile
 
-Phones with approximately 9 GB or more usable total RAM, at least 3.8 GB live free RAM, and a high local CPU score can enter `flagship`. This is not a fixed promise: temperature, battery, storage, memory pressure, and remaining deadline can still downgrade the plan. Flagship permits larger model-specific contexts and up to six inference threads while keeping at least one logical core available to Android.
+Phones with approximately 9 GB or more usable total RAM, at least 3.8 GB live free RAM, and a high local CPU score can enter `flagship`. Temperature, battery, storage, memory pressure, and the remaining deadline can still force a smaller model, shorter context, fewer threads, or a single-pass answer.
