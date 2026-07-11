@@ -10,50 +10,40 @@ import re
 import unicodedata
 from typing import Mapping
 
-MODULE_VERSION = 2
+MODULE_VERSION = 3
 
 MODEL_COGNITIVE_PROFILES = {
+    "emergency_fast": {
+        "tier": "135M emergency evidence extractor", "planning_steps": 2,
+        "default_output": 144, "detailed_output": 192, "evidence_ratio": 0.78,
+    },
+    "emergency_quality": {
+        "tier": "135M emergency grounded writer", "planning_steps": 3,
+        "default_output": 192, "detailed_output": 256, "evidence_ratio": 0.80,
+    },
     "fast": {
-        "tier": "evidence extractor",
-        "planning_steps": 2,
-        "default_output": 176,
-        "detailed_output": 232,
-        "evidence_ratio": 0.72,
+        "tier": "0.6B compact general reasoner", "planning_steps": 4,
+        "default_output": 288, "detailed_output": 416, "evidence_ratio": 0.73,
     },
     "quality": {
-        "tier": "grounded compact reasoner",
-        "planning_steps": 3,
-        "default_output": 256,
-        "detailed_output": 336,
-        "evidence_ratio": 0.76,
+        "tier": "0.8B compact bridge reasoner", "planning_steps": 4,
+        "default_output": 336, "detailed_output": 480, "evidence_ratio": 0.71,
     },
     "smart": {
-        "tier": "small general reasoner",
-        "planning_steps": 4,
-        "default_output": 384,
-        "detailed_output": 544,
-        "evidence_ratio": 0.70,
+        "tier": "1.5B advanced compact reasoner", "planning_steps": 5,
+        "default_output": 448, "detailed_output": 608, "evidence_ratio": 0.67,
     },
     "ultra": {
-        "tier": "mid-size general reasoner",
-        "planning_steps": 5,
-        "default_output": 480,
-        "detailed_output": 640,
-        "evidence_ratio": 0.66,
+        "tier": "1.7B strongest compact reasoner", "planning_steps": 6,
+        "default_output": 512, "detailed_output": 704, "evidence_ratio": 0.64,
     },
     "pro": {
-        "tier": "advanced local reasoner",
-        "planning_steps": 6,
-        "default_output": 544,
-        "detailed_output": 704,
-        "evidence_ratio": 0.62,
+        "tier": "4B advanced local reasoner", "planning_steps": 6,
+        "default_output": 544, "detailed_output": 736, "evidence_ratio": 0.62,
     },
     "max": {
-        "tier": "maximum local reasoner",
-        "planning_steps": 7,
-        "default_output": 608,
-        "detailed_output": 768,
-        "evidence_ratio": 0.60,
+        "tier": "8B maximum local reasoner", "planning_steps": 7,
+        "default_output": 608, "detailed_output": 768, "evidence_ratio": 0.60,
     },
 }
 
@@ -106,45 +96,47 @@ def intelligence_instruction(model: str, language: str, task_profile: Mapping | 
     greek = language == "el"
     check = (_TASK_CHECKS_EL if greek else _TASK_CHECKS_EN).get(task, "")
 
-    if model == "fast":
+    if model == "emergency_fast":
         base = (
-            "Δούλεψε ως ακριβής εξαγωγέας στοιχείων: (1) βρες τι ακριβώς ζητείται, "
-            "(2) πάρε μόνο τα σχετικά τεκμήρια και το ασφαλές προσχέδιο, (3) δώσε σύντομη τελική απάντηση. "
-            "Μην δημιουργείς νέο γεγονός, πηγή, ημερομηνία, εντολή ή υπολογισμό που δεν υποστηρίζεται."
+            "Δούλεψε μόνο ως ακριβής εξαγωγέας τεκμηρίων: βρες το ζητούμενο, χρησιμοποίησε το ασφαλές προσχέδιο και δώσε σύντομη απάντηση χωρίς νέο μη τεκμηριωμένο γεγονός."
             if greek else
-            "Act as a precise evidence extractor: (1) identify exactly what is asked, "
-            "(2) use only relevant evidence and the safe draft, (3) give a compact final answer. "
-            "Do not create a new fact, source, date, command, or calculation that is not supported."
+            "Act only as a precise evidence extractor: identify the request, use the safe grounded draft, and give a short answer without adding unsupported facts."
+        )
+    elif model == "emergency_quality":
+        base = (
+            "Χρησιμοποίησε μικρό πλάνο πρόθεση→τεκμήρια→έλεγχος. Διόρθωσε το ασφαλές προσχέδιο μόνο όταν τα στοιχεία το αποδεικνύουν."
+            if greek else
+            "Use a small intent→evidence→verification plan. Correct the safe draft only when the evidence proves the correction."
+        )
+    elif model == "fast":
+        base = (
+            "Σχεδίασε σιωπηρά τέσσερα βήματα: πρόθεση, περιορισμοί, σχετικά στοιχεία, τελικός έλεγχος. Απάντησε άμεσα και μη συμπληρώνεις κενά με εικασίες."
+            if greek else
+            "Privately use four steps: intent, constraints, relevant evidence, final check. Answer directly and never fill missing evidence with guesses."
         )
     elif model == "quality":
         base = (
-            "Κάνε ένα μικρό εσωτερικό πλάνο τριών βημάτων: πρόθεση, τεκμήρια, έλεγχος. "
-            "Διόρθωσε το ασφαλές προσχέδιο μόνο όταν τα στοιχεία το δικαιολογούν. Απάντησε πρώτα άμεσα και μετά πρόσθεσε μόνο χρήσιμες λεπτομέρειες."
+            "Σύνδεσε τα στοιχεία σε φυσική απάντηση, έλεγξε αντιφάσεις και βασικές παραδοχές και κράτησε ξεχωριστά γεγονότα, συμπεράσματα και αβεβαιότητα."
             if greek else
-            "Use a small three-step internal plan: intent, evidence, verification. "
-            "Correct the safe draft only when the evidence supports the change. Answer directly first, then add only useful detail."
+            "Connect the evidence into a natural answer, check conflicts and key assumptions, and keep facts, inferences, and uncertainty distinct."
         )
     elif model == "smart":
         base = (
-            "Σχεδίασε σιωπηρά την απάντηση, εντόπισε όλους τους περιορισμούς, έλεγξε τις βασικές παραδοχές και σύνδεσε τα τεκμήρια σε φυσικό κείμενο. "
-            "Ξεχώρισε γεγονότα από συμπεράσματα και κάνε έναν τελικό έλεγχο πληρότητας."
+            "Αποσύνθεσε σιωπηρά το πρόβλημα, κάλυψε όλους τους περιορισμούς, σύγκρινε πιθανές λύσεις και επανέλεγξε αριθμούς, κώδικα και εντολές πριν γράψεις."
             if greek else
-            "Privately plan the answer, capture every constraint, check key assumptions, and connect the evidence into natural prose. "
-            "Separate facts from inferences and perform one final completeness check."
+            "Privately decompose the problem, cover every constraint, compare plausible solutions, and recheck numbers, code, and commands before writing."
         )
     elif model == "ultra":
         base = (
-            "Κάνε εσωτερική ανάλυση πρόθεσης, περιορισμών, εναλλακτικών και πιθανών λαθών. Επίλυσε αντιφάσεις στα στοιχεία, έλεγξε αριθμούς και κώδικα και γράψε μία συνεκτική τελική απάντηση."
+            "Κάνε πλήρη αλλά αποδοτική ανάλυση πρόθεσης, περιορισμών, εναλλακτικών, αντιπαραδειγμάτων και πιθανών λαθών. Επίλυσε αντιφάσεις και γράψε μία συνεκτική τελική απάντηση."
             if greek else
-            "Internally analyze intent, constraints, alternatives, and likely failure modes. Resolve evidence conflicts, verify numbers and code, and write one coherent final answer."
+            "Run a complete but efficient analysis of intent, constraints, alternatives, counterexamples, and likely failures. Resolve conflicts and write one coherent final answer."
         )
     else:
         base = (
-            "Εκτέλεσε πλήρη αλλά σύντομη εσωτερική διαδικασία: αποσύνθεση, έλεγχος τεκμηρίων, αντιπαραδείγματα, επανυπολογισμός, έλεγχος περιορισμών και τελική σύνθεση. "
-            "Μην αποκαλύπτεις το εσωτερικό σχέδιο. Διατήρησε την απάντηση φυσική, ακριβή και πρακτική."
+            "Εκτέλεσε πλήρη εσωτερική διαδικασία αποσύνθεσης, ελέγχου τεκμηρίων, επανυπολογισμού, ελέγχου περιορισμών και τελικής σύνθεσης χωρίς να αποκαλύπτεις το εσωτερικό σχέδιο."
             if greek else
-            "Run a complete but efficient internal process: decomposition, evidence check, counterexamples, recalculation, constraint audit, and final synthesis. "
-            "Do not expose the internal plan. Keep the answer natural, precise, and practical."
+            "Run a complete internal process of decomposition, evidence checking, recalculation, constraint auditing, and final synthesis without exposing the private plan."
         )
     if detailed:
         base += (
@@ -164,19 +156,21 @@ def sampling_settings(model: str, task_profile: Mapping | None = None, runtime: 
     exact = task in {"math", "coding", "comparison", "causal_explanation", "research"}
     creative = task in {"creative_writing", "brainstorm", "story"}
     values = {
-        "fast": {"temperature": 0.08, "top_p": 0.82, "top_k": 18, "min_p": 0.00, "presence_penalty": 0.00, "repeat_penalty": 1.14},
-        "quality": {"temperature": 0.07, "top_p": 0.84, "top_k": 20, "min_p": 0.00, "presence_penalty": 0.00, "repeat_penalty": 1.13},
-        "smart": {"temperature": 0.24, "top_p": 0.88, "top_k": 20, "min_p": 0.02, "presence_penalty": 0.15, "repeat_penalty": 1.08},
-        "ultra": {"temperature": 0.28, "top_p": 0.90, "top_k": 24, "min_p": 0.02, "presence_penalty": 0.18, "repeat_penalty": 1.07},
+        "emergency_fast": {"temperature": 0.05, "top_p": 0.80, "top_k": 16, "min_p": 0.00, "presence_penalty": 0.00, "repeat_penalty": 1.15},
+        "emergency_quality": {"temperature": 0.06, "top_p": 0.82, "top_k": 18, "min_p": 0.00, "presence_penalty": 0.00, "repeat_penalty": 1.14},
+        "fast": {"temperature": 0.20, "top_p": 0.86, "top_k": 20, "min_p": 0.01, "presence_penalty": 0.10, "repeat_penalty": 1.10},
+        "quality": {"temperature": 0.22, "top_p": 0.87, "top_k": 22, "min_p": 0.01, "presence_penalty": 0.12, "repeat_penalty": 1.09},
+        "smart": {"temperature": 0.25, "top_p": 0.89, "top_k": 24, "min_p": 0.02, "presence_penalty": 0.15, "repeat_penalty": 1.08},
+        "ultra": {"temperature": 0.28, "top_p": 0.90, "top_k": 26, "min_p": 0.02, "presence_penalty": 0.18, "repeat_penalty": 1.07},
         "pro": {"temperature": 0.30, "top_p": 0.91, "top_k": 28, "min_p": 0.02, "presence_penalty": 0.20, "repeat_penalty": 1.06},
         "max": {"temperature": 0.32, "top_p": 0.92, "top_k": 32, "min_p": 0.02, "presence_penalty": 0.20, "repeat_penalty": 1.06},
-    }.get(model, {"temperature": 0.10, "top_p": 0.86, "top_k": 20, "min_p": 0.00, "presence_penalty": 0.00, "repeat_penalty": 1.12})
+    }.get(model, {"temperature": 0.18, "top_p": 0.86, "top_k": 20, "min_p": 0.00, "presence_penalty": 0.00, "repeat_penalty": 1.12})
     values = dict(values)
     if exact:
-        values["temperature"] = min(values["temperature"], 0.18 if model in {"smart", "ultra", "pro", "max"} else 0.06)
+        values["temperature"] = min(values["temperature"], 0.18 if model not in {"emergency_fast", "emergency_quality"} else 0.06)
         values["top_p"] = min(values["top_p"], 0.86)
     elif creative:
-        values["temperature"] = max(values["temperature"], 0.52 if model in {"smart", "ultra", "pro", "max"} else 0.20)
+        values["temperature"] = max(values["temperature"], 0.52 if model in {"quality", "smart", "ultra", "pro", "max"} else 0.30)
         values["top_p"] = max(values["top_p"], 0.92)
     if runtime and str(runtime.get("thermal_state", "")).casefold() in {"hot", "critical", "emergency"}:
         values["temperature"] = min(values["temperature"], 0.18)
@@ -193,7 +187,7 @@ def output_token_budget(model: str, runtime: Mapping, task_profile: Mapping | No
     if task in {"coding", "school", "research", "how_to"}:
         desired = int(desired * 1.12)
     if role in {"analyst", "draft", "independent"}:
-        desired = min(desired, 176 if model in {"fast", "quality"} else 256)
+        desired = min(desired, 176 if model in {"emergency_fast", "emergency_quality"} else 256)
     elif role in {"final_critic", "verify"}:
         desired = min(desired, 224)
     ceiling = max(32, int(runtime.get("max_tokens", desired) or desired))
