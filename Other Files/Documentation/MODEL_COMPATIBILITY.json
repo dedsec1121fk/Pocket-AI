@@ -1,7 +1,7 @@
 {
-  "package": "Pocket AI model compatibility and knowledge matrix",
-  "package_version": "14.0-spec-max-cognitive-scaling",
-  "target": "Termux on unrooted Android phones with bilingual multi-turn conversation, grades 1-12 knowledge, web grounding/learning, evidence-first reasoning, and per-model spec-max cognitive scaling from SmolLM2 135M through optional Qwen3 8B. Live RAM/CPU/thermal/deadline controls maximise each tier safely.",
+  "package": "Pocket AI compact hybrid model and knowledge matrix",
+  "package_version": "15.0-compact-hybrid-intelligence",
+  "target": "Termux on unrooted Android phones with a regular 0.6B, 0.8B, 1.5B, and 1.7B compact ladder, adjacent sequential hybrids, emergency 135M fallbacks, bilingual conversation, grades 1-12 knowledge, web grounding, and live RAM/CPU/thermal controls.",
   "automatic_scan": {
     "checks": [
       "processor identifiers and family",
@@ -87,26 +87,30 @@
       "cross-model high-confidence lesson sharing",
       "771-topic / 3994-lesson bilingual grade 1-12 school foundation",
       "12842-entry / 78509-alias maximum-knowledge database",
-      "per-model spec-max cognitive instructions, sampling, context compression, and output budgeting",
+      "regular compact model ladder at 0.6B, 0.8B, 1.5B, and 1.7B",
+      "adjacent sequential hybrid routes with one GGUF loaded at a time",
+      "135M emergency fallbacks separated from normal model selection",
       "six live hardware profiles including flagship"
     ],
-    "runtime_controller": "PocketAI_Spec_Max_Cognitive_Scaler.json.gz plus PocketAI_Continuous_Runtime_Controller.json.gz"
+    "runtime_controller": "PocketAI_Compact_Hybrid_Ladder_Controller.json.gz plus PocketAI_Continuous_Runtime_Controller.json.gz"
   },
-  "model_count": 47,
+  "model_count": 49,
   "models": [
     {
-      "id": "fast",
-      "name": "SmolLM2-135M-Instruct Q2_K",
-      "kind": "GGUF language model",
+      "id": "emergency_fast",
+      "name": "SmolLM2-135M-Instruct Q2_K Emergency Fast",
+      "kind": "bundled emergency GGUF language model",
       "file": "Other Files/Saved Data/GGUF Models/SmolLM2-135M-Instruct.Q2_K.gguf",
       "size_bytes": 88201792,
       "sha256": "1e014d3c45f6cf502397a3b85b1d9d282605afb02079fd32665b0422c3f0106c",
       "parameters": 134520000,
-      "minimum_total_ram_bytes": 1520435200,
-      "minimum_available_ram_bytes": 314572800,
-      "minimum_cpu_score": 14,
+      "minimum_total_ram_bytes": 1310720000,
+      "minimum_available_ram_bytes": 262144000,
+      "minimum_cpu_score": 12,
       "requires_64_bit": true,
-      "processor_combinations": "Entry-level or better 64-bit ARM/x86; Cortex-A53/A55, Snapdragon 2/4+, Helio A/P/G, Exynos 7/850+, Unisoc SC9863/T+, Kirin 6+",
+      "regular_tier": false,
+      "emergency_only": true,
+      "processor_combinations": "Used only when no regular 0.6B+ model safely fits the live device envelope.",
       "packaged_as_parts": true,
       "parts_directory": "Models/GGUF Parts",
       "parts": [
@@ -124,18 +128,20 @@
       "reconstruction": "automatic on first use or by Other Files/install_models.sh"
     },
     {
-      "id": "quality",
-      "name": "SmolLM2-135M-Instruct Q4_1",
-      "kind": "GGUF language model",
+      "id": "emergency_quality",
+      "name": "SmolLM2-135M-Instruct Q4_1 Emergency Quality",
+      "kind": "bundled emergency GGUF language model",
       "file": "Other Files/Saved Data/GGUF Models/SmolLM2-135M-Instruct.Q4_1.gguf",
       "size_bytes": 98362432,
       "sha256": "b179c9523d0e6a0f98a330c7562b682750a6f8c8c15e5bc70ea373728110db53",
       "parameters": 134520000,
-      "minimum_total_ram_bytes": 2149580800,
-      "minimum_available_ram_bytes": 587202560,
-      "minimum_cpu_score": 35,
+      "minimum_total_ram_bytes": 1835008000,
+      "minimum_available_ram_bytes": 440401920,
+      "minimum_cpu_score": 18,
       "requires_64_bit": true,
-      "processor_combinations": "Efficient entry/mid-range or better; Snapdragon 6/7/8, Dimensity, Helio G8x/G9x, Exynos 9/1xxx/2xxx, Tensor, Kirin 8/9, Unisoc T7/T8/T9",
+      "regular_tier": false,
+      "emergency_only": true,
+      "processor_combinations": "Used only when no regular 0.6B+ model safely fits the live device envelope.",
       "packaged_as_parts": true,
       "parts_directory": "Models/GGUF Parts",
       "parts": [
@@ -153,89 +159,142 @@
       "reconstruction": "automatic on first use or by Other Files/install_models.sh"
     },
     {
-      "id": "smart",
-      "name": "Qwen3 0.6B Q8_0",
-      "kind": "optional GGUF reasoning language model",
+      "id": "fast",
+      "name": "Qwen3 0.6B Q8_0 Fast",
+      "kind": "optional regular GGUF reasoning language model",
       "file": "Models/Qwen3-0.6B-Q8_0.gguf",
       "size_bytes": 0,
-      "sha256": "resolved from official Hugging Face LFS metadata at installation time",
+      "size_note": "Resolved and verified from Hugging Face repository metadata at installation time",
+      "sha256": "resolved from Hugging Face metadata at installation time",
       "parameters": 600000000,
-      "minimum_total_ram_bytes": 3565158400,
-      "minimum_available_ram_bytes": 943718400,
-      "minimum_cpu_score": 26,
+      "minimum_total_ram_bytes": 3040870400,
+      "minimum_available_ram_bytes": 838860800,
+      "minimum_cpu_score": 24,
       "requires_64_bit": true,
       "bundled": false,
-      "installer": "Other Files/install_smart_models.sh smart",
+      "regular_tier": true,
+      "installer": "Other Files/install_smart_models.sh fast",
       "source": "Qwen/Qwen3-0.6B-GGUF",
-      "processor_combinations": "Recommended reasoning tier for capable 4 GB+ 64-bit phones; non-thinking and short-context operation protects the two-minute budget.",
-      "size_note": "Resolved and verified from official Hugging Face LFS metadata at installation time",
-      "non_embedding_parameters": 440000000,
+      "origin": "official Qwen GGUF",
+      "processor_combinations": "Regular minimum for capable 3-4 GB 64-bit phones with guarded context.",
       "native_context_tokens": 32768,
       "quantization": "Q8_0",
-      "verification": "official LFS SHA-256 and size + GGUF header + local checksum sidecar"
+      "verification": "repository metadata SHA-256 and exact size + GGUF header + local checksum sidecar"
+    },
+    {
+      "id": "quality",
+      "name": "Qwen3.5 0.8B Q4_0 Quality Bridge",
+      "kind": "optional regular GGUF reasoning language model",
+      "file": "Models/Qwen3.5-0.8B-Q4_0.gguf",
+      "size_bytes": 0,
+      "size_note": "Resolved and verified from Hugging Face repository metadata at installation time",
+      "sha256": "resolved from Hugging Face metadata at installation time",
+      "parameters": 800000000,
+      "minimum_total_ram_bytes": 3565158400,
+      "minimum_available_ram_bytes": 964689920,
+      "minimum_cpu_score": 30,
+      "requires_64_bit": true,
+      "bundled": false,
+      "regular_tier": true,
+      "installer": "Other Files/install_smart_models.sh quality",
+      "source": "ggml-org/Qwen3.5-0.8B-GGUF",
+      "origin": "GGUF published by ggml-org from official Qwen3.5-0.8B weights",
+      "processor_combinations": "Compact bridge for stronger 4 GB and most 6 GB phones.",
+      "native_context_tokens": 32768,
+      "quantization": "Q4_0",
+      "verification": "repository metadata SHA-256 and exact size + GGUF header + local checksum sidecar"
+    },
+    {
+      "id": "smart",
+      "name": "Qwen2.5 1.5B Instruct Q4_K_M Smart",
+      "kind": "optional regular GGUF reasoning language model",
+      "file": "Models/qwen2.5-1.5b-instruct-q4_k_m.gguf",
+      "size_bytes": 0,
+      "size_note": "Resolved and verified from Hugging Face repository metadata at installation time",
+      "sha256": "resolved from Hugging Face metadata at installation time",
+      "parameters": 1540000000,
+      "minimum_total_ram_bytes": 4771020800,
+      "minimum_available_ram_bytes": 1415577600,
+      "minimum_cpu_score": 39,
+      "requires_64_bit": true,
+      "bundled": false,
+      "regular_tier": true,
+      "installer": "Other Files/install_smart_models.sh smart",
+      "source": "Qwen/Qwen2.5-1.5B-Instruct-GGUF",
+      "origin": "official Qwen GGUF",
+      "processor_combinations": "Advanced compact tier for capable 5-6 GB phones and better.",
+      "native_context_tokens": 32768,
+      "quantization": "Q4_K_M",
+      "verification": "repository metadata SHA-256 and exact size + GGUF header + local checksum sidecar"
     },
     {
       "id": "ultra",
       "name": "Qwen3 1.7B Q4_K_M Ultra",
-      "kind": "optional GGUF reasoning language model",
+      "kind": "optional regular GGUF reasoning language model",
       "file": "Models/Qwen3-1.7B-Q4_K_M.gguf",
       "size_bytes": 0,
-      "size_note": "Resolved and verified from official Hugging Face LFS metadata at installation time",
-      "sha256": "resolved from official Hugging Face LFS metadata at installation time",
+      "size_note": "Resolved and verified from Hugging Face repository metadata at installation time",
+      "sha256": "resolved from Hugging Face metadata at installation time",
       "parameters": 1700000000,
-      "minimum_total_ram_bytes": 7340032000,
-      "minimum_available_ram_bytes": 2621440000,
-      "minimum_cpu_score": 55,
+      "minimum_total_ram_bytes": 5452595200,
+      "minimum_available_ram_bytes": 1625292800,
+      "minimum_cpu_score": 45,
       "requires_64_bit": true,
       "bundled": false,
+      "regular_tier": true,
       "installer": "Other Files/install_smart_models.sh ultra",
       "source": "Qwen/Qwen3-1.7B-GGUF",
-      "processor_combinations": "Strongest guarded phone tier for capable 8 GB-class 64-bit devices.",
+      "origin": "official Qwen GGUF",
+      "processor_combinations": "Strongest compact tier for capable 6-8 GB phones.",
       "native_context_tokens": 32768,
       "quantization": "Q4_K_M",
-      "verification": "official LFS SHA-256 and size + GGUF header + local checksum sidecar"
+      "verification": "repository metadata SHA-256 and exact size + GGUF header + local checksum sidecar"
     },
     {
       "id": "pro",
-      "name": "Qwen3 4B Q4_K_M",
-      "kind": "optional GGUF reasoning language model",
+      "name": "Qwen3 4B Q4_K_M Pro",
+      "kind": "optional regular GGUF reasoning language model",
       "file": "Models/Qwen3-4B-Q4_K_M.gguf",
       "size_bytes": 0,
-      "size_note": "Resolved and verified from official Hugging Face LFS metadata at installation time",
-      "sha256": "resolved from official Hugging Face LFS metadata at installation time",
+      "size_note": "Resolved and verified from Hugging Face repository metadata at installation time",
+      "sha256": "resolved from Hugging Face metadata at installation time",
       "parameters": 4000000000,
-      "minimum_total_ram_bytes": 7600000000,
-      "minimum_available_ram_bytes": 3000000000,
+      "minimum_total_ram_bytes": 7969177600,
+      "minimum_available_ram_bytes": 3145728000,
       "minimum_cpu_score": 66,
       "requires_64_bit": true,
       "bundled": false,
+      "regular_tier": true,
       "installer": "Other Files/install_smart_models.sh pro",
       "source": "Qwen/Qwen3-4B-GGUF",
+      "origin": "official Qwen GGUF",
       "processor_combinations": "Strong 8 GB-class phones with short guarded context.",
       "native_context_tokens": 32768,
       "quantization": "Q4_K_M",
-      "verification": "official LFS SHA-256 and size + GGUF header + local checksum sidecar"
+      "verification": "repository metadata SHA-256 and exact size + GGUF header + local checksum sidecar"
     },
     {
       "id": "max",
-      "name": "Qwen3 8B Q4_K_M",
-      "kind": "optional GGUF reasoning language model",
+      "name": "Qwen3 8B Q4_K_M Max",
+      "kind": "optional regular GGUF reasoning language model",
       "file": "Models/Qwen3-8B-Q4_K_M.gguf",
       "size_bytes": 0,
-      "size_note": "Resolved and verified from official Hugging Face LFS metadata at installation time",
-      "sha256": "resolved from official Hugging Face LFS metadata at installation time",
+      "size_note": "Resolved and verified from Hugging Face repository metadata at installation time",
+      "sha256": "resolved from Hugging Face metadata at installation time",
       "parameters": 8000000000,
-      "minimum_total_ram_bytes": 11800000000,
-      "minimum_available_ram_bytes": 5700000000,
+      "minimum_total_ram_bytes": 12373196800,
+      "minimum_available_ram_bytes": 5976883200,
       "minimum_cpu_score": 82,
       "requires_64_bit": true,
       "bundled": false,
+      "regular_tier": true,
       "installer": "Other Files/install_smart_models.sh max",
       "source": "Qwen/Qwen3-8B-GGUF",
-      "processor_combinations": "High-end 12 GB+ phones with substantial free RAM and storage.",
+      "origin": "official Qwen GGUF",
+      "processor_combinations": "High-end 12 GB+ phones only.",
       "native_context_tokens": 32768,
       "quantization": "Q4_K_M",
-      "verification": "official LFS SHA-256 and size + GGUF header + local checksum sidecar"
+      "verification": "repository metadata SHA-256 and exact size + GGUF header + local checksum sidecar"
     },
     {
       "id": "classifier_micro",
@@ -382,8 +441,8 @@
       "name": "PocketAI Hybrid Router",
       "kind": "resource-aware hybrid routing model",
       "file": "Models/PocketAI_Hybrid_Router.json.gz",
-      "size_bytes": 524,
-      "sha256": "ad582fcbb6bc1757b73c24bacd0719ccdf65f539de359841ac0bc6fe877e0ff5",
+      "size_bytes": 550,
+      "sha256": "1c4d5c4375ca7c00c4f8193b535d60ad2e498fce9a004af3cc299566561437d7",
       "requires_64_bit": false,
       "processor_combinations": "Any processor; this compact controller coordinates other bundled models and does not run a transformer by itself."
     },
@@ -422,8 +481,8 @@
       "name": "Pocket AI Adaptive Controller",
       "kind": "hybrid control model",
       "file": "Models/PocketAI_Adaptive_Controller.json.gz",
-      "size_bytes": 261,
-      "sha256": "4a4319b6c72f8d3627cdf9b5a6dec3d973690c3caae50feca609a69953b0eebf",
+      "size_bytes": 440,
+      "sha256": "31583a0b4b9d9be251944da4a78390bc0e6ec4de72d8069133e1ea6f161b62a3",
       "parameters": 0,
       "minimum_total_ram_bytes": 536870912,
       "minimum_available_ram_bytes": 83886080,
@@ -436,8 +495,8 @@
       "name": "Pocket AI Consensus Controller",
       "kind": "hybrid control model",
       "file": "Models/PocketAI_Consensus_Controller.json.gz",
-      "size_bytes": 258,
-      "sha256": "c5ead29eeb0f602820aa4a859200485ba751e49acc13f50fe19a965021235de7",
+      "size_bytes": 364,
+      "sha256": "62bf9b991ff82a2f0fc5148886ee225b4fd72e793c1c29505e0991a59d1af0da",
       "parameters": 0,
       "minimum_total_ram_bytes": 536870912,
       "minimum_available_ram_bytes": 83886080,
@@ -590,8 +649,8 @@
       "name": "PocketAI No-Key Public Web Learning Controller",
       "kind": "safe web-learning controller",
       "file": "Models/PocketAI_NoKey_Web_Learner.json.gz",
-      "size_bytes": 502,
-      "sha256": "51b912bfd88134ee9dffb3e6f8a76a5712a3a483d3ed0cf32d6686756d206c47",
+      "size_bytes": 293,
+      "sha256": "6410e73b3add5d583ae2ecda917f75267ea251c377126c96bb5634c31b0c51c1",
       "requires_64_bit": false,
       "minimum_total_ram_bytes": 0,
       "minimum_available_ram_bytes": 0,
@@ -632,8 +691,8 @@
       "name": "Pocket AI Natural Dialogue Controller",
       "kind": "bilingual conversational state controller",
       "file": "Models/PocketAI_Natural_Dialogue_Controller.json.gz",
-      "size_bytes": 483,
-      "sha256": "05cd8b3258d9f6ec36bb17c9cca1d86092f5f90aa605a0d369f6837575864a7d",
+      "size_bytes": 283,
+      "sha256": "4b8dff7959f71ca0cad913d63862cbbb1d38d1f3b08735e598ede92adcfa0fa5",
       "requires_64_bit": false,
       "minimum_total_ram_bytes": 0,
       "minimum_available_ram_bytes": 0,
@@ -762,7 +821,9 @@
         "English",
         "Greek"
       ],
-      "coverage": "Strongest-safe live model selection, sustained performance and sequential analyst/synthesizer fusion"
+      "coverage": "Strongest-safe live model selection, sustained performance and sequential analyst/synthesizer fusion",
+      "size_bytes": 1194,
+      "sha256": "61fe8821b2b6dc020a84d60f196fb82d7e4686a867a7acd682b9bff6ced7f336"
     },
     {
       "id": "adaptive_compute_controller",
@@ -772,23 +833,27 @@
       "module": "Other Files/Modules/adaptive_compute.py",
       "purpose": "learn sustainable per-model speed and heat response; tune deadline, context, batch, threads, and optional final verification",
       "simultaneous_gguf_models": false,
-      "can_override_thermal_abort": false
+      "can_override_thermal_abort": false,
+      "size_bytes": 538,
+      "sha256": "13392e67553a8c67c5f53881417f855390a73c550a22b9a4a3e0abd9c97e570d"
     },
     {
-      "id": "spec_max_cognitive_scaler",
-      "name": "PocketAI Spec-Max Cognitive Scaler",
-      "kind": "per-model reasoning and resource control model",
-      "file": "Models/PocketAI_Spec_Max_Cognitive_Scaler.json.gz",
+      "id": "compact_hybrid_ladder_controller",
+      "name": "PocketAI Compact Hybrid Ladder Controller",
+      "kind": "per-model reasoning, resource and adjacent-hybrid control model",
+      "file": "Models/PocketAI_Compact_Hybrid_Ladder_Controller.json.gz",
       "module": "Other Files/Modules/model_intelligence.py",
-      "purpose": "model-specific reasoning instructions, evidence budgets, output budgets, sampling, and task verification from 135M through 8B",
+      "purpose": "normal 0.6B start, real 0.8B/1.5B/1.7B tiers, emergency 135M fallback, model-specific budgets and non-additive sequential hybrids",
       "languages": [
         "English",
         "Greek"
       ],
-      "size_bytes": 1723,
-      "sha256": "2c042b2bf7aea9683984ebfe036a9d87ca300c185944cc77a8ab6262d49cbfa3",
+      "size_bytes": 1399,
+      "sha256": "84c37b54330f1211c837dff8547ef73812871481fe6030e5871e602d77ef9e17",
       "changes_gguf_weights": false,
-      "claims_literal_gpt35_equivalence": false
+      "claims_literal_gpt35_equivalence": false,
+      "simultaneous_gguf_models": 1,
+      "parameter_counts_are_additive": false
     }
   ],
   "runtime_profiles": {
@@ -849,7 +914,7 @@
     "lexical_knowledge": "Models/Lexical Knowledge/",
     "encyclopedia_knowledge": "Models/Encyclopedia Knowledge/",
     "school_knowledge": "Models/School Knowledge/",
-    "cognitive_scaler": "Models/PocketAI_Spec_Max_Cognitive_Scaler.json.gz"
+    "compact_hybrid_ladder_controller": "Models/PocketAI_Compact_Hybrid_Ladder_Controller.json.gz"
   },
   "persona_system": {
     "persistent_file": "Other Files/Saved Data/persona.json",
@@ -1002,7 +1067,7 @@
   },
   "continuous_runtime_matrix": {
     "documentation": "Other Files/Documentation/HARDWARE_COMBINATIONS.md",
-    "representative_tiers": 11,
+    "representative_tiers": 15,
     "live_rechecks": true,
     "one_gguf_process_at_a_time": true
   },
@@ -1013,7 +1078,9 @@
     "maximum_part_bytes": 60000000,
     "actual_part_size_ceiling_bytes": 50331648,
     "runtime_cache": "Other Files/Saved Data/GGUF Models",
-    "downloads_required": false
+    "downloads_required": true,
+    "bundled_models": "135M emergency fallbacks only",
+    "regular_model_installer": "Other Files/install_models.sh (defaults to --best)"
   },
   "maximum_knowledge": {
     "curated_bilingual_records": 12842,
@@ -1077,7 +1144,9 @@
     "persistent_learning": "SQLite retrieval chunks; no GGUF weight modification"
   },
   "optional_model_tiers": {
-    "smart": "Qwen3 0.6B Q8_0",
+    "fast": "Qwen3 0.6B Q8_0 (regular minimum)",
+    "quality": "Qwen3.5 0.8B Q4_0",
+    "smart": "Qwen2.5 1.5B Instruct Q4_K_M",
     "ultra": "Qwen3 1.7B Q4_K_M",
     "pro": "Qwen3 4B Q4_K_M",
     "max": "Qwen3 8B Q4_K_M"
@@ -1116,16 +1185,25 @@
     "can_disable_android_thermal_protection": false
   },
   "spec_max_cognitive_scaling": {
-    "controller": "Models/PocketAI_Spec_Max_Cognitive_Scaler.json.gz",
+    "renamed_in_v15": "compact_hybrid_intelligence",
+    "controller": "Models/PocketAI_Compact_Hybrid_Ladder_Controller.json.gz",
     "runtime_module": "Other Files/Modules/model_intelligence.py",
     "resource_module": "Other Files/Modules/resource_matrix.py",
     "profiles": [
+      "emergency_fast",
+      "emergency_quality",
       "fast",
       "quality",
       "smart",
       "ultra",
       "pro",
       "max"
+    ],
+    "regular_compact_profiles": [
+      "fast",
+      "quality",
+      "smart",
+      "ultra"
     ],
     "hardware_profiles": [
       "ultra_eco",
@@ -1138,12 +1216,70 @@
     "literal_gpt35_equivalence_claimed": false,
     "method": [
       "model-specific instructions",
-      "task-aware conservative sampling",
-      "model-targeted evidence compression",
-      "safe expanded context and output budgets",
-      "sequential fusion",
+      "task-aware sampling",
+      "evidence compression",
+      "safe context and output budgets",
+      "adjacent sequential fusion",
       "exact tools",
       "answer audit and repair"
+    ],
+    "status": "v14 historical foundation; superseded for model routing by v15 compact hybrid intelligence"
+  },
+  "emergency_model_tiers": {
+    "emergency_fast": "SmolLM2 135M Q2_K",
+    "emergency_quality": "SmolLM2 135M Q4_1"
+  },
+  "compact_hybrid_ladder": {
+    "regular_start_parameters": 600000000,
+    "regular_tiers": [
+      "fast:0.6B",
+      "quality:0.8B",
+      "smart:1.5B",
+      "ultra:1.7B"
+    ],
+    "sequential_routes": [
+      "emergency_quality→fast",
+      "fast→quality",
+      "quality→smart",
+      "smart→ultra"
+    ],
+    "parameter_counts_are_additive": false,
+    "simultaneous_gguf_models": 1,
+    "selection_inputs": [
+      "total RAM",
+      "live available RAM",
+      "CPU score",
+      "64-bit support",
+      "thermal state",
+      "battery",
+      "storage",
+      "task complexity"
     ]
+  },
+  "compact_hybrid_intelligence": {
+    "version": "15.0",
+    "regular_start": "Qwen3 0.6B Q8_0",
+    "regular_tiers": {
+      "fast": "0.6B",
+      "quality": "0.8B",
+      "smart": "1.5B",
+      "ultra": "1.7B",
+      "pro": "4B",
+      "max": "8B"
+    },
+    "emergency_tiers": {
+      "emergency_fast": "135M Q2_K",
+      "emergency_quality": "135M Q4_1"
+    },
+    "adjacent_sequential_routes": [
+      "emergency_quality→fast",
+      "fast→quality",
+      "quality→smart",
+      "smart→ultra",
+      "ultra→pro",
+      "pro→max"
+    ],
+    "simultaneous_gguf_models": 1,
+    "parameter_counts_are_additive": false
   }
 }
