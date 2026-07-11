@@ -1,4 +1,4 @@
-# Pocket AI 15: Web Intelligence, Follow-up Conversation, and Model Tiers
+# Pocket AI 16: Web Intelligence, Follow-up Conversation, and Model Tiers
 
 ## Conversation continuity
 
