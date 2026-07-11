@@ -1,6 +1,6 @@
 # Rapid Web Shared Learning
 
-Pocket AI 15.0 uses retrieval-based learning, not uncontrolled on-device weight training.
+Pocket AI 16.0 uses retrieval-based learning, not uncontrolled on-device weight training.
 
 ## Fast path
 
