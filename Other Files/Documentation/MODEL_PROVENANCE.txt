@@ -131,4 +131,4 @@ outputs sequentially.
 
 Adaptive MaxSafe Compute Controller: locally authored standard-library runtime logic. It contains no model weights and stores only local performance telemetry.
 
-Pocket AI 14.0 adds local retrieval-based shared lessons and trusted public-web evidence caches. It does not alter third-party GGUF weights.
+Pocket AI 15.0 adds local retrieval-based shared lessons and trusted public-web evidence caches. It does not alter third-party GGUF weights.
