@@ -16,7 +16,10 @@
           "size_bytes": 37870144,
           "sha256": "7f18ad621e6594f4189cb2eb384c37f53be6594c8dedf6ce4b3fcda94d45ef6c"
         }
-      ]
+      ],
+      "role": "emergency_fast",
+      "regular_tier": false,
+      "emergency_only": true
     },
     "SmolLM2-135M-Instruct.Q4_1.gguf": {
       "size_bytes": 98362432,
@@ -32,7 +35,13 @@
           "size_bytes": 48030784,
           "sha256": "17ef73c7f78f5a7b75af408583a7310b68d44a5df6c9f742d963fc754e30343a"
         }
-      ]
+      ],
+      "role": "emergency_quality",
+      "regular_tier": false,
+      "emergency_only": true
     }
-  }
+  },
+  "package_role": "emergency_fallback_models",
+  "regular_ladder_starts_at_parameters": 600000000,
+  "normal_start_model": "Qwen3 0.6B Q8_0"
 }
