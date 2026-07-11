@@ -19,7 +19,7 @@ Pocket AI cannot make a 135M model intrinsically equivalent to a modern cloud mo
 - `fast`: SmolLM2 135M Q2_K, minimum memory.
 - `quality`: SmolLM2 135M Q4_1, stronger bundled fallback.
 - `smart`: Qwen3 0.6B Q8_0, recommended optional model.
-- `ultra`: Qwen3 1.7B Q8_0, strongest optional model.
+- `ultra`: Qwen3 1.7B Q4_K_M, strongest optional model.
 
 Only one GGUF process is loaded at a time. Automatic routing uses live RAM, CPU score, architecture, storage, temperature, battery state, question complexity, and remaining deadline.
 
@@ -42,3 +42,7 @@ The generation plan shares a 112-second budget. This is a safety target for the 
 ## Qwen3 thinking policy
 
 Routine and low-resource requests use `/no_think`. Difficult analysis can use `/think` only on safe balanced/performance profiles and while the shared inference deadline has enough time. Hidden reasoning tags are removed before display.
+
+## Final critic gate
+
+A short third pass is available only for difficult Qwen3 tasks when quality, deadline, RAM, and thermal gates all pass. It never runs on hot or critical devices and never loads a second model simultaneously.
