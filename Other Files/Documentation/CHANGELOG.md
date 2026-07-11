@@ -1,5 +1,16 @@
 # Pocket AI Changelog
 
+## 15.0 — Compact Hybrid Intelligence
+
+- Changed the normal minimum language-model tier from 135M to **Qwen3 0.6B Q8_0**.
+- Reclassified both bundled SmolLM2 135M models as emergency-only fallbacks.
+- Added real compact tiers at **0.8B** (Qwen3.5), **1.5B** (Qwen2.5 Instruct), and **1.7B** (Qwen3).
+- Added adjacent sequential routes: 135M→0.6B, 0.6B→0.8B, 0.8B→1.5B, 1.5B→1.7B, 1.7B→4B, and 4B→8B.
+- Explicitly prevents additive hybrid claims: two sequential models do not become one model with the sum of their parameters.
+- Updated automatic selection, hardware compatibility, model-specific prompting, thermal estimates, shared learning, manifests, and installers for all eight tier keys.
+- `install_models.sh` now installs the strongest conservative regular tier by default; `--compact` installs 0.6B, 0.8B, 1.5B, and 1.7B.
+- Added resumable metadata-verified downloads and rebuilt llama.cpp support for Qwen3.5.
+
 ## 14.0 — Spec-Max Cognitive Scaling
 
 - Added per-model cognitive profiles for Fast, Quality, Smart, Ultra, Pro, and Max instead of one broad instruction for every GGUF.
