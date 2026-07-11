@@ -17,11 +17,14 @@ QUALITY_SHA="b179c9523d0e6a0f98a330c7562b682750a6f8c8c15e5bc70ea373728110db53"
 OPTIONAL_MODEL=""
 for argument in "$@"; do
   case "$argument" in
+    --best|--auto) OPTIONAL_MODEL="best" ;;
     --smart) OPTIONAL_MODEL="smart" ;;
     --ultra) OPTIONAL_MODEL="ultra" ;;
+    --pro) OPTIONAL_MODEL="pro" ;;
+    --max) OPTIONAL_MODEL="max" ;;
     --all-smart-models) OPTIONAL_MODEL="all" ;;
     --help|-h)
-      echo "Usage: bash Other\ Files/install_models.sh [--smart|--ultra|--all-smart-models]"
+      echo "Usage: bash Other\ Files/install_models.sh [--best|--auto|--smart|--ultra|--pro|--max|--all-smart-models]"
       exit 0
       ;;
     *) echo "Unknown argument: $argument" >&2; exit 2 ;;
@@ -91,6 +94,7 @@ fi
 
 pkg update -y
 pkg install -y python git cmake clang make libandroid-spawn ccache
+python -m pip install --upgrade ddgs >/dev/null 2>&1 || echo "Optional DDGS metasearch was not installed; Bing RSS and Wikipedia remain available."
 
 if [ ! -x "$LLAMA_DIR/build/bin/llama-cli" ]; then
   if [ ! -d "$LLAMA_DIR/.git" ]; then
@@ -156,9 +160,14 @@ The bundled 135M GGUF weights remain under 60 MB per package file in:
 Verified runtime GGUF files are reconstructed automatically in:
   $MODEL_CACHE_DIR
 
-Optional stronger Qwen3 reasoning models can be installed with:
+The strongest safe Qwen3 match can be selected automatically with:
+  bash "$OTHER_DIR/install_smart_models.sh" best
+
+Optional stronger Qwen3 reasoning models can also be selected manually with:
   bash "$OTHER_DIR/install_smart_models.sh" smart
   bash "$OTHER_DIR/install_smart_models.sh" ultra
+  bash "$OTHER_DIR/install_smart_models.sh" pro
+  bash "$OTHER_DIR/install_smart_models.sh" max
 
 All settings, scans, persona data, databases, generated models, history,
 backups, exports, and the llama.cpp runner are stored under:
