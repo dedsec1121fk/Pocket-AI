@@ -17,7 +17,7 @@ Everything is implemented with Python's standard library:
 - Safe no-key public-web research through optional DDGS metasearch, Bing RSS, Wikipedia, and constrained search operators
 - Optional SmolLM2 135M GGUF reasoning through llama.cpp
 - Automatic RAM, storage, temperature, battery, and processor-aware model profiles
-- Adaptive 0.6B-1.7B compact ladder with adjacent sequential hybrid inference and guarded final verification
+- Adaptive 0.6B-3.09B extended ladder with adjacent sequential hybrid inference and guarded final verification
 - Persistent custom AI name and human-style bilingual conversation profiles
 - Modular context optimization, confidence calibration, universal knowledge, WordNet lexical retrieval, offline encyclopedia retrieval, natural dialogue, and continuous resource tuning
 
@@ -284,8 +284,8 @@ except Exception:
         return generated or grounded, {"decision": "fallback"}
 
 
-APP_NAME = "PocketAI Compact Hybrid Intelligence"
-MODEL_VERSION = 15
+APP_NAME = "PocketAI Extended 3B Hybrid Intelligence"
+MODEL_VERSION = 16
 DATASET_VERSION = 7
 RANDOM_SEED = 1121
 DEFAULT_CONFIDENCE = 0.42
@@ -328,7 +328,7 @@ EXTERNAL_LLM_MODELS = {
         "filename": "Qwen3-0.6B-Q8_0.gguf", "sha256": "",
         "label": "Qwen3 0.6B Q8_0 Fast (regular minimum)", "context": 4096, "batch": 64,
         "max_tokens": 512, "family": "qwen3", "source_repo": "Qwen/Qwen3-0.6B-GGUF",
-        "estimated_size_bytes": 700000000, "parameter_count": 600_000_000, "regular_tier": True,
+        "estimated_size_bytes": 700_000_000, "parameter_count": 600_000_000, "regular_tier": True,
         "quantization": "Q8_0", "verification": "official Hugging Face LFS SHA-256 + byte size + GGUF header",
         "download_url": "https://huggingface.co/Qwen/Qwen3-0.6B-GGUF/resolve/main/Qwen3-0.6B-Q8_0.gguf?download=true",
     },
@@ -336,7 +336,7 @@ EXTERNAL_LLM_MODELS = {
         "filename": "Qwen3.5-0.8B-Q4_0.gguf", "sha256": "",
         "label": "Qwen3.5 0.8B Q4_0 Quality Bridge", "context": 4096, "batch": 48,
         "max_tokens": 576, "family": "qwen3.5", "source_repo": "ggml-org/Qwen3.5-0.8B-GGUF",
-        "estimated_size_bytes": 563000000, "parameter_count": 800_000_000, "regular_tier": True,
+        "estimated_size_bytes": 563_000_000, "parameter_count": 800_000_000, "regular_tier": True,
         "quantization": "Q4_0", "verification": "Hugging Face LFS SHA-256 + byte size + GGUF header; GGUF published by ggml-org from official Qwen weights",
         "download_url": "https://huggingface.co/ggml-org/Qwen3.5-0.8B-GGUF/resolve/main/Qwen3.5-0.8B-Q4_0.gguf?download=true",
     },
@@ -344,7 +344,7 @@ EXTERNAL_LLM_MODELS = {
         "filename": "qwen2.5-1.5b-instruct-q4_k_m.gguf", "sha256": "",
         "label": "Qwen2.5 1.5B Instruct Q4_K_M Smart", "context": 4096, "batch": 48,
         "max_tokens": 672, "family": "qwen2.5", "source_repo": "Qwen/Qwen2.5-1.5B-Instruct-GGUF",
-        "estimated_size_bytes": 1100000000, "parameter_count": 1_540_000_000, "regular_tier": True,
+        "estimated_size_bytes": 1_100_000_000, "parameter_count": 1_540_000_000, "regular_tier": True,
         "quantization": "Q4_K_M", "verification": "official Hugging Face LFS SHA-256 + byte size + GGUF header",
         "download_url": "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q4_k_m.gguf?download=true",
     },
@@ -353,23 +353,41 @@ EXTERNAL_LLM_MODELS = {
         "alternate_filenames": ["Qwen3-1.7B-Q8_0.gguf"],
         "label": "Qwen3 1.7B Q4_K_M Ultra", "context": 4096, "batch": 48,
         "max_tokens": 736, "family": "qwen3", "source_repo": "Qwen/Qwen3-1.7B-GGUF",
-        "estimated_size_bytes": 1150000000, "parameter_count": 1_700_000_000, "regular_tier": True,
+        "estimated_size_bytes": 1_150_000_000, "parameter_count": 1_700_000_000, "regular_tier": True,
         "quantization": "Q4_K_M", "verification": "official Hugging Face LFS SHA-256 + byte size + GGUF header",
         "download_url": "https://huggingface.co/Qwen/Qwen3-1.7B-GGUF/resolve/main/Qwen3-1.7B-Q4_K_M.gguf?download=true",
     },
+    "advanced": {
+        "filename": "Qwen3.5-2B-Q4_K_M.gguf", "sha256": "",
+        "alternate_filenames": ["Qwen3.5-2B-Q4_0.gguf"],
+        "label": "Qwen3.5 2B Q4_K_M Advanced", "context": 4096, "batch": 40,
+        "max_tokens": 800, "family": "qwen3.5", "source_repo": "bartowski/Qwen_Qwen3.5-2B-GGUF",
+        "estimated_size_bytes": 1_400_000_000, "parameter_count": 2_000_000_000, "regular_tier": True,
+        "quantization": "Q4_K_M", "verification": "Hugging Face LFS SHA-256 + byte size + GGUF header; community GGUF conversion from official Qwen3.5-2B weights",
+        "download_url": "https://huggingface.co/bartowski/Qwen_Qwen3.5-2B-GGUF/resolve/main/Qwen3.5-2B-Q4_K_M.gguf?download=true",
+    },
+    "prime": {
+        "filename": "qwen2.5-3b-instruct-q4_k_m.gguf", "sha256": "",
+        "alternate_filenames": ["qwen2.5-3b-instruct-q3_k_m.gguf"],
+        "label": "Qwen2.5 3.09B Instruct Prime (Q3_K_M/Q4_K_M)", "context": 4096, "batch": 32,
+        "max_tokens": 896, "family": "qwen2.5", "source_repo": "Qwen/Qwen2.5-3B-Instruct-GGUF",
+        "estimated_size_bytes": 2_100_000_000, "parameter_count": 3_090_000_000, "regular_tier": True,
+        "quantization": "adaptive Q3_K_M or Q4_K_M", "verification": "official Hugging Face LFS SHA-256 + byte size + GGUF header",
+        "download_url": "https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF/resolve/main/qwen2.5-3b-instruct-q4_k_m.gguf?download=true",
+    },
     "pro": {
         "filename": "Qwen3-4B-Q4_K_M.gguf", "sha256": "",
-        "label": "Qwen3 4B Q4_K_M Pro", "context": 4096, "batch": 32,
-        "max_tokens": 768, "family": "qwen3", "source_repo": "Qwen/Qwen3-4B-GGUF",
-        "estimated_size_bytes": 2650000000, "parameter_count": 4_000_000_000, "regular_tier": True,
+        "label": "Qwen3 4B Q4_K_M Pro", "context": 4096, "batch": 28,
+        "max_tokens": 960, "family": "qwen3", "source_repo": "Qwen/Qwen3-4B-GGUF",
+        "estimated_size_bytes": 2_650_000_000, "parameter_count": 4_000_000_000, "regular_tier": True,
         "quantization": "Q4_K_M", "verification": "official Hugging Face LFS SHA-256 + byte size + GGUF header",
         "download_url": "https://huggingface.co/Qwen/Qwen3-4B-GGUF/resolve/main/Qwen3-4B-Q4_K_M.gguf?download=true",
     },
     "max": {
         "filename": "Qwen3-8B-Q4_K_M.gguf", "sha256": "",
         "label": "Qwen3 8B Q4_K_M Max", "context": 4096, "batch": 24,
-        "max_tokens": 768, "family": "qwen3", "source_repo": "Qwen/Qwen3-8B-GGUF",
-        "estimated_size_bytes": 5250000000, "parameter_count": 8_000_000_000, "regular_tier": True,
+        "max_tokens": 1024, "family": "qwen3", "source_repo": "Qwen/Qwen3-8B-GGUF",
+        "estimated_size_bytes": 5_250_000_000, "parameter_count": 8_000_000_000, "regular_tier": True,
         "quantization": "Q4_K_M", "verification": "official Hugging Face LFS SHA-256 + byte size + GGUF header",
         "download_url": "https://huggingface.co/Qwen/Qwen3-8B-GGUF/resolve/main/Qwen3-8B-Q4_K_M.gguf?download=true",
     },
@@ -383,49 +401,49 @@ MAX_PACKAGED_MODEL_PART_BYTES = 60_000_000
 LLM_CPU_PROFILES = {
     "ultra_eco": {
         "threads": 1,
-        "context": {"emergency_fast": 384, "emergency_quality": 384, "fast": 256, "quality": 192, "smart": 128, "ultra": 128, "pro": 96, "max": 64},
+        "context": {"emergency_fast": 384, "emergency_quality": 384, "fast": 256, "quality": 192, "smart": 128, "ultra": 128, "advanced": 96, "prime": 80, "pro": 64, "max": 64},
         "batch": 8, "ubatch": 8,
-        "max_tokens": {"emergency_fast": 72, "emergency_quality": 80, "fast": 48, "quality": 40, "smart": 32, "ultra": 32, "pro": 24, "max": 24},
+        "max_tokens": {"emergency_fast": 72, "emergency_quality": 80, "fast": 48, "quality": 40, "smart": 32, "ultra": 32, "advanced": 24, "prime": 24, "pro": 24, "max": 24},
         "timeout": 106,
         "description": "Emergency-only profile for critically constrained devices.",
     },
     "eco": {
         "threads": 1,
-        "context": {"emergency_fast": 512, "emergency_quality": 512, "fast": 384, "quality": 320, "smart": 192, "ultra": 160, "pro": 128, "max": 96},
+        "context": {"emergency_fast": 512, "emergency_quality": 512, "fast": 384, "quality": 320, "smart": 192, "ultra": 160, "advanced": 128, "prime": 112, "pro": 96, "max": 96},
         "batch": 16, "ubatch": 8,
-        "max_tokens": {"emergency_fast": 96, "emergency_quality": 112, "fast": 80, "quality": 72, "smart": 48, "ultra": 40, "pro": 32, "max": 24},
+        "max_tokens": {"emergency_fast": 96, "emergency_quality": 112, "fast": 80, "quality": 72, "smart": 48, "ultra": 40, "advanced": 32, "prime": 28, "pro": 24, "max": 24},
         "timeout": 106,
         "description": "Minimum-memory profile with automatic compact-model downgrades.",
     },
     "entry": {
         "threads": 2,
-        "context": {"emergency_fast": 768, "emergency_quality": 768, "fast": 640, "quality": 512, "smart": 320, "ultra": 256, "pro": 160, "max": 128},
+        "context": {"emergency_fast": 768, "emergency_quality": 768, "fast": 640, "quality": 512, "smart": 320, "ultra": 256, "advanced": 192, "prime": 160, "pro": 128, "max": 128},
         "batch": 24, "ubatch": 16,
-        "max_tokens": {"emergency_fast": 144, "emergency_quality": 168, "fast": 144, "quality": 128, "smart": 80, "ultra": 64, "pro": 40, "max": 32},
+        "max_tokens": {"emergency_fast": 144, "emergency_quality": 168, "fast": 144, "quality": 128, "smart": 80, "ultra": 64, "advanced": 48, "prime": 40, "pro": 32, "max": 32},
         "timeout": 104,
         "description": "Entry profile for weak 64-bit CPUs; 0.6B only when live RAM is safe.",
     },
     "balanced": {
         "threads": 3,
-        "context": {"emergency_fast": 1024, "emergency_quality": 1280, "fast": 1280, "quality": 1024, "smart": 768, "ultra": 640, "pro": 384, "max": 256},
+        "context": {"emergency_fast": 1024, "emergency_quality": 1280, "fast": 1280, "quality": 1024, "smart": 768, "ultra": 640, "advanced": 512, "prime": 384, "pro": 320, "max": 256},
         "batch": 40, "ubatch": 24,
-        "max_tokens": {"emergency_fast": 192, "emergency_quality": 240, "fast": 256, "quality": 240, "smart": 176, "ultra": 144, "pro": 88, "max": 56},
+        "max_tokens": {"emergency_fast": 192, "emergency_quality": 240, "fast": 256, "quality": 240, "smart": 176, "ultra": 144, "advanced": 112, "prime": 88, "pro": 72, "max": 56},
         "timeout": 102,
         "description": "Balanced profile for mainstream 4-6 GB phones.",
     },
     "performance": {
         "threads": 4,
-        "context": {"emergency_fast": 1280, "emergency_quality": 1536, "fast": 2048, "quality": 1792, "smart": 1536, "ultra": 1280, "pro": 896, "max": 640},
+        "context": {"emergency_fast": 1280, "emergency_quality": 1536, "fast": 2048, "quality": 1792, "smart": 1536, "ultra": 1280, "advanced": 1024, "prime": 896, "pro": 768, "max": 640},
         "batch": 64, "ubatch": 32,
-        "max_tokens": {"emergency_fast": 224, "emergency_quality": 280, "fast": 384, "quality": 416, "smart": 384, "ultra": 352, "pro": 224, "max": 144},
+        "max_tokens": {"emergency_fast": 224, "emergency_quality": 280, "fast": 384, "quality": 416, "smart": 384, "ultra": 352, "advanced": 288, "prime": 224, "pro": 192, "max": 144},
         "timeout": 100,
         "description": "Quality-first profile for capable mid-range and upper-tier phones.",
     },
     "flagship": {
         "threads": 6,
-        "context": {"emergency_fast": 1536, "emergency_quality": 1536, "fast": 3072, "quality": 3072, "smart": 2560, "ultra": 2304, "pro": 1792, "max": 1280},
+        "context": {"emergency_fast": 1536, "emergency_quality": 1536, "fast": 3072, "quality": 3072, "smart": 2560, "ultra": 2304, "advanced": 2048, "prime": 1792, "pro": 1536, "max": 1280},
         "batch": 80, "ubatch": 40,
-        "max_tokens": {"emergency_fast": 240, "emergency_quality": 280, "fast": 512, "quality": 576, "smart": 640, "ultra": 704, "pro": 448, "max": 320},
+        "max_tokens": {"emergency_fast": 240, "emergency_quality": 280, "fast": 512, "quality": 576, "smart": 640, "ultra": 704, "advanced": 640, "prime": 512, "pro": 448, "max": 320},
         "timeout": 98,
         "description": "Maximum safe profile for high-end 8-16 GB phones while preserving Android headroom.",
     },
@@ -436,25 +454,25 @@ HYBRID_MODES = {
     "off": "Internal classifier, retrieval, tools, and specialists only.",
     "speed": "Use the lowest-memory safe installed tier; regular operation begins at 0.6B and can fall back to 135M only under pressure.",
     "smart": "Route each question to the strongest safe installed model with one guarded pass.",
-    "quality": "Prefer the strongest compact 0.6B-1.7B tier that safely fits the phone.",
-    "adaptive": "Use an adjacent compact tier for a draft and the next stronger tier for verification when resources permit.",
+    "quality": "Prefer the strongest extended 0.6B-3.09B tier that safely fits the phone.",
+    "adaptive": "Use an adjacent tier for a draft and the next stronger tier for verification when resources permit.",
     "expert": "Use specialist guidance, optimized evidence, and the strongest safe Qwen model for technical questions.",
     "consensus": "Run two adjacent real model tiers sequentially and select the stronger answer; parameter counts are not added together.",
     "cascade": "Generate a compact draft, unload it, then verify and rewrite with a stronger model.",
-    "fusion": "Use adjacent 0.6B→0.8B, 0.8B→1.5B, or 1.5B→1.7B tiers sequentially without loading both at once.",
-    "auto": "Select speed, smart, expert, or safe sequential fusion from live RAM, CPU, task complexity, and thermal state.",
+    "fusion": "Use adjacent 0.6B→0.8B→1.5B→1.7B→2B→3.09B routes sequentially without loading two GGUF models at once.",
+    "auto": "Select speed, smart, expert, or safe sequential fusion from live RAM, CPU, task complexity, deadline, and thermal state.",
 }
 HYBRID_MODES_EL = {
     "off": "Μόνο εσωτερικός classifier, ανάκτηση, εργαλεία και specialists.",
     "speed": "Χρήση του μικρότερου ασφαλούς εγκατεστημένου tier· η κανονική λειτουργία αρχίζει από 0.6B και πέφτει στα 135M μόνο σε ανάγκη.",
     "smart": "Επιλογή του ισχυρότερου ασφαλούς εγκατεστημένου μοντέλου με ένα ελεγχόμενο πέρασμα.",
-    "quality": "Προτίμηση του ισχυρότερου ασφαλούς compact tier από 0.6B έως 1.7B.",
-    "adaptive": "Ξεκινά γρήγορα και εκτελεί ποιοτικό δεύτερο πέρασμα μόνο όταν χρειάζεται.",
-    "expert": "Χρήση specialist, βελτιστοποιημένων συμφραζομένων και ποιοτικού μοντέλου για τεχνικές ερωτήσεις.",
+    "quality": "Προτίμηση του ισχυρότερου ασφαλούς extended tier από 0.6B έως 3B.",
+    "adaptive": "Χρήση γειτονικού tier για προσχέδιο και του αμέσως ισχυρότερου για έλεγχο όταν το επιτρέπουν οι πόροι.",
+    "expert": "Χρήση specialist, βελτιστοποιημένων συμφραζομένων και του ισχυρότερου ασφαλούς Qwen για τεχνικές ερωτήσεις.",
     "consensus": "Διαδοχική σύγκριση δύο γειτονικών εγκατεστημένων tiers και επιλογή της ισχυρότερης απάντησης.",
-    "cascade": "Γρήγορο πρόχειρο και μετά ξεχωριστός ποιοτικός έλεγχος και επανεγγραφή.",
-    "fusion": "Διαδοχική χρήση 0.6B→0.8B, 0.8B→1.5B ή 1.5B→1.7B χωρίς ταυτόχρονη φόρτωση.",
-    "auto": "Επιλογή speed, smart, expert ή ασφαλούς fusion από RAM, CPU, δυσκολία και θερμοκρασία.",
+    "cascade": "Γρήγορο προσχέδιο, αποφόρτωση και μετά ξεχωριστός ποιοτικός έλεγχος και επανεγγραφή.",
+    "fusion": "Διαδοχική χρήση 0.6B→0.8B→1.5B→1.7B→2B→3.09B χωρίς ταυτόχρονη φόρτωση δύο GGUF.",
+    "auto": "Επιλογή speed, smart, expert ή ασφαλούς fusion από RAM, CPU, δυσκολία, χρόνο και θερμοκρασία.",
 }
 DEFAULT_HYBRID_MODE = "auto"
 
@@ -605,13 +623,25 @@ AI_MODEL_COMPATIBILITY = {
         "label": "Qwen3 1.7B Q4_K_M Ultra", "minimum_total_ram": 5200 * 1024 ** 2,
         "minimum_available_ram": 1550 * 1024 ** 2, "minimum_free_storage": 1750 * 1024 ** 2,
         "minimum_cpu_score": 45, "requires_64_bit": True,
-        "processor_combos": "Preferred 1.7B tier for capable 6-8 GB phones, including stronger Galaxy A22 configurations.",
+        "processor_combos": "Preferred 1.7B tier for capable 6-8 GB phones.",
+    },
+    "advanced": {
+        "label": "Qwen3.5 2B Q4_0 Advanced", "minimum_total_ram": 5800 * 1024 ** 2,
+        "minimum_available_ram": 1900 * 1024 ** 2, "minimum_free_storage": 2100 * 1024 ** 2,
+        "minimum_cpu_score": 50, "requires_64_bit": True,
+        "processor_combos": "Advanced 2B tier for strong 6 GB and most 8 GB phones.",
+    },
+    "prime": {
+        "label": "Qwen2.5 3.09B Prime", "minimum_total_ram": 6800 * 1024 ** 2,
+        "minimum_available_ram": 2400 * 1024 ** 2, "minimum_free_storage": 2900 * 1024 ** 2,
+        "minimum_cpu_score": 58, "requires_64_bit": True,
+        "processor_combos": "Maximum extended tier for capable 8 GB phones; Q3_K_M is preferred under memory pressure.",
     },
     "pro": {
-        "label": "Qwen3 4B Q4_K_M Pro", "minimum_total_ram": 7600 * 1024 ** 2,
-        "minimum_available_ram": 3000 * 1024 ** 2, "minimum_free_storage": 3600 * 1024 ** 2,
-        "minimum_cpu_score": 66, "requires_64_bit": True,
-        "processor_combos": "Strong 8 GB-class phones.",
+        "label": "Qwen3 4B Q4_K_M Pro", "minimum_total_ram": 8600 * 1024 ** 2,
+        "minimum_available_ram": 3400 * 1024 ** 2, "minimum_free_storage": 3900 * 1024 ** 2,
+        "minimum_cpu_score": 68, "requires_64_bit": True,
+        "processor_combos": "Strong 10-12 GB-class phones.",
     },
     "max": {
         "label": "Qwen3 8B Q4_K_M Max", "minimum_total_ram": 11800 * 1024 ** 2,
@@ -2076,7 +2106,7 @@ def _recommend_ai_configuration(scan: dict) -> dict:
     if recommend_phone_configuration is not None:
         selected = recommend_phone_configuration(scan, compatibility)
     else:
-        fallback_model = next((name for name in ("max", "pro", "ultra", "smart", "quality", "fast", "emergency_quality", "emergency_fast") if compatibility.get(name, {}).get("compatible")), "internal")
+        fallback_model = next((name for name in ("max", "pro", "prime", "advanced", "ultra", "smart", "quality", "fast", "emergency_quality", "emergency_fast") if compatibility.get(name, {}).get("compatible")), "internal")
         selected = {
             "gguf_model": fallback_model,
             "classifier_profile": "balanced",
@@ -2235,10 +2265,10 @@ def print_phone_scan_report(scan: dict) -> None:
     if shared["total"]:
         print(f"Shared Downloads storage: {human_size(shared['free'])} free of {human_size(shared['total'])}")
     print("\nModel compatibility:")
-    for model_id in ("internal", "emergency_fast", "emergency_quality", "fast", "quality", "smart", "ultra", "pro", "max"):
+    for model_id in ("internal", "emergency_fast", "emergency_quality", "fast", "quality", "smart", "ultra", "advanced", "prime", "pro", "max"):
         print(_compatibility_line(model_id, scan))
     print("\nBundled / optional model integrity:")
-    for model_id in ("emergency_fast", "emergency_quality", "fast", "quality", "smart", "ultra", "pro", "max"):
+    for model_id in ("emergency_fast", "emergency_quality", "fast", "quality", "smart", "ultra", "advanced", "prime", "pro", "max"):
         item = scan.get("models", {}).get(model_id, {})
         checksum = "verified" if item.get("verified") else "not checked" if not item.get("sha256") else "FAILED"
         print(f"  {model_id}: header={'valid' if item.get('header_valid') else 'invalid'}; checksum={checksum}; size={human_size(int(item.get('size', 0) or 0))}")
@@ -4361,8 +4391,10 @@ class LocalGGUFModel:
             "qwen0.8b": "quality", "qwen-0.8b": "quality", "0.8b": "quality", "bridge": "quality", "2": "quality",
             "qwen1.5b": "smart", "qwen-1.5b": "smart", "1.5b": "smart", "3": "smart",
             "qwen1.7b": "ultra", "qwen-1.7b": "ultra", "1.7b": "ultra", "ultra-smart": "ultra", "4": "ultra",
-            "qwen4b": "pro", "qwen-4b": "pro", "professional": "pro", "5": "pro",
-            "qwen8b": "max", "qwen-8b": "max", "best": "max", "smartest": "max", "strongest": "max", "6": "max",
+            "qwen2b": "advanced", "qwen-2b": "advanced", "2b": "advanced", "advanced": "advanced", "5": "advanced",
+            "qwen3b": "prime", "qwen-3b": "prime", "3b": "prime", "prime": "prime", "6": "prime",
+            "qwen4b": "pro", "qwen-4b": "pro", "professional": "pro", "7": "pro",
+            "qwen8b": "max", "qwen-8b": "max", "best": "max", "smartest": "max", "strongest": "max", "8": "max",
         }
         normalized = aliases.get(name.casefold().strip(), name.casefold().strip())
         return normalized if normalized in EXTERNAL_LLM_MODELS else DEFAULT_EXTERNAL_LLM_MODEL
@@ -4601,7 +4633,7 @@ class LocalGGUFModel:
         self.model_paths = self._find_models()
         self.binary_path = self._find_binary()
         if self.active_model not in self.model_paths and self.model_paths:
-            for preferred in ("max", "pro", "ultra", "smart", "quality", "fast", "emergency_quality", "emergency_fast"):
+            for preferred in ("max", "pro", "prime", "advanced", "ultra", "smart", "quality", "fast", "emergency_quality", "emergency_fast"):
                 if preferred in self.model_paths:
                     self.active_model = preferred
                     break
@@ -4775,7 +4807,7 @@ class LocalGGUFModel:
         if specialist_instruction.strip():
             system += "\nSpecialist rules: " + specialist_instruction.strip()[:1600]
         user = user_text.strip()[:input_limit]
-        if family == "qwen3":
+        if family in {"qwen3", "qwen3.5"}:
             complexity = float(profile.get("complexity", 0.5) or 0.5)
             difficult_task = task_name in {"math", "coding", "comparison", "causal_explanation", "recommendation"}
             thinking_allowed = runtime.get("resolved") in {"balanced", "performance", "flagship"} and difficult_task and complexity >= 0.62
@@ -4806,7 +4838,7 @@ class LocalGGUFModel:
             + "<|im_start|>assistant\n"
         )
 
-        token_ceiling = 384 if model_key in {"emergency_fast", "emergency_quality"} else (640 if model_key in {"fast", "quality"} else 768)
+        token_ceiling = 384 if model_key in {"emergency_fast", "emergency_quality"} else (640 if model_key in {"fast", "quality"} else 768 if model_key in {"smart", "ultra"} else 896 if model_key == "advanced" else 1024)
         token_limit = min(int(runtime["max_tokens"]), max(24, min(token_ceiling, max_tokens)))
         sampling = model_sampling_settings(model_key, profile, runtime)
         base_common = [
@@ -5846,7 +5878,7 @@ class PocketAssistant:
             context_tokens = int(runtime.get("context", 768) or 768)
         except Exception:
             active, context_tokens = "quality", 768
-        evidence_ceiling = (11000 if active in {"pro", "max"} else 9000 if active == "ultra" else 8200 if active == "smart" else 6600 if active == "quality" else 5600 if active == "fast" else 3600)
+        evidence_ceiling = (11000 if active in {"prime", "pro", "max"} else 9800 if active == "advanced" else 9400 if active == "ultra" else 8200 if active == "smart" else 6600 if active == "quality" else 5600 if active == "fast" else 3600)
         max_chars = min(evidence_ceiling, max(1100, int(context_tokens * 3.15)))
         packet, ranked = build_evidence_packet(
             query, sources, language=language, task_profile=task_profile, max_chars=max_chars
@@ -6354,7 +6386,7 @@ class PocketAssistant:
                 selected = "internal"
             if selected == "internal" or selected not in self.local_llm.model_paths:
                 selected = next((
-                    tier for tier in ("max", "pro", "ultra", "smart", "quality", "fast", "emergency_quality", "emergency_fast")
+                    tier for tier in ("max", "pro", "prime", "advanced", "ultra", "smart", "quality", "fast", "emergency_quality", "emergency_fast")
                     if tier in self.local_llm.model_paths
                 ), "")
             if not selected:
@@ -6572,7 +6604,7 @@ class PocketAssistant:
                 pressure_score=int(pressure.get("score", 0) or 0),
             )
         else:
-            strongest = next((name for name in ("max", "pro", "ultra", "smart", "quality", "fast", "emergency_quality", "emergency_fast") if name in available_models), None)
+            strongest = next((name for name in ("max", "pro", "prime", "advanced", "ultra", "smart", "quality", "fast", "emergency_quality", "emergency_fast") if name in available_models), None)
             plan = {"mode": "smart", "steps": [strongest] if strongest else [], "roles": ["answer"] if strongest else [], "reason": "legacy strongest-model fallback"}
 
         plan.update({
@@ -6813,10 +6845,10 @@ class PocketAssistant:
         final_quality = self.response_quality_score(final, language, text)
         verification_requested = bool(plan.get("verification_pass"))
         remaining_for_verify = deadline - time.monotonic() - 2.0
-        if verification_requested and remaining_for_verify >= 16.0 and final_model in {"quality", "smart", "ultra", "pro", "max"}:
+        if verification_requested and remaining_for_verify >= 16.0 and final_model in {"quality", "smart", "ultra", "advanced", "prime", "pro", "max"}:
             verify_metrics = self.local_llm.thermal_governor.observe(_thermal_snapshot())
             verify_free = available_memory_bytes()
-            verify_minimum = {"smart": 900, "ultra": 1450, "pro": 3000, "max": 5900}.get(final_model, 900) * 1024 ** 2
+            verify_minimum = {"smart": 900, "ultra": 1450, "advanced": 1800, "prime": 2400, "pro": 3200, "max": 5900}.get(final_model, 900) * 1024 ** 2
             task_name = str(task_profile.get("task", "general_question"))
             needs_critic = final_quality["score"] < 0.90 or task_name in {"math", "coding", "comparison", "causal_explanation"}
             if needs_critic and str(verify_metrics.get("level")) in {"cool", "normal"} and (not verify_free or verify_free >= verify_minimum):
@@ -6961,8 +6993,8 @@ Learning and knowledge
   /llm off|fallback|always      Control when transformer inference is allowed
   /hybrid auto|off|speed|smart|quality|adaptive|expert|consensus|cascade|fusion
                                 Select resource-aware hybrid orchestration
-  /llm-model auto|emergency_fast|emergency_quality|fast|quality|smart|ultra|pro|max
-                                Select emergency 135M or regular 0.6B, 0.8B, 1.5B, 1.7B, 4B, or 8B
+  /llm-model auto|emergency_fast|emergency_quality|fast|quality|smart|ultra|advanced|prime|pro|max
+                                Select emergency 135M or regular 0.6B, 0.8B, 1.5B, 1.7B, 2B, 3.09B, 4B, or 8B
   /cpu-profile auto|ultra_eco|eco|entry|balanced|performance|flagship
                                 Override automatic hardware tuning
   /ask-llm PROMPT               Ask the selected GGUF model directly
@@ -7025,8 +7057,8 @@ HELP_TEXT_EL = """
   /llm off|fallback|always      Έλεγχος χρήσης του τοπικού transformer
   /υβριδικό auto|off|speed|smart|quality|adaptive|expert|consensus|cascade|fusion
                                 Επιλογή υβριδικής δρομολόγησης
-  /μοντέλο auto|emergency_fast|emergency_quality|fast|quality|smart|ultra|pro|max
-                                Επιλογή emergency 135M ή κανονικού 0.6B, 0.8B, 1.5B, 1.7B, 4B ή 8B
+  /μοντέλο auto|emergency_fast|emergency_quality|fast|quality|smart|ultra|advanced|prime|pro|max
+                                Επιλογή emergency 135M ή κανονικού 0.6B, 0.8B, 1.5B, 1.7B, 2B, 3.09B, 4B ή 8B
   /επεξεργαστής auto|ultra_eco|eco|entry|balanced|performance|flagship
                                 Παράκαμψη αυτόματης ρύθμισης hardware
   /ask-llm PROMPT               Άμεση ερώτηση στο επιλεγμένο GGUF μοντέλο
@@ -7479,8 +7511,8 @@ def handle_command(assistant: PocketAssistant, command_line: str) -> Tuple[bool,
     if command == "/llm-model":
         if not argument:
             return True, assistant.t(
-                f"Active model: {assistant.local_llm.active_model}. Use /llm-model auto, fast, quality, smart, ultra, pro, max, emergency_fast, or emergency_quality.",
-                f"Ενεργό μοντέλο: {assistant.local_llm.active_model}. Χρησιμοποίησε /llm-model auto, fast, quality, smart, ultra, pro, max, emergency_fast ή emergency_quality.",
+                f"Active model: {assistant.local_llm.active_model}. Use /llm-model auto, fast, quality, smart, ultra, advanced, prime, pro, max, emergency_fast, or emergency_quality.",
+                f"Ενεργό μοντέλο: {assistant.local_llm.active_model}. Χρησιμοποίησε /llm-model auto, fast, quality, smart, ultra, advanced, prime, pro, max, emergency_fast ή emergency_quality.",
                 language,
             )
         try:
@@ -7536,7 +7568,7 @@ def handle_command(assistant: PocketAssistant, command_line: str) -> Tuple[bool,
             f"Ρυθμίσεις: νήματα={runtime['threads']}, context={runtime['context']}, batch={runtime['batch']}, ubatch={runtime['ubatch']}, όριο tokens={runtime['max_tokens']}",
             f"Συσκευή: {device_name}; οικογένεια επεξεργαστή={marker}; διαθέσιμη RAM={human_size(runtime['available_ram'])}",
         ]
-        for key in ("emergency_fast", "emergency_quality", "fast", "quality", "smart", "ultra", "pro", "max"):
+        for key in ("emergency_fast", "emergency_quality", "fast", "quality", "smart", "ultra", "advanced", "prime", "pro", "max"):
             item = status["models"][key]
             lines_en.append(f"{key}: {item['path']} | {human_size(item['size'])} | checksum={item['verified']}")
             lines_el.append(f"{key}: {item['path']} | {human_size(item['size'])} | checksum={item['verified']}")
