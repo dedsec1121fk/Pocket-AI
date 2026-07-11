@@ -1,5 +1,14 @@
 # Pocket AI Changelog
 
+## 16.0 — Extended 3B Hybrid Intelligence
+
+- Extended normal local inference from 0.6B through 3.09B.
+- Added Advanced 2B and Prime 3.09B tiers with live-memory quantization selection.
+- Added adjacent 1.7B→2B and 2B→3.09B sequential hybrid routes.
+- Kept the bundled 135M models as emergency-only fallbacks.
+- Updated installers, device routing, cognitive profiles, documentation, manifests, and runtime controllers.
+- Preserved one-GGUF-at-a-time execution and non-additive hybrid parameter reporting.
+
 ## 15.0 — Compact Hybrid Intelligence
 
 - Changed the normal minimum language-model tier from 135M to **Qwen3 0.6B Q8_0**.
