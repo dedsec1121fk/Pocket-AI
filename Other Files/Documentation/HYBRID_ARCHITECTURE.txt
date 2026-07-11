@@ -1,5 +1,5 @@
-POCKET AI HYBRID ARCHITECTURE
-=============================
+POCKET AI 15 COMPACT HYBRID ARCHITECTURE
+========================================
 
 Pocket AI combines multiple local layers:
 
@@ -7,24 +7,27 @@ Pocket AI combines multiple local layers:
    Calculator, unit conversion, dates, time, and structured local commands.
 
 2. Persistent retrieval
-   Taught question/answer pairs, indexed documents, public research snippets,
-   memories, and recent conversation.
+   Taught answers, indexed documents, public research snippets, memories, and
+   recent conversation.
 
 3. Bilingual intent classifiers
    Micro, Lite, Balanced, Standard, and Max pre-trained profiles.
 
 4. Task specialists
-   Coding/Termux, mathematics, and public-research routing/knowledge models.
+   Coding/Termux, mathematics, school subjects, and public research.
 
 5. Bilingual MicroLM
-   Lite or Quality compact n-gram generation selected from phone resources.
+   Compact fallback text generation selected from phone resources.
 
-6. GGUF models
-   SmolLM2-135M Q2_K Fast and SmolLM2-135M Q4_1 Quality.
+6. GGUF model ladder
+   Emergency: SmolLM2 135M Q2_K / Q4_1.
+   Normal compact ladder: Qwen3 0.6B, Qwen3.5 0.8B,
+   Qwen2.5 1.5B Instruct, and Qwen3 1.7B.
+   Optional high tiers: Qwen3 4B and 8B.
 
 7. Runtime modules
-   Persona, context optimizer, consensus engine, confidence calibrator, and
-   resource advisor under Other Files/Modules/.
+   Persona, context optimizer, model intelligence, hybrid orchestrator,
+   consensus, confidence calibration, resource matrix, and thermal governor.
 
 HYBRID MODES
 ------------
@@ -33,59 +36,44 @@ OFF
   Internal tools, retrieval, specialists, classifier, and MicroLM only.
 
 SPEED
-  One Fast Q2_K pass with the lowest safe runtime settings.
+  The smallest safe installed regular tier. It falls back to 135M only when no
+  0.6B+ model safely fits.
 
 SMART
-  Chooses Fast or Quality from question complexity and current resources.
+  The strongest safe installed single model.
 
 QUALITY
-  One Quality Q4_1 pass when RAM and temperature permit it.
+  Prefers the strongest safe compact tier from 0.6B through 1.7B.
 
-ADAPTIVE
-  Runs Fast first. If the draft quality is high and the question is not
-  complex, the Quality pass is skipped. Otherwise Quality verifies it.
-
-EXPERT
-  Uses the strongest task specialist, optimized local context, persona
-  guidance, and the Quality model. It falls back safely when resources drop.
+ADAPTIVE / CASCADE / FUSION
+  Uses adjacent installed tiers sequentially: emergency Q4→0.6B, 0.6→0.8B,
+  0.8→1.5B, 1.5→1.7B, 1.7→4B, or 4→8B. The analyst exits before the stronger
+  synthesizer starts. Parameter counts are not added together.
 
 CONSENSUS
-  Runs a compact tier and a stronger tier independently, sequentially. The consensus module
-  compares answer quality, question coverage, repetition, and lexical
-  agreement, then selects the stronger answer.
-
-CASCADE
-  Runs Fast for a draft, exits that process, checks live RAM/temperature, and
-  asks Quality to correct and rewrite the draft.
+  Runs adjacent models independently and sequentially, then scores evidence,
+  instruction coverage, consistency, code/calculation checks, and language.
 
 AUTO
-  Uses live total/available RAM, CPU score, architecture, storage, temperature,
-  model integrity, specialist relevance, and query complexity to choose a mode.
+  Selects the safest useful route from live RAM, CPU score, architecture,
+  storage, battery, temperature, measured speed/heat, task complexity, and the
+  remaining answer deadline.
 
-MEMORY SAFETY
--------------
+MEMORY AND THERMAL SAFETY
+-------------------------
 
-- GGUF processes run sequentially, never simultaneously.
-- Available RAM and temperature are checked before a second pass.
-- Context, batch, micro-batch, thread count, and output tokens are capped by the
+- Only one GGUF process runs at a time.
+- RAM and temperature are checked before every pass and before escalation.
+- Context, batch, micro-batch, threads, and output tokens are capped by the
   selected phone profile.
-- A valid first answer is preserved if a second pass becomes unsafe.
+- A valid first answer is preserved when a second pass becomes unsafe.
+- Android thermal protection is never disabled or bypassed.
 - The internal bilingual engine remains the universal fallback.
 
-SHARED SCHOOL FOUNDATION
-------------------------
-School questions are handled before generic transformer fallback. The shared layer provides
-bilingual grade 1-12 topic retrieval and deterministic solvers for arithmetic, fractions,
-percentages, statistics, equations, and common geometry. This makes the capability available
-regardless of the phone's selected classifier or GGUF tier.
+SHARED FOUNDATION
+-----------------
 
-NO-KEY PUBLIC LEARNING
-----------------------
-The web-learning route combines safe operator validation, Bing RSS, Wikipedia MediaWiki search,
-robots-aware public page fetching, language filtering, size limits, and local source-aware storage.
-Official Google Gemini access is not attempted without credentials.
-
-
-VERSION 20 SHARED PIPELINE
-School deterministic tools -> Universal bilingual knowledge -> Learned local retrieval -> Task specialist -> Neural classifier -> Optional GGUF/hybrid.
-The continuous runtime controller rechecks live RAM and temperature before every GGUF pass and keeps only one GGUF process active.
+Every tier shares the same school database, maximum-knowledge database,
+WordNet shards, encyclopedia shards, deterministic tools, learned retrieval,
+and verified shared lessons. The shared foundation improves usefulness without
+pretending to change a model's parameter count.
