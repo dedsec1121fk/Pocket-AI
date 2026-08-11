@@ -298,7 +298,7 @@ MAX_FILE_BYTES = 6 * 1024 * 1024
 MAX_INGEST_FILES = 300
 MAX_DOCUMENT_CHUNKS_PER_FILE = 1200
 HISTORY_LIMIT = 240
-WEB_USER_AGENT = "PocketAI-WebResearch/2.0 (+local educational research)"
+WEB_USER_AGENT = "PocketAI-WebResearch (+local educational research)"
 WEB_SEARCH_TIMEOUT = 9
 WEB_PAGE_TIMEOUT = 8
 WEB_MAX_DOWNLOAD_BYTES = 700 * 1024
@@ -5359,7 +5359,7 @@ class PocketAssistant:
         self.hybrid_mode = stored_hybrid_mode if stored_hybrid_mode in HYBRID_MODES else DEFAULT_HYBRID_MODE
         # Old cached/template answers can make an upgraded build appear unchanged.
         # Invalidate them once when the smartness pipeline changes.
-        smartness_version = "14-spec-max-cognitive-scaling"
+        smartness_version = "spec-max-cognitive-scaling"
         if self.store.get_setting("smartness_version", "") != smartness_version:
             try:
                 with self.store.connection:

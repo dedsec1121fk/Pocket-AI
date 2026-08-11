@@ -1,6 +1,6 @@
 # Pocket AI Changelog
 
-## 16.0 — Extended 3B Hybrid Intelligence
+## Extended 3B Hybrid Intelligence
 
 - Extended normal local inference from 0.6B through 3.09B.
 - Added Advanced 2B and Prime 3.09B tiers with live-memory quantization selection.
@@ -9,7 +9,7 @@
 - Updated installers, device routing, cognitive profiles, documentation, manifests, and runtime controllers.
 - Preserved one-GGUF-at-a-time execution and non-additive hybrid parameter reporting.
 
-## 15.0 — Compact Hybrid Intelligence
+## Compact Hybrid Intelligence
 
 - Changed the normal minimum language-model tier from 135M to **Qwen3 0.6B Q8_0**.
 - Reclassified both bundled SmolLM2 135M models as emergency-only fallbacks.
@@ -20,7 +20,7 @@
 - `install_models.sh` now installs the strongest conservative regular tier by default; `--compact` installs 0.6B, 0.8B, 1.5B, and 1.7B.
 - Added resumable metadata-verified downloads and rebuilt llama.cpp support for Qwen3.5.
 
-## 14.0 — Spec-Max Cognitive Scaling
+## Spec-Max Cognitive Scaling
 
 - Added per-model cognitive profiles for Fast, Quality, Smart, Ultra, Pro, and Max instead of one broad instruction for every GGUF.
 - Added task-aware sampling, evidence compression, context allocation, and output-token budgeting matched to each model's real capacity.
@@ -30,12 +30,12 @@
 - Expanded the fallback universal pack to 341 high-value entries.
 - Expanded the school foundation to 771 topics and 3,994 grade-specific lessons.
 - Replaced the incorrect Password Safety/Safety Harbor material and added grade-adapted AI, privacy, source-verification, secure-coding, and cybersecurity lessons.
-- Added `model_intelligence.py` version 2 and `PocketAI_Spec_Max_Cognitive_Scaler.json.gz`.
+- Updated `model_intelligence.py` and added `PocketAI_Spec_Max_Cognitive_Scaler.json.gz`.
 - Preserved the honest limitation that 135M weights cannot literally equal GPT-3.5; gains come from orchestration, retrieval, exact tools, verification, and optional Qwen tiers.
 
 # Pocket AI Changelog
 
-## 13.0 — Rapid Web Shared Intelligence
+## Rapid Web Shared Intelligence
 
 - Added parallel DDGS, Bing RSS, and Wikipedia search with trust/relevance ranking.
 - Added concurrent readable-page fetching, bounded search/page caching, and per-host request pacing.
@@ -48,7 +48,7 @@
 
 # Pocket AI Changelog
 
-## 12.0 — Adaptive MaxSafe Deep Fusion
+## Adaptive MaxSafe Deep Fusion
 
 - Added persistent per-model throughput and thermal-response learning in `adaptive_compute.py`.
 - Added cool-and-stable burst headroom for context, batch, output budget, and up to six inference threads while preserving one Android scheduling core.
@@ -60,7 +60,7 @@
 - Improved `--best` model installation matching by checking live `MemAvailable` as well as total RAM and storage.
 - No code disables Android thermal protection, overclocks the device, or keeps multiple GGUF models loaded simultaneously.
 
-# Pocket AI 11.0 — MaxSafe Hybrid Intelligence
+## MaxSafe Hybrid Intelligence
 
 - Added live battery/skin/SoC thermal classification and temperature-rise tracking.
 - Added continuous RAM and thermal monitoring during GGUF generation.
@@ -73,7 +73,7 @@
 
 # Pocket AI Changelog
 
-## 10.0 — Conversational Web Intelligence
+## Conversational Web Intelligence
 
 - Closed every README `<details>` section by default.
 - Added persistent multi-turn context restoration and ChatML history injection.
@@ -86,7 +86,7 @@
 
 # Changelog
 
-## 7.0 — advanced reasoning and Qwen3
+## Advanced Reasoning and Qwen3
 
 - Added `advanced_reasoning.py` with query decomposition, exact local solvers, evidence diagnostics, grounded synthesis, and answer auditing/repair.
 - Upgraded optional local reasoning tiers to Qwen3 0.6B Q8_0 Smart and Qwen3 1.7B Q8_0 Ultra.
@@ -95,7 +95,7 @@
 - Added comparison-side coverage checks, wrong-language correction, unsupported-number checks, and deterministic fallback selection.
 - Preserved the shared 112-second local inference plan and sub-60-MB packaged-file rule.
 
-## 6.1 — Bilingual reasoning and comparison repair
+## Bilingual Reasoning and Comparison Repair
 
 - Added Greek-to-English encyclopedia and WordNet query bridging.
 - Added entity-balanced retrieval for comparisons such as TCP versus UDP.
@@ -129,7 +129,7 @@
 
 ## Max Knowledge Indexed Edition
 
-## 4.1 — Split GGUF distribution
+## Split GGUF Distribution
 
 - Added the verified Q2_K and Q4_1 SmolLM2 GGUF weights to the package.
 - Split each GGUF into two ordered parts with a 48 MiB maximum part size.
@@ -184,7 +184,7 @@
 - Added `/google-ai` to explain honestly that official Gemini access requires credentials.
 - Rebuilt the root README as a full bullet-based English/Greek GitHub document.
 
-## Version 20 — Universal Knowledge and Continuous Phone Tuning
+## Universal Knowledge and Continuous Phone Tuning
 
 - Added a 274-entry English/Greek universal knowledge foundation shared by every model path.
 - Added natural bilingual small talk and follow-up resolution.
@@ -195,7 +195,7 @@
 - Preserved one-GGUF-process-at-a-time behavior.
 
 
-## 9.0 — Natural Complete School
+## Natural Complete School
 
 - Expanded the school foundation to 758 concepts and 3,893 grade-adapted lessons.
 - Added a read-only FTS5 school curriculum database with structured goals, prerequisites, explanations, strategies, vocabulary, examples, misconceptions, practice, mastery checks, relationships, and evidence.

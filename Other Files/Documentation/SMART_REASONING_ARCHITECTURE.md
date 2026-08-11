@@ -1,4 +1,4 @@
-# Pocket AI 15 Smart Reasoning Architecture
+# Pocket AI Smart Reasoning Architecture
 
 ## Objective
 

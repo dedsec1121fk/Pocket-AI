@@ -1,4 +1,4 @@
-Pocket AI 16.0 — Extended 3B Hybrid Intelligence
+Pocket AI — Extended 3B Hybrid Intelligence
 
 Normal model ladder:
   fast 0.6B -> quality 0.8B -> smart 1.5B -> ultra 1.7B -> advanced 2B -> prime 3.09B

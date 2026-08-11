@@ -1,6 +1,6 @@
 # Natural Conversation and Understanding
 
-Version 9 replaces rigid one-turn behavior with a bilingual conversation controller.
+This architecture replaces rigid one-turn behavior with a bilingual conversation controller.
 
 ## Behaviors
 

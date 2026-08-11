@@ -1,4 +1,4 @@
-# Pocket AI 16.0 Hardware Combination Matrix
+# Pocket AI Hardware Combination Matrix
 
 These are conservative routing envelopes, not guarantees. Pocket AI rechecks live available RAM and temperature before every model pass.
 

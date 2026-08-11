@@ -25,7 +25,7 @@
 
 # Pocket AI — English
 
-> **Pocket AI 16.0 model policy:** normal local inference begins at **0.6B**, then scales through **0.8B, 1.5B, 1.7B, 2B, and 3.09B**. The 135M models are emergency-only. Adjacent hybrids run one model at a time; their parameters are not added. Use `--extended` to download the full 0.6B–3.09B ladder.
+> **Pocket AI model policy:** normal local inference begins at **0.6B**, then scales through **0.8B, 1.5B, 1.7B, 2B, and 3.09B**. The 135M models are emergency-only. Adjacent hybrids run one model at a time; their parameters are not added. Use `--extended` to download the full 0.6B–3.09B ladder.
 
 
 > **Για να μεταβείτε στην πλήρη Ελληνική έκδοση, συνεχίστε [πατώντας εδώ](#greek-readme).**
@@ -35,7 +35,7 @@
 <details>
 <summary><strong>Extended 3B Hybrid Intelligence: 0.6B to 3.09B</strong></summary>
 
-Pocket AI 16.0 begins normal local inference at **Qwen3 0.6B**, not 135M. It adds real intermediate tiers and selects the strongest safe installed model from live phone conditions.
+Pocket AI begins normal local inference at **Qwen3 0.6B**, not 135M. It adds real intermediate tiers and selects the strongest safe installed model from live phone conditions.
 
 | Tier key | Model | Parameters | Purpose |
 |---|---|---:|---|
@@ -55,14 +55,14 @@ The shared foundation still contains **12,842 bilingual knowledge entries**, **7
 
 ### Ελληνικά
 
-Το Pocket AI 16.0 ξεκινά κανονικά από πραγματικό μοντέλο **0.6B** και προσθέτει πραγματικά tiers 0.8B, 1.5B, 1.7B, 2B και 3.09B. Τα δύο 135M παραμένουν μόνο ως emergency fallback. Τα υβριδικά routes είναι διαδοχικά και οι παράμετροι δεν αθροίζονται.
+Το Pocket AI ξεκινά κανονικά από πραγματικό μοντέλο **0.6B** και προσθέτει πραγματικά tiers 0.8B, 1.5B, 1.7B, 2B και 3.09B. Τα δύο 135M παραμένουν μόνο ως emergency fallback. Τα υβριδικά routes είναι διαδοχικά και οι παράμετροι δεν αθροίζονται.
 
 </details>
 
 <details>
 <summary><strong>MaxSafe Phone-Limit Intelligence</strong></summary>
 
-Pocket AI 16.0 uses the strongest installed model that fits the phone <strong>right now</strong>, not merely the largest model found on disk. It combines live RAM, processor score, CPU-core count, battery state, available storage, temperature sensors, recent temperature rise, task difficulty, and the remaining answer deadline.
+Pocket AI uses the strongest installed model that fits the phone <strong>right now</strong>, not merely the largest model found on disk. It combines live RAM, processor score, CPU-core count, battery state, available storage, temperature sensors, recent temperature rise, task difficulty, and the remaining answer deadline.
 
 ● <strong>Cool-device burst:</strong> raises useful threads and batch size for short work while leaving at least one logical core available to Android and Termux.
 
@@ -92,7 +92,7 @@ These are conservative starting bands. Live free RAM and thermal state can cause
 
 ### Ελληνικά
 
-Το Pocket AI 16.0 επιλέγει το ισχυρότερο εγκατεστημένο μοντέλο που χωράει με ασφάλεια στην πραγματική κατάσταση του κινητού. Παρακολουθεί RAM, CPU, μπαταρία, αισθητήρες θερμοκρασίας και την άνοδο θερμοκρασίας κατά την απάντηση. Η λειτουργία `fusion` χρησιμοποιεί δύο μοντέλα <strong>διαδοχικά</strong>, ποτέ ταυτόχρονα: πρώτα έναν μικρό αναλυτή και μετά το ισχυρότερο ασφαλές μοντέλο για την τελική σύνθεση.
+Το Pocket AI επιλέγει το ισχυρότερο εγκατεστημένο μοντέλο που χωράει με ασφάλεια στην πραγματική κατάσταση του κινητού. Παρακολουθεί RAM, CPU, μπαταρία, αισθητήρες θερμοκρασίας και την άνοδο θερμοκρασίας κατά την απάντηση. Η λειτουργία `fusion` χρησιμοποιεί δύο μοντέλα <strong>διαδοχικά</strong>, ποτέ ταυτόχρονα: πρώτα έναν μικρό αναλυτή και μετά το ισχυρότερο ασφαλές μοντέλο για την τελική σύνθεση.
  Το Pocket AI αποθηκεύει μόνο τοπικά μετρήσεις απόδοσης ανά μοντέλο και μαθαίνει πόσο γρήγορα και πόσο θερμά λειτουργεί το συγκεκριμένο κινητό. Σε δύσκολες ερωτήσεις μπορεί να εκτελέσει έναν σύντομο τελικό έλεγχο μόνο όταν η θερμοκρασία, η RAM και ο χρόνος παραμένουν ασφαλή.
 
 </details>
@@ -100,7 +100,7 @@ These are conservative starting bands. Live free RAM and thermal state can cause
 <details>
 <summary><strong>Rapid Web Learning and Shared Model Intelligence</strong></summary>
 
-Pocket AI 16.0 makes internet learning faster without pretending to retrain GGUF weights on the phone. Search providers run in parallel, readable public pages are fetched concurrently, repeated searches use a bounded cache, and trusted evidence is inserted into SQLite in one transaction instead of one transaction per paragraph.
+Pocket AI makes internet learning faster without pretending to retrain GGUF weights on the phone. Search providers run in parallel, readable public pages are fetched concurrently, repeated searches use a bounded cache, and trusted evidence is inserted into SQLite in one transaction instead of one transaction per paragraph.
 
 ● <strong>Safe automatic learning:</strong> `/learn safe` stores trusted evidence that was actually used in an answer.
 
@@ -118,7 +118,7 @@ This can make responses substantially more capable and consistent, but a 135M mo
 
 ### Ελληνικά
 
-Το Pocket AI 16.0 εκτελεί παράλληλη αναζήτηση και ανάγνωση δημόσιων σελίδων, αποθηκεύει αξιόπιστα στοιχεία μαζικά στη SQLite και επιτρέπει στα ισχυρότερα εγκατεστημένα μοντέλα να δημιουργούν σύντομα επαληθευμένα μαθήματα για όλα τα μικρότερα μοντέλα. Η διαδικασία δεν αλλάζει ανεξέλεγκτα τα βάρη GGUF και δεν αποθηκεύει επίκαιρες πληροφορίες ως μόνιμες αλήθειες.
+Το Pocket AI εκτελεί παράλληλη αναζήτηση και ανάγνωση δημόσιων σελίδων, αποθηκεύει αξιόπιστα στοιχεία μαζικά στη SQLite και επιτρέπει στα ισχυρότερα εγκατεστημένα μοντέλα να δημιουργούν σύντομα επαληθευμένα μαθήματα για όλα τα μικρότερα μοντέλα. Η διαδικασία δεν αλλάζει ανεξέλεγκτα τα βάρη GGUF και δεν αποθηκεύει επίκαιρες πληροφορίες ως μόνιμες αλήθειες.
 
 </details>
 
@@ -138,7 +138,7 @@ Type **`help`** at any time to open the easy numbered menu.
 
 ## Compact-hybrid maximum-smartness architecture
 
-Pocket AI 16.0 starts normal GGUF inference at 0.6B and uses a conversation-aware, evidence-first reasoning stack before any language-model call. The advanced reasoning module decomposes requests, extracts comparison entities and constraints, ranks sources by reliability and coverage, runs exact local tools for arithmetic, equations, statistics, conversions, and exact text counting, constructs a compact reasoning blueprint, audits generated answers, and repairs weak output with grounded synthesis. Qwen3 runs in non-thinking mode for routine questions and guarded thinking mode only for difficult tasks when live RAM, CPU, temperature, and the shared deadline permit it. The 135M models remain emergency generators; retrieval and deterministic tools carry most factual and exact work on low-end phones.
+Pocket AI starts normal GGUF inference at 0.6B and uses a conversation-aware, evidence-first reasoning stack before any language-model call. The advanced reasoning module decomposes requests, extracts comparison entities and constraints, ranks sources by reliability and coverage, runs exact local tools for arithmetic, equations, statistics, conversions, and exact text counting, constructs a compact reasoning blueprint, audits generated answers, and repairs weak output with grounded synthesis. Qwen3 runs in non-thinking mode for routine questions and guarded thinking mode only for difficult tasks when live RAM, CPU, temperature, and the shared deadline permit it. The 135M models remain emergency generators; retrieval and deterministic tools carry most factual and exact work on low-end phones.
 
 ## Table of Contents
 
@@ -550,7 +550,7 @@ Install the strongest conservative match with `bash "Other Files/install_models.
 * **Emergency Fast — SmolLM2-135M-Instruct Q2_K**
 * **Emergency Quality — SmolLM2-135M-Instruct Q4_1**
 
-The 135M models remain in verified split parts for offline and critical low-memory fallback. They are not the normal Pocket AI 16 starting tier.
+The 135M models remain in verified split parts for offline and critical low-memory fallback. They are not the normal Pocket AI starting tier.
 
 ### Sequential hybrids
 

@@ -1,6 +1,6 @@
 {
   "package": "Pocket AI extended 3B hybrid model and knowledge matrix",
-  "package_version": "16.0-extended-3b-hybrid-intelligence",
+  "package_profile": "extended-3b-hybrid-intelligence",
   "target": "Termux on unrooted Android phones with a normal 0.6B, 0.8B, 1.5B, 1.7B, 2B, and 3.09B ladder, adjacent sequential hybrids, emergency 135M fallbacks, bilingual conversation, grades 1-12 knowledge, web grounding, and live RAM/CPU/thermal controls.",
   "automatic_scan": {
     "checks": [
@@ -1114,7 +1114,7 @@
     "backend": "SQLite FTS5 with exact alias index",
     "routing": "direct exact answer, indexed retrieval, compact context injection, then selected model",
     "fallback_entry_count": 341,
-    "maximum_knowledge_version": "5-spec-max-cognitive"
+    "maximum_knowledge_profile": "spec-max-cognitive"
   },
   "continuous_runtime_matrix": {
     "documentation": "Other Files/Documentation/HARDWARE_COMBINATIONS.md",
@@ -1238,7 +1238,7 @@
     "can_disable_android_thermal_protection": false
   },
   "spec_max_cognitive_scaling": {
-    "renamed_in_v15": "compact_hybrid_intelligence",
+    "current_name": "compact_hybrid_intelligence",
     "controller": "Models/PocketAI_Compact_Hybrid_Ladder_Controller.json.gz",
     "runtime_module": "Other Files/Modules/model_intelligence.py",
     "resource_module": "Other Files/Modules/resource_matrix.py",
@@ -1276,7 +1276,7 @@
       "exact tools",
       "answer audit and repair"
     ],
-    "status": "v14 historical foundation; superseded for model routing by v16 extended 3B hybrid intelligence"
+    "status": "historical reasoning foundation; superseded for model routing by extended 3B hybrid intelligence"
   },
   "emergency_model_tiers": {
     "emergency_fast": "SmolLM2 135M Q2_K",
@@ -1315,7 +1315,6 @@
     ]
   },
   "compact_hybrid_intelligence": {
-    "version": "16.0",
     "regular_start": "Qwen3 0.6B Q8_0",
     "regular_tiers": {
       "fast": "0.6B",
@@ -1345,7 +1344,6 @@
     "parameter_counts_are_additive": false
   },
   "extended_3b_hybrid_intelligence": {
-    "version": "16.0",
     "normal_range": "0.6B through 3.09B",
     "full_install_option": "--extended",
     "adaptive_prime_quantization": [

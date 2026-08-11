@@ -1,4 +1,4 @@
-"""Resource-aware sequential model fusion for Pocket AI v16.
+"""Resource-aware sequential model fusion for Pocket AI.
 
 The normal extended ladder is 0.6B -> 0.8B -> 1.5B -> 1.7B -> 2B -> 3B.
 The bundled 135M models remain emergency fallbacks. Only one GGUF model is

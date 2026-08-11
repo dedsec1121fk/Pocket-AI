@@ -1,4 +1,4 @@
-# Pocket AI 16.0 Extended 3B Hybrid Model Ladder
+# Pocket AI Extended 3B Hybrid Model Ladder
 
 ## Normal tiers
 

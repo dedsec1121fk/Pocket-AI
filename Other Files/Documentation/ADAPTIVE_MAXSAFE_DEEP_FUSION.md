@@ -1,6 +1,6 @@
 # Adaptive MaxSafe Deep Fusion
 
-Pocket AI 12.0 learns a safe performance envelope for each installed GGUF model on the current phone. It stores only local runtime telemetry: completed and aborted runs, approximate output characters per second, elapsed time, temperature rise, threads, context, and batch size.
+Pocket AI learns a safe performance envelope for each installed GGUF model on the current phone. It stores only local runtime telemetry: completed and aborted runs, approximate output characters per second, elapsed time, temperature rise, threads, context, and batch size.
 
 ## Quality path
 

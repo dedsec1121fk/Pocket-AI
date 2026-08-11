@@ -1,6 +1,6 @@
 # Pocket AI Complete School Foundation
 
-Version: 9.0 natural-complete-school
+Profile: natural-complete-school
 
 ## Scope
 

@@ -1,6 +1,6 @@
 # MaxSafe Thermal Hybrid Architecture
 
-Pocket AI 11.0 aims for the highest sustainable answer quality on Android rather than the highest momentary CPU load.
+Pocket AI aims for the highest sustainable answer quality on Android rather than the highest momentary CPU load.
 
 ## Operating rules
 
@@ -32,7 +32,7 @@ Thermal sensors and device cooling vary. The system proactively reduces load but
 
 ## Adaptive compute learning
 
-Pocket AI 12.0 records local per-model throughput, elapsed time, temperature rise, and guarded aborts. Stable cool runs can earn modest burst headroom; rapid heating or failures reduce later budgets. A final hard thermal/RAM check always runs after learned tuning.
+Pocket AI records local per-model throughput, elapsed time, temperature rise, and guarded aborts. Stable cool runs can earn modest burst headroom; rapid heating or failures reduce later budgets. A final hard thermal/RAM check always runs after learned tuning.
 
 ## Guarded final critic
 

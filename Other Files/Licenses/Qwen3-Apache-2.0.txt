@@ -4,4 +4,4 @@ The optional weights are not embedded in this package. Pocket AI downloads them 
 
 Apache License 2.0: https://www.apache.org/licenses/LICENSE-2.0
 
-Additional downloadable repositories used by Pocket AI 16 include Qwen/Qwen2.5-1.5B-Instruct-GGUF, Qwen/Qwen2.5-3B-Instruct-GGUF, ggml-org/Qwen3.5-0.8B-GGUF, and bartowski/Qwen_Qwen3.5-2B-GGUF. Review each repository license and model card before redistribution.
+Additional downloadable repositories used by Pocket AI include Qwen/Qwen2.5-1.5B-Instruct-GGUF, Qwen/Qwen2.5-3B-Instruct-GGUF, ggml-org/Qwen3.5-0.8B-GGUF, and bartowski/Qwen_Qwen3.5-2B-GGUF. Review each repository license and model card before redistribution.

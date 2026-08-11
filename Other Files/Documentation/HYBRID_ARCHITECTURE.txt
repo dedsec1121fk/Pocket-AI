@@ -1,4 +1,4 @@
-POCKET AI 16.0 HYBRID ARCHITECTURE
+POCKET AI HYBRID ARCHITECTURE
 
 Normal ladder: 0.6B -> 0.8B -> 1.5B -> 1.7B -> 2B -> 3.09B.
 Emergency fallback: 135M Q2_K / Q4_1. Optional high-memory tiers: 4B / 8B.

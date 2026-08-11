@@ -1,4 +1,4 @@
-POCKET AI 16.0 MODEL PROVENANCE
+POCKET AI MODEL PROVENANCE
 
 Bundled emergency models:
 - SmolLM2-135M-Instruct Q2_K and Q4_1, Apache-2.0, distributed as verified split GGUF parts.
