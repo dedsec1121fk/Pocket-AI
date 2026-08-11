@@ -1,5 +1,4 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/dedsec1121fk/dedsec1121fk.github.io/47ad8e5cbaaee04af552ae6b90edc49cd75b324b/Assets/Images/Logos/Black%20Purple%20Butterfly%20Logo.jpeg" alt="Pocket AI / DedSec Project Logo" width="150"/>
   <h1>Pocket AI</h1>
   <p><strong>Local bilingual AI for Android + Termux, built for old and low-memory phones</strong></p>
   <p>
