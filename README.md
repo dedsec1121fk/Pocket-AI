@@ -1,5 +1,4 @@
-<div align="center">
-  <h1>Pocket AI</h1>
+<h1>Pocket AI</h1>
   <p><strong>Local bilingual AI for Android + Termux, built for old and low-memory phones</strong></p>
   <p>
     <a href="https://github.com/dedsec1121fk/Pocket-AI"><strong>GitHub Repository</strong></a>
