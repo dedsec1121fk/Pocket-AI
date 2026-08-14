@@ -1,4 +1,4 @@
-"""Fast bilingual indexed knowledge retrieval shared by every Pocket AI model."""
+"""Fast bilingual indexed knowledge retrieval shared by every Pocket AI Project model."""
 from __future__ import annotations
 
 import gzip

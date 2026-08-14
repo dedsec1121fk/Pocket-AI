@@ -1,4 +1,4 @@
-<h1>Pocket AI</h1>
+<h1>Pocket AI Project</h1>
   <p><strong>Local bilingual AI for Android + Termux, built for old and low-memory phones</strong></p>
   <p>
     <a href="https://github.com/dedsec1121fk/Pocket-AI"><strong>GitHub Repository</strong></a>
@@ -21,19 +21,19 @@
 
 <a id="english-readme"></a>
 
-# Pocket AI — English
+# Pocket AI Project — English
 
-> **Pocket AI model policy:** normal local inference begins at **0.6B**, then scales through **0.8B, 1.5B, 1.7B, 2B, and 3.09B**. The 135M models are emergency-only. Adjacent hybrids run one model at a time; their parameters are not added. Use `--extended` to download the full 0.6B–3.09B ladder.
+> **Pocket AI Project model policy:** normal local inference begins at **0.6B**, then scales through **0.8B, 1.5B, 1.7B, 2B, and 3.09B**. The 135M models are emergency-only. Adjacent hybrids run one model at a time; their parameters are not added. Use `--extended` to download the full 0.6B–3.09B ladder.
 
 
 > **Για να μεταβείτε στην πλήρη Ελληνική έκδοση, συνεχίστε [πατώντας εδώ](#greek-readme).**
 
-**Pocket AI** is a bilingual local assistant for **English and Greek** that runs in **Termux without root**. It combines compact neural classifiers, local GGUF language models, persistent retrieval memory, subject specialists, deterministic school tools, and hardware-aware hybrid routing.
+**Pocket AI Project** is a bilingual local assistant for **English and Greek** that runs in **Termux without root**. It combines compact neural classifiers, local GGUF language models, persistent retrieval memory, subject specialists, deterministic school tools, and hardware-aware hybrid routing.
 
 <details>
 <summary><strong>Extended 3B Hybrid Intelligence: 0.6B to 3.09B</strong></summary>
 
-Pocket AI begins normal local inference at **Qwen3 0.6B**, not 135M. It adds real intermediate tiers and selects the strongest safe installed model from live phone conditions.
+Pocket AI Project begins normal local inference at **Qwen3 0.6B**, not 135M. It adds real intermediate tiers and selects the strongest safe installed model from live phone conditions.
 
 | Tier key | Model | Parameters | Purpose |
 |---|---|---:|---|
@@ -53,14 +53,14 @@ The shared foundation still contains **12,842 bilingual knowledge entries**, **7
 
 ### Ελληνικά
 
-Το Pocket AI ξεκινά κανονικά από πραγματικό μοντέλο **0.6B** και προσθέτει πραγματικά tiers 0.8B, 1.5B, 1.7B, 2B και 3.09B. Τα δύο 135M παραμένουν μόνο ως emergency fallback. Τα υβριδικά routes είναι διαδοχικά και οι παράμετροι δεν αθροίζονται.
+Το Pocket AI Project ξεκινά κανονικά από πραγματικό μοντέλο **0.6B** και προσθέτει πραγματικά tiers 0.8B, 1.5B, 1.7B, 2B και 3.09B. Τα δύο 135M παραμένουν μόνο ως emergency fallback. Τα υβριδικά routes είναι διαδοχικά και οι παράμετροι δεν αθροίζονται.
 
 </details>
 
 <details>
 <summary><strong>MaxSafe Phone-Limit Intelligence</strong></summary>
 
-Pocket AI uses the strongest installed model that fits the phone <strong>right now</strong>, not merely the largest model found on disk. It combines live RAM, processor score, CPU-core count, battery state, available storage, temperature sensors, recent temperature rise, task difficulty, and the remaining answer deadline.
+Pocket AI Project uses the strongest installed model that fits the phone <strong>right now</strong>, not merely the largest model found on disk. It combines live RAM, processor score, CPU-core count, battery state, available storage, temperature sensors, recent temperature rise, task difficulty, and the remaining answer deadline.
 
 ● <strong>Cool-device burst:</strong> raises useful threads and batch size for short work while leaving at least one logical core available to Android and Termux.
 
@@ -74,7 +74,7 @@ Pocket AI uses the strongest installed model that fits the phone <strong>right n
 
 ● <strong>Guarded final critic:</strong> very difficult mathematics, coding, comparison, and causal questions can receive one short final verification pass on Qwen3 when the phone remains cool, free RAM is sufficient, and at least 16 seconds remain. The verifier is skipped immediately if any safety condition tightens.
 
-● <strong>Automatic best match:</strong> `bash "Other Files/install_models.sh" --best` selects the strongest practical Qwen3 tier from the phone's RAM, architecture, and free storage. Inside Pocket AI, keep `/llm-model auto` and `/hybrid auto` enabled.
+● <strong>Automatic best match:</strong> `bash "Other Files/install_models.sh" --best` selects the strongest practical Qwen3 tier from the phone's RAM, architecture, and free storage. Inside Pocket AI Project, keep `/llm-model auto` and `/hybrid auto` enabled.
 
 | Approximate phone class | Strongest conservative starting tier |
 |---|---|
@@ -86,19 +86,19 @@ Pocket AI uses the strongest installed model that fits the phone <strong>right n
 | Strong 8–12 GB phone | Qwen3 4B Q4_K_M Pro |
 | 12 GB+ with sufficient live headroom | Qwen3 8B Q4_K_M Max |
 
-These are conservative starting bands. Live free RAM and thermal state can cause Pocket AI to select a smaller tier. Pocket AI never disables Android thermal protection, and no software can guarantee that a phone will never become warm.
+These are conservative starting bands. Live free RAM and thermal state can cause Pocket AI Project to select a smaller tier. Pocket AI Project never disables Android thermal protection, and no software can guarantee that a phone will never become warm.
 
 ### Ελληνικά
 
-Το Pocket AI επιλέγει το ισχυρότερο εγκατεστημένο μοντέλο που χωράει με ασφάλεια στην πραγματική κατάσταση του κινητού. Παρακολουθεί RAM, CPU, μπαταρία, αισθητήρες θερμοκρασίας και την άνοδο θερμοκρασίας κατά την απάντηση. Η λειτουργία `fusion` χρησιμοποιεί δύο μοντέλα <strong>διαδοχικά</strong>, ποτέ ταυτόχρονα: πρώτα έναν μικρό αναλυτή και μετά το ισχυρότερο ασφαλές μοντέλο για την τελική σύνθεση.
- Το Pocket AI αποθηκεύει μόνο τοπικά μετρήσεις απόδοσης ανά μοντέλο και μαθαίνει πόσο γρήγορα και πόσο θερμά λειτουργεί το συγκεκριμένο κινητό. Σε δύσκολες ερωτήσεις μπορεί να εκτελέσει έναν σύντομο τελικό έλεγχο μόνο όταν η θερμοκρασία, η RAM και ο χρόνος παραμένουν ασφαλή.
+Το Pocket AI Project επιλέγει το ισχυρότερο εγκατεστημένο μοντέλο που χωράει με ασφάλεια στην πραγματική κατάσταση του κινητού. Παρακολουθεί RAM, CPU, μπαταρία, αισθητήρες θερμοκρασίας και την άνοδο θερμοκρασίας κατά την απάντηση. Η λειτουργία `fusion` χρησιμοποιεί δύο μοντέλα <strong>διαδοχικά</strong>, ποτέ ταυτόχρονα: πρώτα έναν μικρό αναλυτή και μετά το ισχυρότερο ασφαλές μοντέλο για την τελική σύνθεση.
+ Το Pocket AI Project αποθηκεύει μόνο τοπικά μετρήσεις απόδοσης ανά μοντέλο και μαθαίνει πόσο γρήγορα και πόσο θερμά λειτουργεί το συγκεκριμένο κινητό. Σε δύσκολες ερωτήσεις μπορεί να εκτελέσει έναν σύντομο τελικό έλεγχο μόνο όταν η θερμοκρασία, η RAM και ο χρόνος παραμένουν ασφαλή.
 
 </details>
 
 <details>
 <summary><strong>Rapid Web Learning and Shared Model Intelligence</strong></summary>
 
-Pocket AI makes internet learning faster without pretending to retrain GGUF weights on the phone. Search providers run in parallel, readable public pages are fetched concurrently, repeated searches use a bounded cache, and trusted evidence is inserted into SQLite in one transaction instead of one transaction per paragraph.
+Pocket AI Project makes internet learning faster without pretending to retrain GGUF weights on the phone. Search providers run in parallel, readable public pages are fetched concurrently, repeated searches use a bounded cache, and trusted evidence is inserted into SQLite in one transaction instead of one transaction per paragraph.
 
 ● <strong>Safe automatic learning:</strong> `/learn safe` stores trusted evidence that was actually used in an answer.
 
@@ -116,17 +116,17 @@ This can make responses substantially more capable and consistent, but a 135M mo
 
 ### Ελληνικά
 
-Το Pocket AI εκτελεί παράλληλη αναζήτηση και ανάγνωση δημόσιων σελίδων, αποθηκεύει αξιόπιστα στοιχεία μαζικά στη SQLite και επιτρέπει στα ισχυρότερα εγκατεστημένα μοντέλα να δημιουργούν σύντομα επαληθευμένα μαθήματα για όλα τα μικρότερα μοντέλα. Η διαδικασία δεν αλλάζει ανεξέλεγκτα τα βάρη GGUF και δεν αποθηκεύει επίκαιρες πληροφορίες ως μόνιμες αλήθειες.
+Το Pocket AI Project εκτελεί παράλληλη αναζήτηση και ανάγνωση δημόσιων σελίδων, αποθηκεύει αξιόπιστα στοιχεία μαζικά στη SQLite και επιτρέπει στα ισχυρότερα εγκατεστημένα μοντέλα να δημιουργούν σύντομα επαληθευμένα μαθήματα για όλα τα μικρότερα μοντέλα. Η διαδικασία δεν αλλάζει ανεξέλεγκτα τα βάρη GGUF και δεν αποθηκεύει επίκαιρες πληροφορίες ως μόνιμες αλήθειες.
 
 </details>
 
 The normal experience is deliberately simple:
 
 ```text
-Pocket AI is ready. Ask me anything, or type help for options.
+Pocket AI Project is ready. Ask me anything, or type help for options.
 
 You: What is an apple?
-Pocket AI: An apple is an edible fruit produced by an apple tree...
+Pocket AI Project: An apple is an edible fruit produced by an apple tree...
 ```
 
 Type **`help`** at any time to open the easy numbered menu.
@@ -136,7 +136,7 @@ Type **`help`** at any time to open the easy numbered menu.
 
 ## Compact-hybrid maximum-smartness architecture
 
-Pocket AI starts normal GGUF inference at 0.6B and uses a conversation-aware, evidence-first reasoning stack before any language-model call. The advanced reasoning module decomposes requests, extracts comparison entities and constraints, ranks sources by reliability and coverage, runs exact local tools for arithmetic, equations, statistics, conversions, and exact text counting, constructs a compact reasoning blueprint, audits generated answers, and repairs weak output with grounded synthesis. Qwen3 runs in non-thinking mode for routine questions and guarded thinking mode only for difficult tasks when live RAM, CPU, temperature, and the shared deadline permit it. The 135M models remain emergency generators; retrieval and deterministic tools carry most factual and exact work on low-end phones.
+Pocket AI Project starts normal GGUF inference at 0.6B and uses a conversation-aware, evidence-first reasoning stack before any language-model call. The advanced reasoning module decomposes requests, extracts comparison entities and constraints, ranks sources by reliability and coverage, runs exact local tools for arithmetic, equations, statistics, conversions, and exact text counting, constructs a compact reasoning blueprint, audits generated answers, and repairs weak output with grounded synthesis. Qwen3 runs in non-thinking mode for routine questions and guarded thinking mode only for difficult tasks when live RAM, CPU, temperature, and the shared deadline permit it. The 135M models remain emergency generators; retrieval and deterministic tools carry most factual and exact work on low-end phones.
 
 ## Table of Contents
 
@@ -146,7 +146,7 @@ Pocket AI starts normal GGUF inference at 0.6B and uses a conversation-aware, ev
 * [Hardware Combination Matrix](#hardware-combination-matrix)
 * [Requirements](#requirements)
 * [Installation](#installation)
-* [How To Use Pocket AI](#how-to-use-pocket-ai)
+* [How To Use Pocket AI Project](#how-to-use-pocket-ai)
 * [School Tutor: Grades 1–12](#school-tutor-grades-112)
 * [Models And Hybrid Intelligence](#models-and-hybrid-intelligence)
 * [Automatic Phone Scanning](#automatic-phone-scanning)
@@ -191,7 +191,7 @@ Pocket AI starts normal GGUF inference at 0.6B and uses a conversation-aware, ev
 <details>
 <summary><strong>Universal Knowledge And Natural Conversation</strong></summary>
 
-Pocket AI now gives **every model path** the same shared bilingual foundation before a transformer is used. This prevents weak phones from losing basic capabilities simply because they cannot run the Quality model.
+Pocket AI Project now gives **every model path** the same shared bilingual foundation before a transformer is used. This prevents weak phones from losing basic capabilities simply because they cannot run the Quality model.
 
 * **12,842 indexed bilingual knowledge records** covering school subjects, countries and capitals, chemistry, physical constants, programming APIs, arithmetic tables, fractions, number theory, everyday concepts, and specialist guidance.
 * **117,659 WordNet concepts** with 206,978 English lemma records, plus 17,891 Greek-linked concepts and 23,853 Greek lemma records.
@@ -199,7 +199,7 @@ Pocket AI now gives **every model path** the same shared bilingual foundation be
 * **72 grade-and-subject curriculum summaries** covering grades 1–12 across mathematics, science, language, history, geography, and computing.
 * **Natural conversation** for greetings, feelings, confusion, capabilities, thanks, corrections, and ordinary conversational turns.
 * **Context-aware follow-ups:** “simpler,” “go deeper,” “another example,” “use an analogy,” and “quiz me” continue the actual topic instead of starting over.
-* **Understanding recovery:** when the learner says they are confused, Pocket AI changes the explanation method rather than repeating the same wording.
+* **Understanding recovery:** when the learner says they are confused, Pocket AI Project changes the explanation method rather than repeating the same wording.
 * **Follow-up understanding** for messages such as `tell me more`, `why`, `continue`, `πες μου περισσότερα`, and `γιατί`.
 * **Shared routing order:** school tools → universal knowledge → learned local documents → specialists → classifier → optional GGUF.
 * **Fast exact-answer path:** known facts and exact mathematics can be returned directly without starting a transformer.
@@ -230,7 +230,7 @@ Use `/knowledge` or `/γνώσεις` to show the active shared knowledge founda
 <details>
 <summary><strong>Maximum Smartness Under Two Minutes</strong></summary>
 
-The smallest bundled Q2_K model is now used as an **evidence synthesizer**. Pocket AI searches its local databases first, sends only the strongest passages into the active context window, and then asks the model to compose and verify the answer. A 135M-parameter model still cannot equal a cloud frontier model, so this edition also supports stronger Qwen tiers without sacrificing the bundled low-end fallback.
+The smallest bundled Q2_K model is now used as an **evidence synthesizer**. Pocket AI Project searches its local databases first, sends only the strongest passages into the active context window, and then asks the model to compose and verify the answer. A 135M-parameter model still cannot equal a cloud frontier model, so this edition also supports stronger Qwen tiers without sacrificing the bundled low-end fallback.
 
 * **Retrieval-first prompts:** curated facts, encyclopedia passages, and lexical evidence are ranked separately for every question.
 * **Cross-language evidence retrieval:** Greek questions are converted into compact English search variants while the final answer remains Greek.
@@ -246,12 +246,12 @@ The smallest bundled Q2_K model is now used as an **evidence synthesizer**. Pock
 
 ### Stronger optional intelligence tiers
 
-* **Qwen3 0.6B Fast:** a compact reasoning upgrade for capable 4 GB+ 64-bit phones. Pocket AI uses short context, one guarded pass, and non-thinking mode on entry-level hardware.
-* **Qwen3 1.7B Ultra:** a stronger local tier intended mainly for capable 6–8 GB phones. Pocket AI keeps context, thinking, and answer length guarded to protect the time budget.
+* **Qwen3 0.6B Fast:** a compact reasoning upgrade for capable 4 GB+ 64-bit phones. Pocket AI Project uses short context, one guarded pass, and non-thinking mode on entry-level hardware.
+* **Qwen3 1.7B Ultra:** a stronger local tier intended mainly for capable 6–8 GB phones. Pocket AI Project keeps context, thinking, and answer length guarded to protect the time budget.
 * **Smallest-model protection:** when only the bundled 135M model is available, the same query planner, evidence reranker, exact-answer tools, bilingual retrieval, answer validator, and safe fallback remain active.
 * **Qwen3 4B Pro:** the first tier intended to approach a modern assistant experience on many ordinary knowledge and reasoning tasks; designed for strong 8 GB-class phones.
 * **Qwen3 8B Max:** the strongest supported tier, intended for high-end 12 GB+ phones with substantial free RAM and storage.
-* **Honest capability boundary:** the bundled 135M models cannot be made genuinely equivalent to ChatGPT 3.5 by prompting or adding facts. Pocket AI improves them with retrieval, exact tools, conversation memory, verification, and web grounding, then automatically selects a larger model when the phone can safely run one.
+* **Honest capability boundary:** the bundled 135M models cannot be made genuinely equivalent to ChatGPT 3.5 by prompting or adding facts. Pocket AI Project improves them with retrieval, exact tools, conversation memory, verification, and web grounding, then automatically selects a larger model when the phone can safely run one.
 
 Install either optional model directly from its official repository with resumable download and SHA-256 verification:
 
@@ -265,7 +265,7 @@ bash "Other Files/install_smart_models.sh" max
 
 Then use `/llm-model smart`, `/llm-model ultra`, or leave `/hybrid auto` enabled.
 
-The two-minute target covers Pocket AI's local inference plan after startup. First-run GGUF reconstruction, very slow storage, Android scheduling, severe thermal throttling, or an external `llama.cpp` build can add overhead, so no device-independent wall-clock guarantee is possible.
+The two-minute target covers Pocket AI Project's local inference plan after startup. First-run GGUF reconstruction, very slow storage, Android scheduling, severe thermal throttling, or an external `llama.cpp` build can add overhead, so no device-independent wall-clock guarantee is possible.
 
 See `Other Files/Documentation/MAX_KNOWLEDGE_ARCHITECTURE.md` for the complete routing and timing design.
 
@@ -276,7 +276,7 @@ See `Other Files/Documentation/MAX_KNOWLEDGE_ARCHITECTURE.md` for the complete r
 <details>
 <summary><strong>Hardware Combination Matrix</strong></summary>
 
-Pocket AI does not assume that every phone advertised with the same RAM performs equally. It continuously combines:
+Pocket AI Project does not assume that every phone advertised with the same RAM performs equally. It continuously combines:
 
 * total RAM
 * currently available RAM
@@ -328,7 +328,7 @@ The complete matrix is stored in `Other Files/Documentation/HARDWARE_COMBINATION
 * Capable 3–4 GB 64-bit devices can start with Qwen3 0.6B when enough RAM is currently free.
 * Stronger 4–8 GB devices can progress through real 0.8B, 1.5B, and 1.7B tiers.
 * High-end devices can use optional 4B or 8B models with guarded context.
-* Pocket AI loads only one GGUF process at a time.
+* Pocket AI Project loads only one GGUF process at a time.
 * Live RAM and temperature are checked again before an expensive second pass.
 
 </details>
@@ -353,7 +353,7 @@ termux-setup-storage
 git lfs install
 ```
 
-### 3. Clone Pocket AI
+### 3. Clone Pocket AI Project
 
 ```bash
 cd ~
@@ -371,16 +371,16 @@ chmod +x "Other Files/install_models.sh"
 bash "Other Files/install_models.sh"
 ```
 
-### 5. Start Pocket AI
+### 5. Start Pocket AI Project
 
 ```bash
-python "Pocket AI.py"
+python "Pocket AI Project.py"
 ```
 
 ### Open it later
 
 ```bash
-cd ~/Pocket-AI && python "Pocket AI.py"
+cd ~/Pocket-AI && python "Pocket AI Project.py"
 ```
 
 </details>
@@ -388,13 +388,13 @@ cd ~/Pocket-AI && python "Pocket AI.py"
 <a id="how-to-use-pocket-ai"></a>
 
 <details>
-<summary><strong>How To Use Pocket AI</strong></summary>
+<summary><strong>How To Use Pocket AI Project</strong></summary>
 
-Pocket AI opens directly into chat:
+Pocket AI Project opens directly into chat:
 
 ```text
 You: What is gravity?
-Pocket AI: Gravity is the attraction between objects with mass...
+Pocket AI Project: Gravity is the attraction between objects with mass...
 ```
 
 You can type normal questions instead of commands:
@@ -489,7 +489,7 @@ The current school database contains **771 core topics** and **3,994 grade-adapt
 
 ### Deterministic math support
 
-Pocket AI solves many common school calculations without asking a language model to guess:
+Pocket AI Project solves many common school calculations without asking a language model to guess:
 
 ```text
 What is 25% of 80?
@@ -548,11 +548,11 @@ Install the strongest conservative match with `bash "Other Files/install_models.
 * **Emergency Fast — SmolLM2-135M-Instruct Q2_K**
 * **Emergency Quality — SmolLM2-135M-Instruct Q4_1**
 
-The 135M models remain in verified split parts for offline and critical low-memory fallback. They are not the normal Pocket AI starting tier.
+The 135M models remain in verified split parts for offline and critical low-memory fallback. They are not the normal Pocket AI Project starting tier.
 
 ### Sequential hybrids
 
-Pocket AI can run adjacent installed models one after another: 135M→0.6B, 0.6B→0.8B, 0.8B→1.5B, 1.5B→1.7B, 1.7B→2B, 2B→3.09B, 3.09B→4B, or 4B→8B. It unloads the analyst before starting the stronger synthesizer, rechecks RAM and temperature, and never adds parameter counts.
+Pocket AI Project can run adjacent installed models one after another: 135M→0.6B, 0.6B→0.8B, 0.8B→1.5B, 1.5B→1.7B, 1.7B→2B, 2B→3.09B, 3.09B→4B, or 4B→8B. It unloads the analyst before starting the stronger synthesizer, rechecks RAM and temperature, and never adds parameter counts.
 
 ### Pre-trained bilingual neural profiles
 
@@ -565,7 +565,7 @@ Micro, Lite, Balanced, Standard, and Max classifiers remain available for routin
 <details>
 <summary><strong>Automatic Phone Scanning</strong></summary>
 
-Pocket AI checks:
+Pocket AI Project checks:
 
 * phone manufacturer and model
 * Android hardware and board identifiers
@@ -615,7 +615,7 @@ or:
 /ingest ~/storage/downloads/SchoolNotes
 ```
 
-Pocket AI can:
+Pocket AI Project can:
 
 * read supported English and Greek text files
 * split them into searchable knowledge chunks
@@ -626,7 +626,7 @@ Pocket AI can:
 ### Teach a direct answer
 
 ```text
-/teach What is Pocket AI? | Pocket AI is a local bilingual Termux assistant.
+/teach What is Pocket AI Project? | Pocket AI Project is a local bilingual Termux assistant.
 ```
 
 ### No-key public web learning
@@ -664,7 +664,7 @@ Blocked research includes queries aimed at:
 <details>
 <summary><strong>Conversation Memory, Follow-ups, Internet Search And Learning</strong></summary>
 
-Pocket AI now treats chat as a continuing conversation rather than isolated prompts. It restores recent turns at startup, passes prior user/assistant messages into compatible GGUF prompts, resolves short references such as “that,” “why,” “give another example,” and their Greek equivalents, and offers one relevant continuation after substantial explanations.
+Pocket AI Project now treats chat as a continuing conversation rather than isolated prompts. It restores recent turns at startup, passes prior user/assistant messages into compatible GGUF prompts, resolves short references such as “that,” “why,” “give another example,” and their Greek equivalents, and offers one relevant continuation after substantial explanations.
 
 Web behavior is explicit and controllable:
 
@@ -675,7 +675,7 @@ Web behavior is explicit and controllable:
 * `/sources` displays the sources used in the previous web-grounded response.
 * `/web-learn QUERY` fetches allowed public pages, splits them into searchable chunks, and saves them in the local SQLite retrieval database.
 
-“Learning” here means durable local retrieval memory, not secretly retraining or changing the GGUF model weights. Stored web knowledge can be searched in later conversations and can be removed with the local data tools. Search providers can fail, rate-limit, change format, or require JavaScript; Pocket AI falls back between DDGS, Bing RSS, and Wikipedia and continues offline when none is available.
+“Learning” here means durable local retrieval memory, not secretly retraining or changing the GGUF model weights. Stored web knowledge can be searched in later conversations and can be removed with the local data tools. Search providers can fail, rate-limit, change format, or require JavaScript; Pocket AI Project falls back between DDGS, Bing RSS, and Wikipedia and continues offline when none is available.
 
 </details>
 
@@ -684,13 +684,13 @@ Web behavior is explicit and controllable:
 <details>
 <summary><strong>Google AI And API-Key Limitation</strong></summary>
 
-Pocket AI does **not** claim to access Google Gemini anonymously.
+Pocket AI Project does **not** claim to access Google Gemini anonymously.
 
 * The official Gemini API requires authentication credentials.
 * Google’s official programmable search API also requires configuration and an API key.
-* Pocket AI does not bypass authentication, scrape private AI sessions, or imitate Google services.
-* Without a key, Pocket AI uses its bundled local models plus the public no-key research sources listed above.
-* Type `/google-ai` inside Pocket AI to see this explanation.
+* Pocket AI Project does not bypass authentication, scrape private AI sessions, or imitate Google services.
+* Without a key, Pocket AI Project uses its bundled local models plus the public no-key research sources listed above.
+* Type `/google-ai` inside Pocket AI Project to see this explanation.
 
 This design keeps the project honest, reproducible, and usable without attaching a cloud billing account.
 
@@ -703,7 +703,7 @@ This design keeps the project honest, reproducible, and usable without attaching
 
 ```text
 Pocket-AI/
-├── Pocket AI.py
+├── Pocket AI Project.py
 ├── README.md
 ├── Models/
 │   ├── GGUF Parts/ (all parts below 60 MB)
@@ -740,7 +740,7 @@ That folder may contain:
 * exports and backups
 * compiled `llama.cpp` runner files
 
-Bundled model parts remain under `Models/GGUF Parts/`. Reconstructed runtime models are stored under `Other Files/Saved Data/GGUF Models/` and can be deleted safely; Pocket AI recreates them from the verified parts when needed.
+Bundled model parts remain under `Models/GGUF Parts/`. Reconstructed runtime models are stored under `Other Files/Saved Data/GGUF Models/` and can be deleted safely; Pocket AI Project recreates them from the verified parts when needed.
 
 </details>
 
@@ -752,7 +752,7 @@ Bundled model parts remain under `Models/GGUF Parts/`. Reconstructed runtime mod
 ### Easy controls
 
 * `help` — open the simple numbered menu
-* `exit` — close Pocket AI
+* `exit` — close Pocket AI Project
 * `scan my phone` — select the best model automatically
 * `change your name` — open persona configuration
 * `school help` — show school coverage
@@ -818,7 +818,7 @@ Bundled model parts remain under `Models/GGUF Parts/`. Reconstructed runtime mod
 * Local, private, `.onion`, and non-public hosts are blocked.
 * The dork validator blocks credential hunting, exposed systems, private files, databases, and admin-interface targeting.
 * Download size, file type, language, and page count are limited.
-* Pocket AI does not guarantee that public web content is correct; retrieved information should be checked against reliable sources.
+* Pocket AI Project does not guarantee that public web content is correct; retrieved information should be checked against reliable sources.
 
 </details>
 
@@ -827,7 +827,7 @@ Bundled model parts remain under `Models/GGUF Parts/`. Reconstructed runtime mod
 <details>
 <summary><strong>Limitations</strong></summary>
 
-* Pocket AI is not ChatGPT, Gemini, or another cloud-scale model.
+* Pocket AI Project is not ChatGPT, Gemini, or another cloud-scale model.
 * The bundled 135M models are intentionally small so they can run on older phones.
 * Smaller models can misunderstand questions or produce incorrect text.
 * The school layer is broad but not a complete copy of every country’s official curriculum.
@@ -845,7 +845,7 @@ Bundled model parts remain under `Models/GGUF Parts/`. Reconstructed runtime mod
 <summary><strong>Credits</strong></summary>
 
 * **Creator:** dedsec1121fk
-* **Project:** Pocket AI / DedSec Project
+* **Project:** Pocket AI Project / DedSec Project
 * **Platform:** Android + Termux
 * **Languages:** English and Greek
 * **Local model runtime:** `llama.cpp`
@@ -861,7 +861,7 @@ Bundled model parts remain under `Models/GGUF Parts/`. Reconstructed runtime mod
 <details>
 <summary><strong>Disclaimer</strong></summary>
 
-Pocket AI is provided for educational, personal, and experimental use. It is provided **AS IS**, without guarantees of accuracy, availability, suitability, or fitness for a particular purpose. The creator and contributors are not responsible for damage, data loss, incorrect decisions, overheating, battery drain, account restrictions, or other consequences caused by use or misuse.
+Pocket AI Project is provided for educational, personal, and experimental use. It is provided **AS IS**, without guarantees of accuracy, availability, suitability, or fitness for a particular purpose. The creator and contributors are not responsible for damage, data loss, incorrect decisions, overheating, battery drain, account restrictions, or other consequences caused by use or misuse.
 
 Use web learning only for lawful public research. Respect website terms, copyright, privacy, robots rules, and applicable law. Do not use search operators to target credentials, private systems, exposed devices, or data that you are not authorized to access.
 
@@ -871,19 +871,19 @@ Use web learning only for lawful public research. Respect website terms, copyrig
 
 <a id="greek-readme"></a>
 
-# Pocket AI — Ελληνικά
+# Pocket AI Project — Ελληνικά
 
 > **To return to the complete English version, continue by [clicking here](#english-readme).**
 
-Το **Pocket AI** είναι ένας δίγλωσσος τοπικός βοηθός για **Αγγλικά και Ελληνικά**, σχεδιασμένος για **Termux χωρίς root**. Συνδυάζει μικρούς νευρωνικούς classifiers, τοπικά μοντέλα GGUF, μόνιμη μνήμη ανάκτησης, ειδικά μοντέλα μαθημάτων, ντετερμινιστικά σχολικά εργαλεία και υβριδική δρομολόγηση που προσαρμόζεται στο κινητό.
+Το **Pocket AI Project** είναι ένας δίγλωσσος τοπικός βοηθός για **Αγγλικά και Ελληνικά**, σχεδιασμένος για **Termux χωρίς root**. Συνδυάζει μικρούς νευρωνικούς classifiers, τοπικά μοντέλα GGUF, μόνιμη μνήμη ανάκτησης, ειδικά μοντέλα μαθημάτων, ντετερμινιστικά σχολικά εργαλεία και υβριδική δρομολόγηση που προσαρμόζεται στο κινητό.
 
 Η κανονική χρήση είναι απλή:
 
 ```text
-Pocket AI είναι έτοιμο. Ρώτησέ με οτιδήποτε ή γράψε βοήθεια για επιλογές.
+Pocket AI Project είναι έτοιμο. Ρώτησέ με οτιδήποτε ή γράψε βοήθεια για επιλογές.
 
 Εσύ: Τι είναι το μήλο;
-Pocket AI: Το μήλο είναι ένας βρώσιμος καρπός της μηλιάς...
+Pocket AI Project: Το μήλο είναι ένας βρώσιμος καρπός της μηλιάς...
 ```
 
 Γράψε **`βοήθεια`** οποιαδήποτε στιγμή για να ανοίξει το απλό αριθμημένο μενού.
@@ -943,7 +943,7 @@ Pocket AI: Το μήλο είναι ένας βρώσιμος καρπός τη�
 <details>
 <summary><strong>Καθολική Γνώση και Φυσική Συζήτηση</strong></summary>
 
-Το Pocket AI δίνει πλέον **σε κάθε διαδρομή μοντέλου** την ίδια κοινή δίγλωσση βάση πριν χρησιμοποιηθεί transformer. Έτσι, ένα αδύναμο κινητό δεν χάνει βασικές δυνατότητες επειδή δεν μπορεί να τρέξει το Quality μοντέλο.
+Το Pocket AI Project δίνει πλέον **σε κάθε διαδρομή μοντέλου** την ίδια κοινή δίγλωσση βάση πριν χρησιμοποιηθεί transformer. Έτσι, ένα αδύναμο κινητό δεν χάνει βασικές δυνατότητες επειδή δεν μπορεί να τρέξει το Quality μοντέλο.
 
 * **12.775 ευρετηριασμένες εγγραφές γνώσης** για καθημερινές έννοιες, μαθηματικά, επιστήμες, πληροφορική, γλώσσα, γεωγραφία, ιστορία, αγωγή του πολίτη, οικονομία, υγεία και δεξιότητες μελέτης.
 * **117.659 έννοιες WordNet** με 206.978 αγγλικά λήμματα, 17.891 έννοιες συνδεδεμένες με Ελληνικά και 23.853 ελληνικά λήμματα.
@@ -979,7 +979,7 @@ Pocket AI: Το μήλο είναι ένας βρώσιμος καρπός τη�
 <details>
 <summary><strong>Μέγιστη Ευφυΐα Κάτω από Δύο Λεπτά</strong></summary>
 
-Το μικρότερο μοντέλο Q2_K λειτουργεί πλέον ως **συνθέτης τεκμηρίων**. Το Pocket AI αναζητά πρώτα στις τοπικές βάσεις, βάζει μόνο τα πιο σχετικά αποσπάσματα στο context και μετά ζητά από το μοντέλο να συνθέσει και να ελέγξει την απάντηση. Ένα μοντέλο 135M παραμέτρων δεν μπορεί να γίνει ισάξιο με cloud frontier μοντέλο, γι’ αυτό υποστηρίζονται και ισχυρότερα προαιρετικά Qwen tiers.
+Το μικρότερο μοντέλο Q2_K λειτουργεί πλέον ως **συνθέτης τεκμηρίων**. Το Pocket AI Project αναζητά πρώτα στις τοπικές βάσεις, βάζει μόνο τα πιο σχετικά αποσπάσματα στο context και μετά ζητά από το μοντέλο να συνθέσει και να ελέγξει την απάντηση. Ένα μοντέλο 135M παραμέτρων δεν μπορεί να γίνει ισάξιο με cloud frontier μοντέλο, γι’ αυτό υποστηρίζονται και ισχυρότερα προαιρετικά Qwen tiers.
 
 * **Retrieval-first prompts:** ξεχωριστή κατάταξη επιμελημένων γεγονότων, εγκυκλοπαιδικών αποσπασμάτων και λεξιλογικών στοιχείων.
 * **Ευρεία offline γνώση:** 45.591 άρθρα, 117.659 λεξιλογικές έννοιες, 12.775 δίγλωσσες εγγραφές, σχολική ύλη, έγγραφα χρήστη, μνήμες και διδαγμένα Q&A.
@@ -997,7 +997,7 @@ Pocket AI: Το μήλο είναι ένας βρώσιμος καρπός τη�
 * **Qwen3 4B Pro:** η πρώτη βαθμίδα που στοχεύει να πλησιάσει εμπειρία σύγχρονου βοηθού σε πολλές συνηθισμένες εργασίες γνώσης και συλλογισμού, για ισχυρά κινητά κατηγορίας 8 GB.
 * **Qwen3 8B Max:** η ισχυρότερη υποστηριζόμενη βαθμίδα, για high-end κινητά 12 GB+ με αρκετή ελεύθερη RAM και αποθήκευση.
 * **Προστασία μικρού μοντέλου:** ακόμη και με μόνο το 135M παραμένουν ενεργά planner, reranking, exact tools, δίγλωσσο retrieval, validation και ασφαλές fallback.
-* **Ειλικρινές όριο δυνατότητας:** τα ενσωματωμένα 135M μοντέλα δεν μπορούν να γίνουν πραγματικά ισάξια με ChatGPT 3.5 μόνο με prompts ή περισσότερα facts. Το Pocket AI τα ενισχύει με retrieval, ακριβή εργαλεία, μνήμη συζήτησης, verification και web grounding και επιλέγει αυτόματα μεγαλύτερο μοντέλο όταν το κινητό μπορεί να το τρέξει με ασφάλεια.
+* **Ειλικρινές όριο δυνατότητας:** τα ενσωματωμένα 135M μοντέλα δεν μπορούν να γίνουν πραγματικά ισάξια με ChatGPT 3.5 μόνο με prompts ή περισσότερα facts. Το Pocket AI Project τα ενισχύει με retrieval, ακριβή εργαλεία, μνήμη συζήτησης, verification και web grounding και επιλέγει αυτόματα μεγαλύτερο μοντέλο όταν το κινητό μπορεί να το τρέξει με ασφάλεια.
 
 ```bash
 bash "Other Files/install_smart_models.sh" smart
@@ -1018,7 +1018,7 @@ bash "Other Files/install_smart_models.sh" max
 <details>
 <summary><strong>Πίνακας Συνδυασμών Hardware</strong></summary>
 
-Το Pocket AI δεν θεωρεί ότι όλα τα κινητά με την ίδια διαφημιζόμενη RAM έχουν ίδιες επιδόσεις. Συνδυάζει συνεχώς:
+Το Pocket AI Project δεν θεωρεί ότι όλα τα κινητά με την ίδια διαφημιζόμενη RAM έχουν ίδιες επιδόσεις. Συνδυάζει συνεχώς:
 
 * συνολική RAM
 * πραγματικά διαθέσιμη RAM
@@ -1095,7 +1095,7 @@ termux-setup-storage
 git lfs install
 ```
 
-### 3. Κλωνοποίηση Pocket AI
+### 3. Κλωνοποίηση Pocket AI Project
 
 ```bash
 cd ~
@@ -1116,13 +1116,13 @@ bash "Other Files/install_models.sh"
 ### 5. Εκκίνηση
 
 ```bash
-python "Pocket AI.py"
+python "Pocket AI Project.py"
 ```
 
 ### Άνοιγμα αργότερα
 
 ```bash
-cd ~/Pocket-AI && python "Pocket AI.py"
+cd ~/Pocket-AI && python "Pocket AI Project.py"
 ```
 
 </details>
@@ -1132,11 +1132,11 @@ cd ~/Pocket-AI && python "Pocket AI.py"
 <details>
 <summary><strong>Πώς Χρησιμοποιείται</strong></summary>
 
-Το Pocket AI ανοίγει απευθείας στη συνομιλία:
+Το Pocket AI Project ανοίγει απευθείας στη συνομιλία:
 
 ```text
 Εσύ: Τι είναι η βαρύτητα;
-Pocket AI: Η βαρύτητα είναι η έλξη μεταξύ αντικειμένων που έχουν μάζα...
+Pocket AI Project: Η βαρύτητα είναι η έλξη μεταξύ αντικειμένων που έχουν μάζα...
 ```
 
 Μπορείς να γράψεις φυσιολογικές ερωτήσεις:
@@ -1326,7 +1326,7 @@ scan my phone
 /ingest ~/storage/downloads/SchoolNotes
 ```
 
-Το Pocket AI μπορεί να:
+Το Pocket AI Project μπορεί να:
 
 * διαβάζει υποστηριζόμενα αγγλικά και ελληνικά text files
 * τα χωρίζει σε searchable knowledge chunks
@@ -1337,7 +1337,7 @@ scan my phone
 ### Άμεση διδασκαλία
 
 ```text
-/teach Τι είναι το Pocket AI; | Το Pocket AI είναι τοπικός δίγλωσσος βοηθός Termux.
+/teach Τι είναι το Pocket AI Project; | Το Pocket AI Project είναι τοπικός δίγλωσσος βοηθός Termux.
 ```
 
 ### Δημόσια web learning χωρίς API key
@@ -1375,13 +1375,13 @@ scan my phone
 <details>
 <summary><strong>Google AI και Περιορισμός API Key</strong></summary>
 
-Το Pocket AI **δεν ισχυρίζεται** ότι χρησιμοποιεί ανώνυμα το Google Gemini.
+Το Pocket AI Project **δεν ισχυρίζεται** ότι χρησιμοποιεί ανώνυμα το Google Gemini.
 
 * Το επίσημο Gemini API απαιτεί authentication credentials.
 * Το επίσημο programmable search API της Google επίσης απαιτεί ρύθμιση και API key.
-* Το Pocket AI δεν παρακάμπτει authentication και δεν αντιγράφει private AI sessions.
+* Το Pocket AI Project δεν παρακάμπτει authentication και δεν αντιγράφει private AI sessions.
 * Χωρίς key χρησιμοποιεί τα ενσωματωμένα τοπικά μοντέλα και τις δημόσιες no-key πηγές που αναφέρονται παραπάνω.
-* Γράψε `/google-ai` μέσα στο Pocket AI για την ίδια εξήγηση.
+* Γράψε `/google-ai` μέσα στο Pocket AI Project για την ίδια εξήγηση.
 
 </details>
 
@@ -1392,7 +1392,7 @@ scan my phone
 
 ```text
 Pocket-AI/
-├── Pocket AI.py
+├── Pocket AI Project.py
 ├── README.md
 ├── Models/
 │   ├── GGUF Parts/ (όλα τα parts κάτω από 60 MB)
@@ -1508,7 +1508,7 @@ Other Files/Saved Data/
 * Local, private, `.onion` και μη δημόσιοι hosts μπλοκάρονται.
 * Ο dork validator μπλοκάρει credential hunting, exposed systems, private files, databases και admin targets.
 * Περιορίζονται μέγεθος download, file type, γλώσσα και αριθμός σελίδων.
-* Το Pocket AI δεν εγγυάται ότι δημόσιο web content είναι σωστό.
+* Το Pocket AI Project δεν εγγυάται ότι δημόσιο web content είναι σωστό.
 
 </details>
 
@@ -1517,7 +1517,7 @@ Other Files/Saved Data/
 <details>
 <summary><strong>Περιορισμοί</strong></summary>
 
-* Το Pocket AI δεν είναι ChatGPT, Gemini ή cloud-scale μοντέλο.
+* Το Pocket AI Project δεν είναι ChatGPT, Gemini ή cloud-scale μοντέλο.
 * Τα ενσωματωμένα 135M μοντέλα είναι μικρά για να λειτουργούν σε παλιά κινητά.
 * Μπορεί να παρερμηνεύσουν ερωτήσεις ή να παράγουν λάθος κείμενο.
 * Καμία πεπερασμένη offline βάση δεν περιέχει κάθε πρόταση από κάθε σχολικό βιβλίο. Η παρούσα βάση καλύπτει 771 θέματα και 3.994 αναλυτικά μαθήματα τάξης, αλλά δεν ισχυρίζεται ότι αντιγράφει κάθε εθνικό πρόγραμμα ή εξεταστικό φορέα.
@@ -1535,7 +1535,7 @@ Other Files/Saved Data/
 <summary><strong>Συντελεστές</strong></summary>
 
 * **Δημιουργός:** dedsec1121fk
-* **Project:** Pocket AI / DedSec Project
+* **Project:** Pocket AI Project / DedSec Project
 * **Platform:** Android + Termux
 * **Γλώσσες:** Αγγλικά και Ελληνικά
 * **Local model runtime:** `llama.cpp`
@@ -1551,7 +1551,7 @@ Other Files/Saved Data/
 <details>
 <summary><strong>Αποποίηση Ευθύνης</strong></summary>
 
-Το Pocket AI παρέχεται για εκπαιδευτική, προσωπική και πειραματική χρήση **ΩΣ ΕΧΕΙ**, χωρίς εγγύηση ακρίβειας, διαθεσιμότητας ή καταλληλότητας. Ο δημιουργός και οι contributors δεν ευθύνονται για ζημιές, απώλεια δεδομένων, λάθος αποφάσεις, υπερθέρμανση, κατανάλωση μπαταρίας, περιορισμούς λογαριασμών ή άλλες συνέπειες χρήσης ή κατάχρησης.
+Το Pocket AI Project παρέχεται για εκπαιδευτική, προσωπική και πειραματική χρήση **ΩΣ ΕΧΕΙ**, χωρίς εγγύηση ακρίβειας, διαθεσιμότητας ή καταλληλότητας. Ο δημιουργός και οι contributors δεν ευθύνονται για ζημιές, απώλεια δεδομένων, λάθος αποφάσεις, υπερθέρμανση, κατανάλωση μπαταρίας, περιορισμούς λογαριασμών ή άλλες συνέπειες χρήσης ή κατάχρησης.
 
 Χρησιμοποίησε το web learning μόνο για νόμιμη δημόσια έρευνα. Σεβάσου όρους ιστοσελίδων, copyright, ιδιωτικότητα, robots rules και νομοθεσία. Μη χρησιμοποιείς search operators για credentials, ιδιωτικά συστήματα, εκτεθειμένες συσκευές ή δεδομένα χωρίς άδεια.
 

@@ -24,11 +24,11 @@ Everything is implemented with Python's standard library:
 No root, TensorFlow, PyTorch, NumPy, or cloud API is required. Core use remains offline; web mode can search current public information on request or automatically for time-sensitive questions.
 
 Examples:
-    python "Pocket AI.py"
-    python "Pocket AI.py" --train
-    python "Pocket AI.py" --profile max --train
-    python "Pocket AI.py" --benchmark
-    python "Pocket AI.py" --data ~/PocketAI_Bilingual_MAX
+    python "Pocket AI Project.py"
+    python "Pocket AI Project.py" --train
+    python "Pocket AI Project.py" --profile max --train
+    python "Pocket AI Project.py" --benchmark
+    python "Pocket AI Project.py" --data ~/PocketAI_Bilingual_MAX
 
 The default "auto" profile chooses a practical network size from available RAM.
 Use --profile extreme only when you accept slower first-run training.
@@ -82,7 +82,7 @@ from typing import Any, Deque, Dict, Iterable, Iterator, List, Optional, Sequenc
 
 
 # Optional standard-library runtime modules bundled under Other Files/Modules.
-# Pocket AI remains usable with conservative fallbacks if a module file is
+# Pocket AI Project remains usable with conservative fallbacks if a module file is
 # damaged or removed.
 RUNTIME_MODULE_DIR = Path(__file__).resolve().parent / "Other Files" / "Modules"
 if str(RUNTIME_MODULE_DIR) not in sys.path:
@@ -93,14 +93,14 @@ try:
         naturalize_response, persona_instruction, sanitize_name, save_persona,
     )
 except Exception:
-    DEFAULT_PERSONA = {"assistant_name": "Pocket AI", "user_name": "", "style": "friendly", "human_style": True}
+    DEFAULT_PERSONA = {"assistant_name": "Pocket AI Project", "user_name": "", "style": "friendly", "human_style": True}
     PERSONA_STYLES = {"friendly": {"label_en": "Friendly", "label_el": "Φιλικό"}}
     def load_persona(data_dir: Path) -> dict: return dict(DEFAULT_PERSONA)
     def save_persona(data_dir: Path, payload: dict) -> dict: return dict(payload)
-    def sanitize_name(value: str, fallback: str = "Pocket AI", maximum: int = 28) -> str: return str(value).strip()[:maximum] or fallback
+    def sanitize_name(value: str, fallback: str = "Pocket AI Project", maximum: int = 28) -> str: return str(value).strip()[:maximum] or fallback
     def persona_instruction(config: dict, language: str) -> str: return "Speak naturally and clearly while identifying as an AI assistant."
     def naturalize_response(text: str, language: str, config: dict, route: str = "", seed_text: str = "") -> str: return text.strip()
-    def describe_persona(config: dict, language: str = "en") -> str: return f"AI name: {config.get('assistant_name', 'Pocket AI')}"
+    def describe_persona(config: dict, language: str = "en") -> str: return f"AI name: {config.get('assistant_name', 'Pocket AI Project')}"
 try:
     from context_optimizer import optimize_context
 except Exception:
@@ -2297,7 +2297,7 @@ def configure_persona_menu(data_dir: Path) -> dict:
     print("-" * 72)
     print(describe_persona(config, "en"))
     try:
-        entered_name = input(f"\nAI name [{config.get('assistant_name', 'Pocket AI')}]: ").strip()
+        entered_name = input(f"\nAI name [{config.get('assistant_name', 'Pocket AI Project')}]: ").strip()
         if entered_name:
             config["assistant_name"] = sanitize_name(entered_name)
         entered_user = input(f"Your name (optional) [{config.get('user_name', '')}]: ").strip()
@@ -4782,7 +4782,7 @@ class LocalGGUFModel:
         is_qwen_family = family in {"qwen2.5", "qwen3", "qwen3.5"}
         if is_qwen_family:
             system = (
-                "You are Pocket AI, a precise offline assistant. " + language_instruction
+                "You are Pocket AI Project, a precise offline assistant. " + language_instruction
                 + " Use the evidence to answer the user's actual question, not to repeat passages. "
                   "Give the answer first, then only the reasoning, steps, examples, or cautions that improve it. "
                   "Privately plan and verify facts, arithmetic, code, and commands before writing. "
@@ -4795,7 +4795,7 @@ class LocalGGUFModel:
         else:
             # Tiny 135M models follow a shorter, more concrete instruction better.
             system = (
-                "You are Pocket AI. " + language_instruction
+                "You are Pocket AI Project. " + language_instruction
                 + " Answer the exact question. Use the evidence, do not copy irrelevant text, and do not invent facts. "
                   "Give the direct answer first. Check numbers and commands. Say when the evidence is insufficient."
                 + current_warning
@@ -7450,8 +7450,8 @@ def handle_command(assistant: PocketAssistant, command_line: str) -> Tuple[bool,
         return True, assistant.school_tutor.grade_overview(int(match.group(1)), (match.group(2) or "").strip(), language)
     if command == "/google-ai":
         return True, assistant.t(
-            "Google Gemini cannot be called anonymously: its official API requires credentials. Pocket AI instead learns without an API key from public Bing RSS search results, Wikipedia, and readable public pages through /web-learn.",
-            "Το Google Gemini δεν μπορεί να κληθεί ανώνυμα: το επίσημο API του απαιτεί διαπιστευτήρια. Το Pocket AI μαθαίνει χωρίς API key από δημόσια αποτελέσματα Bing RSS, Wikipedia και αναγνώσιμες δημόσιες σελίδες μέσω /web-learn.",
+            "Google Gemini cannot be called anonymously: its official API requires credentials. Pocket AI Project instead learns without an API key from public Bing RSS search results, Wikipedia, and readable public pages through /web-learn.",
+            "Το Google Gemini δεν μπορεί να κληθεί ανώνυμα: το επίσημο API του απαιτεί διαπιστευτήρια. Το Pocket AI Project μαθαίνει χωρίς API key από δημόσια αποτελέσματα Bing RSS, Wikipedia και αναγνώσιμες δημόσιες σελίδες μέσω /web-learn.",
             language
         )
     if command == "/web-learn":

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Shared bilingual grade 1-12 school tutor for Pocket AI.
+"""Shared bilingual grade 1-12 school tutor for Pocket AI Project.
 
 The module uses only Python's standard library. It provides deterministic math
 solvers and a detailed bilingual grade-adapted curriculum knowledge database. It runs before any

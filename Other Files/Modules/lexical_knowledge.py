@@ -1,4 +1,4 @@
-"""Fast sharded WordNet/Greek-WordNet retrieval for Pocket AI.
+"""Fast sharded WordNet/Greek-WordNet retrieval for Pocket AI Project.
 
 The module uses only Python's standard library.  It keeps the 117k-concept
 lexicon in multiple read-only SQLite/FTS5 shards, so even low-RAM phones can

@@ -1,6 +1,6 @@
 # Persona and Runtime Modules
 
-Pocket AI loads optional standard-library modules from `Other Files/Modules/`.
+Pocket AI Project loads optional standard-library modules from `Other Files/Modules/`.
 
 ## Persistent persona
 

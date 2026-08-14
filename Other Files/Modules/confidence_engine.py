@@ -1,4 +1,4 @@
-"""Route-aware answer confidence calibration for Pocket AI."""
+"""Route-aware answer confidence calibration for Pocket AI Project."""
 from __future__ import annotations
 
 from typing import Any, Dict

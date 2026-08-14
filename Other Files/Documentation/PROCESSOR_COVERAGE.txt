@@ -57,5 +57,5 @@ THERMAL AND LIVE RESOURCE FALLBACK
 ----------------------------------
 The processor-name database is only the first signal. Unknown and future SoCs
 are scored through architecture, core topology, frequency and a short benchmark.
-Before inference Pocket AI also checks available RAM and thermal zones, and it
+Before inference Pocket AI Project also checks available RAM and thermal zones, and it
 can downgrade any known processor to a safer runtime when Android is under load.

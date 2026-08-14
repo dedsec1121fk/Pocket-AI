@@ -1,4 +1,4 @@
-# Pocket AI Runtime Modules
+# Pocket AI Project Runtime Modules
 
 The runtime modules provide bilingual retrieval, conversation handling, exact tools, model-specific cognitive profiles, thermal/resource governance, web intelligence, and sequential hybrid orchestration.
 

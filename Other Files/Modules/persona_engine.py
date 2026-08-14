@@ -1,4 +1,4 @@
-"""Persistent bilingual persona and natural-response helpers for Pocket AI."""
+"""Persistent bilingual persona and natural-response helpers for Pocket AI Project."""
 from __future__ import annotations
 
 import hashlib
@@ -44,7 +44,7 @@ PERSONA_STYLES: Dict[str, Dict[str, str]] = {
 
 DEFAULT_PERSONA: Dict[str, Any] = {
     "version": MODULE_VERSION,
-    "assistant_name": "Pocket AI",
+    "assistant_name": "Pocket AI Project",
     "user_name": "",
     "style": "friendly",
     "human_style": True,
@@ -53,7 +53,7 @@ DEFAULT_PERSONA: Dict[str, Any] = {
 _NAME_RE = re.compile(r"[^0-9A-Za-zΑ-Ωα-ωΆ-ώΪΫϊϋΐΰ _'’\-]+", re.UNICODE)
 
 
-def sanitize_name(value: str, fallback: str = "Pocket AI", maximum: int = 28) -> str:
+def sanitize_name(value: str, fallback: str = "Pocket AI Project", maximum: int = 28) -> str:
     cleaned = _NAME_RE.sub("", str(value)).strip()
     cleaned = re.sub(r"\s+", " ", cleaned)[:maximum].strip(" -_'’")
     return cleaned or fallback
@@ -72,7 +72,7 @@ def load_persona(data_dir: Path) -> Dict[str, Any]:
             result.update(payload)
     except (OSError, ValueError, TypeError, json.JSONDecodeError):
         pass
-    result["assistant_name"] = sanitize_name(result.get("assistant_name", "Pocket AI"))
+    result["assistant_name"] = sanitize_name(result.get("assistant_name", "Pocket AI Project"))
     result["user_name"] = sanitize_name(result.get("user_name", ""), fallback="", maximum=36) if result.get("user_name") else ""
     if result.get("style") not in PERSONA_STYLES:
         result["style"] = "friendly"
@@ -86,7 +86,7 @@ def save_persona(data_dir: Path, payload: Dict[str, Any]) -> Dict[str, Any]:
     path.parent.mkdir(parents=True, exist_ok=True)
     clean = dict(DEFAULT_PERSONA)
     clean.update(payload)
-    clean["assistant_name"] = sanitize_name(clean.get("assistant_name", "Pocket AI"))
+    clean["assistant_name"] = sanitize_name(clean.get("assistant_name", "Pocket AI Project"))
     clean["user_name"] = sanitize_name(clean.get("user_name", ""), fallback="", maximum=36) if clean.get("user_name") else ""
     if clean.get("style") not in PERSONA_STYLES:
         clean["style"] = "friendly"
@@ -100,7 +100,7 @@ def save_persona(data_dir: Path, payload: Dict[str, Any]) -> Dict[str, Any]:
 
 def persona_instruction(config: Dict[str, Any], language: str) -> str:
     style = PERSONA_STYLES.get(str(config.get("style", "friendly")), PERSONA_STYLES["friendly"])
-    name = sanitize_name(config.get("assistant_name", "Pocket AI"))
+    name = sanitize_name(config.get("assistant_name", "Pocket AI Project"))
     user_name = str(config.get("user_name", "")).strip()
     if language == "el":
         instruction = (

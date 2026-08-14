@@ -1,5 +1,5 @@
 {
-  "package": "Pocket AI extended 3B hybrid model and knowledge matrix",
+  "package": "Pocket AI Project extended 3B hybrid model and knowledge matrix",
   "package_profile": "extended-3b-hybrid-intelligence",
   "target": "Termux on unrooted Android phones with a normal 0.6B, 0.8B, 1.5B, 1.7B, 2B, and 3.09B ladder, adjacent sequential hybrids, emergency 135M fallbacks, bilingual conversation, grades 1-12 knowledge, web grounding, and live RAM/CPU/thermal controls.",
   "automatic_scan": {
@@ -528,7 +528,7 @@
     },
     {
       "id": "adaptive_controller",
-      "name": "Pocket AI Adaptive Controller",
+      "name": "Pocket AI Project Adaptive Controller",
       "kind": "hybrid control model",
       "file": "Models/PocketAI_Adaptive_Controller.json.gz",
       "size_bytes": 440,
@@ -538,11 +538,11 @@
       "minimum_available_ram_bytes": 83886080,
       "minimum_cpu_score": 0,
       "requires_64_bit": false,
-      "processor_combinations": "Any processor supported by Pocket AI; controller runs in standard Python."
+      "processor_combinations": "Any processor supported by Pocket AI Project; controller runs in standard Python."
     },
     {
       "id": "consensus_controller",
-      "name": "Pocket AI Consensus Controller",
+      "name": "Pocket AI Project Consensus Controller",
       "kind": "hybrid control model",
       "file": "Models/PocketAI_Consensus_Controller.json.gz",
       "size_bytes": 364,
@@ -552,11 +552,11 @@
       "minimum_available_ram_bytes": 83886080,
       "minimum_cpu_score": 0,
       "requires_64_bit": false,
-      "processor_combinations": "Any processor supported by Pocket AI; controller runs in standard Python."
+      "processor_combinations": "Any processor supported by Pocket AI Project; controller runs in standard Python."
     },
     {
       "id": "persona_controller",
-      "name": "Pocket AI Persona Controller",
+      "name": "Pocket AI Project Persona Controller",
       "kind": "conversation control model",
       "file": "Models/PocketAI_Persona_Controller.json.gz",
       "size_bytes": 241,
@@ -566,11 +566,11 @@
       "minimum_available_ram_bytes": 83886080,
       "minimum_cpu_score": 0,
       "requires_64_bit": false,
-      "processor_combinations": "Any processor supported by Pocket AI; controller runs in standard Python."
+      "processor_combinations": "Any processor supported by Pocket AI Project; controller runs in standard Python."
     },
     {
       "id": "context_optimizer",
-      "name": "Pocket AI Context Optimizer",
+      "name": "Pocket AI Project Context Optimizer",
       "kind": "retrieval context control model",
       "file": "Models/PocketAI_Context_Optimizer.json.gz",
       "size_bytes": 230,
@@ -580,11 +580,11 @@
       "minimum_available_ram_bytes": 83886080,
       "minimum_cpu_score": 0,
       "requires_64_bit": false,
-      "processor_combinations": "Any processor supported by Pocket AI; controller runs in standard Python."
+      "processor_combinations": "Any processor supported by Pocket AI Project; controller runs in standard Python."
     },
     {
       "id": "confidence_calibrator",
-      "name": "Pocket AI Confidence Calibrator",
+      "name": "Pocket AI Project Confidence Calibrator",
       "kind": "answer confidence control model",
       "file": "Models/PocketAI_Confidence_Calibrator.json.gz",
       "size_bytes": 209,
@@ -594,7 +594,7 @@
       "minimum_available_ram_bytes": 83886080,
       "minimum_cpu_score": 0,
       "requires_64_bit": false,
-      "processor_combinations": "Any processor supported by Pocket AI; controller runs in standard Python."
+      "processor_combinations": "Any processor supported by Pocket AI Project; controller runs in standard Python."
     },
     {
       "id": "school_knowledge",
@@ -607,7 +607,7 @@
       "minimum_total_ram_bytes": 0,
       "minimum_available_ram_bytes": 0,
       "minimum_cpu_score": 0,
-      "processor_combinations": "Shared standard-library layer available on every Pocket AI profile",
+      "processor_combinations": "Shared standard-library layer available on every Pocket AI Project profile",
       "coverage": "771 topics and 3,994 grade-adapted lessons across grades 1-12, English and Greek"
     },
     {
@@ -621,7 +621,7 @@
       "minimum_total_ram_bytes": 0,
       "minimum_available_ram_bytes": 0,
       "minimum_cpu_score": 0,
-      "processor_combinations": "Shared standard-library layer available on every Pocket AI profile",
+      "processor_combinations": "Shared standard-library layer available on every Pocket AI Project profile",
       "coverage": "Arithmetic through introductory calculus; deterministic solver routes before model fallback"
     },
     {
@@ -635,7 +635,7 @@
       "minimum_total_ram_bytes": 0,
       "minimum_available_ram_bytes": 0,
       "minimum_cpu_score": 0,
-      "processor_combinations": "Shared standard-library layer available on every Pocket AI profile",
+      "processor_combinations": "Shared standard-library layer available on every Pocket AI Project profile",
       "coverage": "Primary through upper-secondary science foundations"
     },
     {
@@ -649,7 +649,7 @@
       "minimum_total_ram_bytes": 0,
       "minimum_available_ram_bytes": 0,
       "minimum_cpu_score": 0,
-      "processor_combinations": "Shared standard-library layer available on every Pocket AI profile",
+      "processor_combinations": "Shared standard-library layer available on every Pocket AI Project profile",
       "coverage": "English/Greek grammar, writing, literature, and research foundations"
     },
     {
@@ -663,7 +663,7 @@
       "minimum_total_ram_bytes": 0,
       "minimum_available_ram_bytes": 0,
       "minimum_cpu_score": 0,
-      "processor_combinations": "Shared standard-library layer available on every Pocket AI profile",
+      "processor_combinations": "Shared standard-library layer available on every Pocket AI Project profile",
       "coverage": "History, geography, civics, economics, and introductory philosophy"
     },
     {
@@ -677,7 +677,7 @@
       "minimum_total_ram_bytes": 0,
       "minimum_available_ram_bytes": 0,
       "minimum_cpu_score": 0,
-      "processor_combinations": "Shared standard-library layer available on every Pocket AI profile",
+      "processor_combinations": "Shared standard-library layer available on every Pocket AI Project profile",
       "coverage": "Computing, algorithms, digital literacy, and study skills"
     },
     {
@@ -691,7 +691,7 @@
       "minimum_total_ram_bytes": 0,
       "minimum_available_ram_bytes": 0,
       "minimum_cpu_score": 0,
-      "processor_combinations": "Shared standard-library layer available on every Pocket AI profile",
+      "processor_combinations": "Shared standard-library layer available on every Pocket AI Project profile",
       "coverage": "Runs shared school tools before retrieval, specialists, and optional GGUF explanation"
     },
     {
@@ -705,12 +705,12 @@
       "minimum_total_ram_bytes": 0,
       "minimum_available_ram_bytes": 0,
       "minimum_cpu_score": 0,
-      "processor_combinations": "Shared standard-library layer available on every Pocket AI profile",
+      "processor_combinations": "Shared standard-library layer available on every Pocket AI Project profile",
       "coverage": "Bing RSS, Wikipedia MediaWiki API, public pages, and constrained operators; no Google Gemini bypass"
     },
     {
       "id": "universal_knowledge_foundation",
-      "name": "Pocket AI Universal Bilingual Knowledge Foundation",
+      "name": "Pocket AI Project Universal Bilingual Knowledge Foundation",
       "kind": "shared bilingual offline knowledge model",
       "file": "Models/PocketAI_Universal_Knowledge.json.gz",
       "size_bytes": 44810,
@@ -719,12 +719,12 @@
       "minimum_total_ram_bytes": 0,
       "minimum_available_ram_bytes": 0,
       "minimum_cpu_score": 0,
-      "processor_combinations": "Shared standard-library layer available on every Pocket AI profile",
+      "processor_combinations": "Shared standard-library layer available on every Pocket AI Project profile",
       "coverage": "274 definitions, school foundations, geography, science, computing, language, civics, history, health, and study skills"
     },
     {
       "id": "universal_knowledge_controller",
-      "name": "Pocket AI Universal Knowledge Controller",
+      "name": "Pocket AI Project Universal Knowledge Controller",
       "kind": "shared routing controller",
       "file": "Models/PocketAI_Universal_Knowledge_Controller.json.gz",
       "size_bytes": 391,
@@ -733,12 +733,12 @@
       "minimum_total_ram_bytes": 0,
       "minimum_available_ram_bytes": 0,
       "minimum_cpu_score": 0,
-      "processor_combinations": "Shared standard-library layer available on every Pocket AI profile",
+      "processor_combinations": "Shared standard-library layer available on every Pocket AI Project profile",
       "coverage": "Routes all model profiles through the shared knowledge foundation before transformer fallback"
     },
     {
       "id": "natural_dialogue_controller",
-      "name": "Pocket AI Natural Dialogue Controller",
+      "name": "Pocket AI Project Natural Dialogue Controller",
       "kind": "bilingual conversational state controller",
       "file": "Models/PocketAI_Natural_Dialogue_Controller.json.gz",
       "size_bytes": 283,
@@ -747,12 +747,12 @@
       "minimum_total_ram_bytes": 0,
       "minimum_available_ram_bytes": 0,
       "minimum_cpu_score": 0,
-      "processor_combinations": "Shared standard-library layer available on every Pocket AI profile",
+      "processor_combinations": "Shared standard-library layer available on every Pocket AI Project profile",
       "coverage": "Small talk, follow-up resolution, persistent persona, naturalization, and anti-repetition"
     },
     {
       "id": "continuous_runtime_controller",
-      "name": "Pocket AI Continuous Runtime Controller",
+      "name": "Pocket AI Project Continuous Runtime Controller",
       "kind": "live hardware optimization controller",
       "file": "Models/PocketAI_Continuous_Runtime_Controller.json.gz",
       "size_bytes": 317,
@@ -761,12 +761,12 @@
       "minimum_total_ram_bytes": 0,
       "minimum_available_ram_bytes": 0,
       "minimum_cpu_score": 0,
-      "processor_combinations": "Shared standard-library layer available on every Pocket AI profile",
+      "processor_combinations": "Shared standard-library layer available on every Pocket AI Project profile",
       "coverage": "Continuously tunes model, classifier, hybrid mode, context, batch, tokens, and threads"
     },
     {
       "id": "max_knowledge_database",
-      "name": "Pocket AI Max Bilingual Knowledge Database",
+      "name": "Pocket AI Project Max Bilingual Knowledge Database",
       "kind": "SQLite FTS5 indexed bilingual knowledge database",
       "file": "Models/PocketAI_Max_Knowledge.sqlite3",
       "requires_64_bit": false,
@@ -780,84 +780,84 @@
     },
     {
       "id": "knowledge_retriever",
-      "name": "Pocket AI Knowledge Retriever",
+      "name": "Pocket AI Project Knowledge Retriever",
       "kind": "indexed retrieval controller",
       "file": "Models/PocketAI_Knowledge_Retriever.json.gz",
       "requires_64_bit": false,
       "minimum_total_ram_bytes": 0,
       "minimum_available_ram_bytes": 0,
       "minimum_cpu_score": 0,
-      "processor_combinations": "Shared standard-library layer available on every Pocket AI profile",
+      "processor_combinations": "Shared standard-library layer available on every Pocket AI Project profile",
       "coverage": "English and Greek; shared by classifiers, specialists, MicroLM, and GGUF inference",
       "size_bytes": 318,
       "sha256": "5f99e48059fe112ba1fdddba6db205064501f70d1bf625dd322d56643e25ab32"
     },
     {
       "id": "knowledge_reranker",
-      "name": "Pocket AI Knowledge Reranker",
+      "name": "Pocket AI Project Knowledge Reranker",
       "kind": "relevance-ranking controller",
       "file": "Models/PocketAI_Knowledge_Reranker.json.gz",
       "requires_64_bit": false,
       "minimum_total_ram_bytes": 0,
       "minimum_available_ram_bytes": 0,
       "minimum_cpu_score": 0,
-      "processor_combinations": "Shared standard-library layer available on every Pocket AI profile",
+      "processor_combinations": "Shared standard-library layer available on every Pocket AI Project profile",
       "coverage": "English and Greek; shared by classifiers, specialists, MicroLM, and GGUF inference",
       "size_bytes": 253,
       "sha256": "20d3b2396670cd84a8ed99ebedb0e51836c64bcd699fb31c5cae9cab296029be"
     },
     {
       "id": "cross_model_knowledge_bridge",
-      "name": "Pocket AI Cross-Model Knowledge Bridge",
+      "name": "Pocket AI Project Cross-Model Knowledge Bridge",
       "kind": "context bridge controller",
       "file": "Models/PocketAI_CrossModel_Knowledge_Bridge.json.gz",
       "requires_64_bit": false,
       "minimum_total_ram_bytes": 0,
       "minimum_available_ram_bytes": 0,
       "minimum_cpu_score": 0,
-      "processor_combinations": "Shared standard-library layer available on every Pocket AI profile",
+      "processor_combinations": "Shared standard-library layer available on every Pocket AI Project profile",
       "coverage": "English and Greek; shared by classifiers, specialists, MicroLM, and GGUF inference",
       "size_bytes": 263,
       "sha256": "21b6f7cf7bfa43576899bfd1a4ff6e771c80fe4297deb189243cc4db2150cb68"
     },
     {
       "id": "response_cache_controller",
-      "name": "Pocket AI Response Cache Controller",
+      "name": "Pocket AI Project Response Cache Controller",
       "kind": "static response caching controller",
       "file": "Models/PocketAI_Response_Cache_Controller.json.gz",
       "requires_64_bit": false,
       "minimum_total_ram_bytes": 0,
       "minimum_available_ram_bytes": 0,
       "minimum_cpu_score": 0,
-      "processor_combinations": "Shared standard-library layer available on every Pocket AI profile",
+      "processor_combinations": "Shared standard-library layer available on every Pocket AI Project profile",
       "coverage": "English and Greek; shared by classifiers, specialists, MicroLM, and GGUF inference",
       "size_bytes": 267,
       "sha256": "feeb3e876cd1fe871e83fa237ce19c6a177dc29e1c6683e9beb1d623a0ca25d6"
     },
     {
       "id": "prompt_compressor",
-      "name": "Pocket AI Prompt Compressor",
+      "name": "Pocket AI Project Prompt Compressor",
       "kind": "low-latency context controller",
       "file": "Models/PocketAI_Prompt_Compressor.json.gz",
       "requires_64_bit": false,
       "minimum_total_ram_bytes": 0,
       "minimum_available_ram_bytes": 0,
       "minimum_cpu_score": 0,
-      "processor_combinations": "Shared standard-library layer available on every Pocket AI profile",
+      "processor_combinations": "Shared standard-library layer available on every Pocket AI Project profile",
       "coverage": "English and Greek; shared by classifiers, specialists, MicroLM, and GGUF inference",
       "size_bytes": 255,
       "sha256": "c205d2775a57e8352175e0825888b869c899c7f7c6f4323722abab02e7bfcc38"
     },
     {
       "id": "school_curriculum_database",
-      "name": "Pocket AI Complete School Curriculum",
+      "name": "Pocket AI Project Complete School Curriculum",
       "kind": "read-only bilingual grade 1-12 SQLite FTS5 knowledge database",
       "file": "Models/School Knowledge/PocketAI_School_Curriculum.sqlite3",
       "requires_64_bit": false,
       "minimum_total_ram_bytes": 0,
       "minimum_available_ram_bytes": 0,
       "minimum_cpu_score": 0,
-      "processor_combinations": "Shared read-only retrieval layer for every Pocket AI profile",
+      "processor_combinations": "Shared read-only retrieval layer for every Pocket AI Project profile",
       "coverage": "771 topics and 3,994 grade-adapted lessons across 9 subject fields, English and Greek",
       "size_bytes": 29999104,
       "sha256": "562380b778a5aef241eb09ade0cb8c9f144081b02cac68e19ca83c988768dc0f"
@@ -955,7 +955,7 @@
     "reason": "Native runner is compiled for the phone architecture; all AI model data is already bundled"
   },
   "package_structure": {
-    "main_script": "Pocket AI.py",
+    "main_script": "Pocket AI Project.py",
     "models_folder": "Models",
     "other_files_folder": "Other Files",
     "generated_data_folder": "Other Files/Saved Data",

@@ -1,6 +1,6 @@
 # MaxSafe Thermal Hybrid Architecture
 
-Pocket AI aims for the highest sustainable answer quality on Android rather than the highest momentary CPU load.
+Pocket AI Project aims for the highest sustainable answer quality on Android rather than the highest momentary CPU load.
 
 ## Operating rules
 
@@ -22,7 +22,7 @@ The router combines installed-model availability with total RAM, current availab
 
 1. Retrieval, exact tools, school knowledge, web evidence, and conversation context are prepared once.
 2. A compact safe model creates structured analysis for a difficult query.
-3. The model process exits. Pocket AI checks heat, RAM, time, and applies a short cooldown when useful.
+3. The model process exits. Pocket AI Project checks heat, RAM, time, and applies a short cooldown when useful.
 4. The strongest safe model synthesizes one natural final answer and corrects conflicts.
 5. The answer auditor can keep the first result if the second pass clearly regresses.
 
@@ -32,7 +32,7 @@ Thermal sensors and device cooling vary. The system proactively reduces load but
 
 ## Adaptive compute learning
 
-Pocket AI records local per-model throughput, elapsed time, temperature rise, and guarded aborts. Stable cool runs can earn modest burst headroom; rapid heating or failures reduce later budgets. A final hard thermal/RAM check always runs after learned tuning.
+Pocket AI Project records local per-model throughput, elapsed time, temperature rise, and guarded aborts. Stable cool runs can earn modest burst headroom; rapid heating or failures reduce later budgets. A final hard thermal/RAM check always runs after learned tuning.
 
 ## Guarded final critic
 

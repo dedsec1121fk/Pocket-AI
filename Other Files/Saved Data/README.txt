@@ -1,4 +1,4 @@
-Pocket AI creates and updates its local runtime data in this folder.
+Pocket AI Project creates and updates its local runtime data in this folder.
 
 Typical generated files:
   device_profile.json       hardware scan and automatic model match

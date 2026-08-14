@@ -1,6 +1,6 @@
-# Pocket AI Maximum-Knowledge Architecture
+# Pocket AI Project Maximum-Knowledge Architecture
 
-Pocket AI uses retrieval-first intelligence so the smallest 135M model receives precise evidence instead of relying only on its limited parameters.
+Pocket AI Project uses retrieval-first intelligence so the smallest 135M model receives precise evidence instead of relying only on its limited parameters.
 
 ## Knowledge layers
 
@@ -47,4 +47,4 @@ Low-end profiles use one generation pass. Balanced and performance profiles may 
 - Only one GGUF process runs at a time.
 - Every packaged model or knowledge shard remains below 60 MB.
 
-The two-minute objective applies to Pocket AI's inference plan after startup. Very slow storage, first-run model reconstruction, Android process scheduling, thermal throttling, or external `llama.cpp` behavior can add overhead, so a universal wall-clock guarantee is not possible.
+The two-minute objective applies to Pocket AI Project's inference plan after startup. Very slow storage, first-run model reconstruction, Android process scheduling, thermal throttling, or external `llama.cpp` behavior can add overhead, so a universal wall-clock guarantee is not possible.

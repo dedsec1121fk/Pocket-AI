@@ -1,4 +1,4 @@
-"""High-value deterministic reasoning tools for Pocket AI.
+"""High-value deterministic reasoning tools for Pocket AI Project.
 
 This module improves small-model answers without pretending that retrieval or
 prompting changes the parameter count of the underlying language model. It uses

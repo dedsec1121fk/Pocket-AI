@@ -1,4 +1,4 @@
-"""No-key web-search planning helpers for Pocket AI.
+"""No-key web-search planning helpers for Pocket AI Project.
 
 The module does not silently modify model weights.  It supplies current public
 information to the retrieval layer and can persist selected page text in the

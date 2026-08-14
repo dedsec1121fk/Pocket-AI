@@ -1,4 +1,4 @@
-"""Deterministic planning, evidence compression and answer validation for Pocket AI.
+"""Deterministic planning, evidence compression and answer validation for Pocket AI Project.
 
 The module is intentionally standard-library only.  It does not pretend to turn a
 small language model into a frontier model; instead it protects the model from

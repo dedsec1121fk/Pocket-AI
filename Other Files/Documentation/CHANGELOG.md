@@ -1,4 +1,4 @@
-# Pocket AI Changelog
+# Pocket AI Project Changelog
 
 ## Extended 3B Hybrid Intelligence
 
@@ -33,7 +33,7 @@
 - Updated `model_intelligence.py` and added `PocketAI_Spec_Max_Cognitive_Scaler.json.gz`.
 - Preserved the honest limitation that 135M weights cannot literally equal GPT-3.5; gains come from orchestration, retrieval, exact tools, verification, and optional Qwen tiers.
 
-# Pocket AI Changelog
+# Pocket AI Project Changelog
 
 ## Rapid Web Shared Intelligence
 
@@ -46,7 +46,7 @@
 - Prevented current-sensitive answers from becoming timeless shared lessons.
 - Kept public-host validation, robots.txt checks, blocked binary types, bounded downloads, thermal protection, and the shared answer deadline.
 
-# Pocket AI Changelog
+# Pocket AI Project Changelog
 
 ## Adaptive MaxSafe Deep Fusion
 
@@ -71,7 +71,7 @@
 - Capped sustained local inference at six threads while leaving Android scheduling headroom.
 - Added the MaxSafe controller, thermal governor, hybrid orchestrator, documentation, and bilingual README guidance.
 
-# Pocket AI Changelog
+# Pocket AI Project Changelog
 
 ## Conversational Web Intelligence
 
@@ -104,7 +104,7 @@
 - Corrected live hardware combination reporting for each active model tier.
 - Added optional Qwen2.5 0.5B Smart and 1.5B Ultra model routes with guarded runtime plans.
 
-# Pocket AI Changelog
+# Pocket AI Project Changelog
 
 ## Smart Reasoning + Qwen Upgrade Edition
 
@@ -134,7 +134,7 @@
 - Added the verified Q2_K and Q4_1 SmolLM2 GGUF weights to the package.
 - Split each GGUF into two ordered parts with a 48 MiB maximum part size.
 - Added `Models/GGUF Parts/split_models_manifest.json` with exact part sizes and SHA-256 hashes.
-- Added automatic, atomic model reconstruction and runtime-cache reuse in `Pocket AI.py`.
+- Added automatic, atomic model reconstruction and runtime-cache reuse in `Pocket AI Project.py`.
 - Updated the Termux installer to reconstruct and verify both GGUF models without downloading weights.
 - Updated English and Greek documentation and model manifests.
 
@@ -145,12 +145,12 @@
 - Added compact knowledge context injection, relevance reranking, prompt compression, and safe static-answer caching.
 - Exact facts and mathematics can bypass transformer generation for faster responses.
 
-# Pocket AI Changelog
+# Pocket AI Project Changelog
 
 ## Direct Chat + Simple Help Edition
 
 - Removed the launcher from normal startup.
-- Pocket AI now opens directly at the `You:` / `Εσύ:` chat prompt.
+- Pocket AI Project now opens directly at the `You:` / `Εσύ:` chat prompt.
 - Typing `help`, `/help`, `βοήθεια`, or `/βοήθεια` opens a simple numbered menu.
 - Added natural phrases such as `scan my phone`, `find best model`, `change your name`, and `exit`.
 - Added menu-driven teaching, file learning, safe web research, phone scanning, model status, and persona setup.

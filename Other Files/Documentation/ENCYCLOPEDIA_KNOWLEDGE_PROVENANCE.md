@@ -1,8 +1,8 @@
 # Offline Encyclopedia Knowledge Provenance
 
-Pocket AI includes a searchable offline encyclopedia index built from the first 50 approximately 1 MiB files in the public repository `ffatty/plain-text-wikipedia-simpleenglish`.
+Pocket AI Project includes a searchable offline encyclopedia index built from the first 50 approximately 1 MiB files in the public repository `ffatty/plain-text-wikipedia-simpleenglish`.
 
-The repository describes the material as a plain-text Simple English Wikipedia corpus ported from the publisher's Kaggle dataset. Pocket AI retrieved and transformed the source files on **2026-07-09**.
+The repository describes the material as a plain-text Simple English Wikipedia corpus ported from the publisher's Kaggle dataset. Pocket AI Project retrieved and transformed the source files on **2026-07-09**.
 
 ## Packaged transformation
 
@@ -23,7 +23,7 @@ The source text files are not loaded into RAM and are not retained separately in
 - It may contain outdated, incomplete, simplified, disputed, or incorrect information.
 - Current office-holders, laws, prices, software releases, medical guidance, security advisories, and other time-sensitive facts must be verified with current authoritative sources.
 - Article-boundary detection is automatic; unusual source formatting can occasionally create imperfect titles or passage grouping.
-- Pocket AI labels the retrieved material as offline encyclopedia evidence and instructs the model not to treat it as current authority.
+- Pocket AI Project labels the retrieved material as offline encyclopedia evidence and instructs the model not to treat it as current authority.
 
 ## Attribution and licensing notice
 

@@ -1,4 +1,4 @@
-# Pocket AI Complete School Foundation
+# Pocket AI Project Complete School Foundation
 
 Profile: natural-complete-school
 

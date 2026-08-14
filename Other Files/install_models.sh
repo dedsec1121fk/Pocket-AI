@@ -56,7 +56,7 @@ done
 
 [[ -d /data/data/com.termux/files/usr ]] || { echo "Run this installer inside Termux." >&2; exit 1; }
 if [[ -f "$OTHER_DIR/CHECKSUMS.sha256" ]]; then
-  echo "Verifying the complete Pocket AI package..."
+  echo "Verifying the complete Pocket AI Project package..."
   (cd "$ROOT_DIR" && sha256sum -c "Other Files/CHECKSUMS.sha256")
 fi
 mkdir -p "$DATA_DIR" "$MODEL_CACHE_DIR"
@@ -115,6 +115,6 @@ Optional larger tiers: 4B → 8B
 Emergency-only: SmolLM2 135M Q2_K / Q4_1
 
 Start:
-  cd "$ROOT_DIR" && python "Pocket AI.py"
+  cd "$ROOT_DIR" && python "Pocket AI Project.py"
 Use: /llm-model auto and /hybrid auto
 EOF

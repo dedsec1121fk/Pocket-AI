@@ -1,4 +1,4 @@
-"""Resource-aware prompt context selection for Pocket AI."""
+"""Resource-aware prompt context selection for Pocket AI Project."""
 from __future__ import annotations
 
 import re

@@ -1,4 +1,4 @@
-"""Low-RAM offline encyclopedia retrieval for Pocket AI.
+"""Low-RAM offline encyclopedia retrieval for Pocket AI Project.
 
 Searches sharded SQLite/FTS5 indexes derived from a plain-text Simple English
 Wikipedia corpus. Only short relevant passages are returned, so a very small

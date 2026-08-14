@@ -1,4 +1,4 @@
-# Pocket AI advanced reasoning architecture
+# Pocket AI Project advanced reasoning architecture
 
 ## Objective
 

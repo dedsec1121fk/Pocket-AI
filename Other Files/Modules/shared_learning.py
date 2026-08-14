@@ -1,4 +1,4 @@
-"""Shared, retrieval-based learning for every Pocket AI model.
+"""Shared, retrieval-based learning for every Pocket AI Project model.
 
 This module does not change GGUF weights.  It stores compact, verified lessons
 from high-confidence local answers and trusted web evidence, then gives those

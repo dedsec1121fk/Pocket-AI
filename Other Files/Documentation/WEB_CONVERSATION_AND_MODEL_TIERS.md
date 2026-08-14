@@ -1,8 +1,8 @@
-# Pocket AI: Web Intelligence, Follow-up Conversation, and Model Tiers
+# Pocket AI Project: Web Intelligence, Follow-up Conversation, and Model Tiers
 
 ## Conversation continuity
 
-Pocket AI restores recent persisted turns, keeps a bounded local transcript, resolves referential follow-ups, and passes only the most useful recent context to the selected GGUF model. Requests such as “Why?”, “make it simpler”, “another example”, and equivalent Greek phrases continue the active subject.
+Pocket AI Project restores recent persisted turns, keeps a bounded local transcript, resolves referential follow-ups, and passes only the most useful recent context to the selected GGUF model. Requests such as “Why?”, “make it simpler”, “another example”, and equivalent Greek phrases continue the active subject.
 
 ## Web modes
 

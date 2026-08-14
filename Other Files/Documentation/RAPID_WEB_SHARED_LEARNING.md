@@ -1,6 +1,6 @@
 # Rapid Web Shared Learning
 
-Pocket AI uses retrieval-based learning, not uncontrolled on-device weight training.
+Pocket AI Project uses retrieval-based learning, not uncontrolled on-device weight training.
 
 ## Fast path
 

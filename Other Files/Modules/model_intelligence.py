@@ -1,4 +1,4 @@
-"""Per-model cognitive scaling for Pocket AI.
+"""Per-model cognitive scaling for Pocket AI Project.
 
 This module does not change GGUF weights. It makes every installed model use the
 available evidence, context, output budget, and verification effort more

@@ -1,8 +1,8 @@
-# Pocket AI Smart Reasoning Architecture
+# Pocket AI Project Smart Reasoning Architecture
 
 ## Objective
 
-Pocket AI does not treat parameter count as the only source of intelligence. It combines real compact models with deterministic tools, broad local retrieval, evidence compression, guarded generation, shared verified lessons, and post-generation validation. It does not claim that a 135M or other small local model literally becomes GPT-3.5.
+Pocket AI Project does not treat parameter count as the only source of intelligence. It combines real compact models with deterministic tools, broad local retrieval, evidence compression, guarded generation, shared verified lessons, and post-generation validation. It does not claim that a 135M or other small local model literally becomes GPT-3.5.
 
 ## Answer pipeline
 
@@ -29,7 +29,7 @@ Only one GGUF process is resident at a time. Hybrid parameter counts are not add
 
 ## Time and safety boundary
 
-The local generation plan shares a 112-second budget. First-run downloads, model reconstruction, compilation, Android scheduling, and severe thermal throttling are outside that generation budget. Pocket AI can shorten context or output, reduce threads, skip a second pass, downgrade the model, or use retrieval-only fallback.
+The local generation plan shares a 112-second budget. First-run downloads, model reconstruction, compilation, Android scheduling, and severe thermal throttling are outside that generation budget. Pocket AI Project can shorten context or output, reduce threads, skip a second pass, downgrade the model, or use retrieval-only fallback.
 
 ## Model-family policies
 

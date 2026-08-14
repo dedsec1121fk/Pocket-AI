@@ -75,7 +75,7 @@ case "$CHOICE" in
     CHOICE="$(select_best)"
     if [[ "$CHOICE" == none ]]; then
       echo "No 0.6B+ model is safely recommended from current RAM and storage."
-      echo "Pocket AI will use the bundled 135M emergency fallbacks."
+      echo "Pocket AI Project will use the bundled 135M emergency fallbacks."
       exit 0
     fi
     echo "Strongest conservative automatic match: $CHOICE"
@@ -187,9 +187,9 @@ esac
 cat <<DONE
 
 Installation complete.
-Start Pocket AI:
+Start Pocket AI Project:
   cd "$ROOT_DIR"
-  python "Pocket AI.py"
+  python "Pocket AI Project.py"
 
 Automatic orchestration:
   /llm-model auto

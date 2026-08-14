@@ -1,6 +1,6 @@
 SIMPLE ENGLISH WIKIPEDIA OFFLINE INDEX — ATTRIBUTION NOTICE
 
-Pocket AI includes an indexed transformation of text described by its source
+Pocket AI Project includes an indexed transformation of text described by its source
 publisher as a plain-text Simple English Wikipedia corpus.
 
 Source repository:
@@ -17,7 +17,7 @@ Documentation License; additional terms may apply. Wikipedia contributors
 retain their rights. Reusers are responsible for satisfying applicable
 attribution, license-linking, indication-of-changes, and share-alike terms.
 
-Pocket AI does not claim authorship or copyright ownership of third-party
+Pocket AI Project does not claim authorship or copyright ownership of third-party
 Wikipedia text. The bundled SQLite databases are a technical indexing and
 chunking transformation for offline retrieval. They may be incomplete or
 outdated and are provided without warranty.

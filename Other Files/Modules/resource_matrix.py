@@ -1,4 +1,4 @@
-"""Continuous Android CPU/RAM/storage optimizer for Pocket AI.
+"""Continuous Android CPU/RAM/storage optimizer for Pocket AI Project.
 
 Normal inference starts at 0.6B and can scale through 0.8B, 1.5B, 1.7B,
 2B and 3B before the optional 4B/8B tiers. The 135M models are emergency-only.

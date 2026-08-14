@@ -1,4 +1,4 @@
-"""Human-readable hardware recommendation summaries for Pocket AI."""
+"""Human-readable hardware recommendation summaries for Pocket AI Project."""
 from __future__ import annotations
 
 from typing import Any, Dict

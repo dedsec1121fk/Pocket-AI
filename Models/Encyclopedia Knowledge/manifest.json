@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "name": "Pocket AI Offline Simple English Encyclopedia",
+  "name": "Pocket AI Project Offline Simple English Encyclopedia",
   "source_repository": "ffatty/plain-text-wikipedia-simpleenglish",
   "source_description": "Plain-text corpus described by its publisher as Simple English Wikipedia, ported from Kaggle.",
   "retrieved_utc": "2026-07-09T18:14:23.882519+00:00",

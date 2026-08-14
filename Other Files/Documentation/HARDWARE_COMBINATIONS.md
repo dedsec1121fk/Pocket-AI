@@ -1,6 +1,6 @@
-# Pocket AI Hardware Combination Matrix
+# Pocket AI Project Hardware Combination Matrix
 
-These are conservative routing envelopes, not guarantees. Pocket AI rechecks live available RAM and temperature before every model pass.
+These are conservative routing envelopes, not guarantees. Pocket AI Project rechecks live available RAM and temperature before every model pass.
 
 | Approximate total RAM | Typical normal tier | Higher tier when live memory is strong |
 |---:|---|---|

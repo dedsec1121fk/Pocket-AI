@@ -1,4 +1,4 @@
-"""Sequential-response comparison for Pocket AI hybrid consensus mode."""
+"""Sequential-response comparison for Pocket AI Project hybrid consensus mode."""
 from __future__ import annotations
 
 import re
